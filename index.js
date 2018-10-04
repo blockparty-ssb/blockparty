@@ -14,7 +14,11 @@ function mainView (state) {
     <body>
       <button id="publish">say "hello world"</button>
       <ol>
-      ${state.messages.map(msg => html`<li>${msg.value.content.type}</li>`)}
+        ${state.messages.map(msg => {
+          const m = msg.value
+          const author = m.author.slice(1, 4)
+          return html`<li>${author} says: ${m.content.type}</li>`
+        })}
       </ol>
     </body>
   `
