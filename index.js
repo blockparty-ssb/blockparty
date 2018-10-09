@@ -1,5 +1,6 @@
 'use strict'
 const path = require('path')
+const fs = require('fs')
 const scuttleBot = require('scuttlebot')
 const ssbClient = require('ssb-client')
 const ssbKeys = require('ssb-keys')
@@ -15,8 +16,13 @@ const createSbot = scuttleBot
   .use(require('scuttlebot/plugins/logging'))
   .use(require('ssb-ws'))
 
+const appIds =
+  fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
+    .trim()
+    .split('\n')
+
 const app = choo()
-app.use(setUpSbot)
+app.use(setUpSbots)
 app.route('/', mainView)
 app.mount('body')
 
@@ -35,34 +41,35 @@ function mainView (state) {
   `
 }
 
-function setUpSbot(state, emitter) {
-  const appName = process.env.ssb_appname
-  const ssbConfig = config(appName)
-  const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
-  ssbConfig.keys = keys
-  state.messages = []
-  const sbot = createSbot(ssbConfig)
-  ssbConfig.remote = sbot.getAddress()
-  ssbClient(keys, ssbConfig, (err, sbot) => {
-    if (err) return console.log(err)
-    sbot.gossip.peers((err, peers) => {
-      console.log(err)
-      console.log(peers)
-    })
-
-    document.getElementById('publish').addEventListener('click', () => {
-      sbot.publish({
-        type: 'hello-world'
+function setUpSbots(state, emitter) {
+  appIds.forEach(appName => {
+    const ssbConfig = config(appName)
+    const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
+    ssbConfig.keys = keys
+    state.messages = []
+    const sbot = createSbot(ssbConfig)
+    ssbConfig.remote = sbot.getAddress()
+    ssbClient(keys, ssbConfig, (err, sbot) => {
+      if (err) return console.log(err)
+      sbot.gossip.peers((err, peers) => {
+        console.log(err)
+        console.log(peers)
       })
-    })
 
-    pull(
-      sbot.createFeedStream({live: true}),
-      pull.drain(msg => {
-        if (!msg.value) return
-        state.messages.push(msg)
-        emitter.emit('render')
+      document.getElementById('publish').addEventListener('click', () => {
+        sbot.publish({
+          type: 'hello-world'
+        })
       })
-    )
+
+      pull(
+        sbot.createFeedStream({live: true}),
+        pull.drain(msg => {
+          if (!msg.value) return
+          state.messages.push(msg)
+          emitter.emit('render')
+        })
+      )
+    })
   })
 }
