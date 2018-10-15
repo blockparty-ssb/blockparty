@@ -27,7 +27,6 @@ app.route('/', mainView)
 app.mount('body')
 
 function mainView (state) {
-  /* Feld leer machen, Button bennennen, type: message, in die Liste anzeigen */
   return html`
     <body>
       <input type="text" id="post" name="your message"/><br>
@@ -71,10 +70,12 @@ function setUpSbots(state, emitter) {
       })
 
       document.getElementById('add-to-list').addEventListener('click', () => {
+        const textField = document.getElementById('post')
         sbot.publish({
           type: 'post',
-          text: document.getElementById('post').value
+          text: textField.value
         })
+        textField.value = ''
       })
 
       pull(
