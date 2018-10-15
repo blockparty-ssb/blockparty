@@ -27,15 +27,23 @@ app.route('/', mainView)
 app.mount('body')
 
 function mainView (state) {
+  /* Feld leer machen, Button bennennen, type: message, in die Liste anzeigen */
   return html`
     <body>
+      <input type="text" id="post" name="your message"/><br>
+      <button id="add-to-list">Post message</button>  
+      <br>
       <button id="publish">say "hello world"</button>
       <ol>
         ${state.messages.map(msg => {
-    const m = msg.value
-    const author = m.author.slice(1, 4)
-    return html`<li>${author} says: ${m.content.type}</li>`
-  })}
+          const m = msg.value
+          let author = m.author.slice(1, 4)
+          if (m.content.type === 'post') {
+            return html`<li>${author} says: ${m.content.text}</li>`
+          } else if (m.content.type === 'hello-world') {
+            return html`<li>${author} says: ${m.content.type}</li>`
+          }
+        })}
       </ol>
     </body>
   `
@@ -59,6 +67,13 @@ function setUpSbots(state, emitter) {
       document.getElementById('publish').addEventListener('click', () => {
         sbot.publish({
           type: 'hello-world'
+        })
+      })
+
+      document.getElementById('add-to-list').addEventListener('click', () => {
+        sbot.publish({
+          type: 'post',
+          text: document.getElementById('post').value
         })
       })
 
