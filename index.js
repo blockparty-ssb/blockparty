@@ -23,12 +23,38 @@ const appIds =
 
 const app = choo()
 app.use(setUpSbots)
-app.route('/', mainView)
+app.route('/', view1)
+app.route('/test-network-1', view1)
+app.route('/test-network-2', view2)
 app.mount('body')
 
-function mainView (state) {
+function view1(state) {
   return html`
-    <body>
+    <body style='background-color:lightyellow'>
+      <a id="switch-to-app-2" href="/test-network-2">Switch to other app</a><br>  
+      <input type="text" id="post" name="your message"/><br>
+      <button id="add-to-list">Post message</button>  
+      <br>
+      <button id="publish">say "hello world"</button>
+      <ol>
+        ${state.messages.map(msg => {
+          const m = msg.value
+          let author = m.author.slice(1, 4)
+          if (m.content.type === 'post') {
+            return html`<li>${author} says: ${m.content.text}</li>`
+          } else if (m.content.type === 'hello-world') {
+            return html`<li>${author} says: ${m.content.type}</li>`
+          }
+        })}
+      </ol>
+    </body>
+  `
+}
+
+function view2(state) {
+  return html`
+    <body style='background-color:lightgreen'>
+      <button id="switch-to-app-1">Switch to other app</button><br>  
       <input type="text" id="post" name="your message"/><br>
       <button id="add-to-list">Post message</button>  
       <br>
