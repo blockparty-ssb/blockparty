@@ -55,6 +55,12 @@ function view(state) {
       <br>
       <button id="publish">say "hello world"</button>
       <ol>
+        ${state.peers[currentApp].map(peer => {
+          return html`<li>${peer.key}</li>`
+        })}
+      </ol>
+      <hr>
+      <ol>
         ${state.messages[currentApp].map(msg => {
     const m = msg.value
     let author = m.author.slice(1, 4)
@@ -73,10 +79,15 @@ function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
   state.sbot = shelf[state.activeApp]
   state.messages = {}
+  state.peers = {}
   appIds.reduce((acc, curr) => {
     acc[curr] = []
     return acc
   }, state.messages)
+  appIds.reduce((acc, curr) => {
+    acc[curr] = []
+    return acc
+  }, state.peers)
 
   emitter.on('DOMContentLoaded', () => {
     document.getElementById('publish').addEventListener('click', () => {
@@ -108,12 +119,22 @@ function prepareStateAndListeners(state, emitter) {
     ssbConfig.keys = keys
     const sbotFile = shelf[appName]
     ssbConfig.remote = sbotFile.getAddress()
+    console.log(ssbConfig)
     ssbClient(keys, ssbConfig, (err, sbot) => {
       if (err) return console.log(err)
-      sbot.gossip.peers((err, peers) => {
-        console.log(err)
-        console.log(peers)
-      })
+      setInterval(function () {
+        console.log('lïoft!' + appName)
+        sbot.gossip.peers((err, peers) => {
+          console.log(peers, appName)
+          if(err) {
+            console.log(err)
+            return
+          } 
+          state.peers[appName] = peers
+          emitter.emit('render')
+        })
+      }, 8000) //peers als live-stream 
+      
 
       pull(
         sbot.createFeedStream({live: true}),
