@@ -9,6 +9,7 @@ const pull = require('pull-stream')
 const choo = require('choo')
 const html = require('choo/html')
 
+
 const createSbot = scuttleBot
   .use(require('scuttlebot/plugins/master'))
   .use(require('scuttlebot/plugins/gossip'))
@@ -21,14 +22,29 @@ const appIds =
     .trim()
     .split('\n')
 
+// sbot regal
+
+const shelf = appIds.reduce((acc, appName) => {
+  const ssbConfig = config(appName)
+  const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
+  ssbConfig.keys = keys
+  const sbot = createSbot(ssbConfig)
+  acc[appName]=sbot
+  return acc
+}, {})
+
+console.log(shelf)
+
+// choo app
+
 const app = choo()
-app.use(setUpSbots)
-app.route('/', view1)
-app.route('/test-network-1', view1)
-app.route('/test-network-2', view2)
+app.use(setUpEventListeners)
+app.route('/', view)
+app.route('/test-network-1', view)
+app.route('/test-network-2', view)
 app.mount('body')
 
-function view1(state) {
+function view(state) {
   return html`
     <body style='background-color:lightyellow'>
       <a id="switch-to-app-2" href="/test-network-2">Switch to other app</a><br>  
@@ -38,50 +54,27 @@ function view1(state) {
       <button id="publish">say "hello world"</button>
       <ol>
         ${state.messages.map(msg => {
-          const m = msg.value
-          let author = m.author.slice(1, 4)
-          if (m.content.type === 'post') {
-            return html`<li>${author} says: ${m.content.text}</li>`
-          } else if (m.content.type === 'hello-world') {
-            return html`<li>${author} says: ${m.content.type}</li>`
-          }
-        })}
+    const m = msg.value
+    let author = m.author.slice(1, 4)
+    if (m.content.type === 'post') {
+      return html`<li>${author} says: ${m.content.text}</li>`
+    } else if (m.content.type === 'hello-world') {
+      return html`<li>${author} says: ${m.content.type}</li>`
+    }
+  })}
       </ol>
     </body>
   `
 }
 
-function view2(state) {
-  return html`
-    <body style='background-color:lightgreen'>
-      <button id="switch-to-app-1">Switch to other app</button><br>  
-      <input type="text" id="post" name="your message"/><br>
-      <button id="add-to-list">Post message</button>  
-      <br>
-      <button id="publish">say "hello world"</button>
-      <ol>
-        ${state.messages.map(msg => {
-          const m = msg.value
-          let author = m.author.slice(1, 4)
-          if (m.content.type === 'post') {
-            return html`<li>${author} says: ${m.content.text}</li>`
-          } else if (m.content.type === 'hello-world') {
-            return html`<li>${author} says: ${m.content.type}</li>`
-          }
-        })}
-      </ol>
-    </body>
-  `
-}
-
-function setUpSbots(state, emitter) {
+function setUpEventListeners(state, emitter) {
   appIds.forEach(appName => {
     const ssbConfig = config(appName)
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
     state.messages = []
-    const sbot = createSbot(ssbConfig)
-    ssbConfig.remote = sbot.getAddress()
+    const sbotFile = shelf[appName]
+    ssbConfig.remote = sbotFile.getAddress()
     ssbClient(keys, ssbConfig, (err, sbot) => {
       if (err) return console.log(err)
       sbot.gossip.peers((err, peers) => {
@@ -97,6 +90,7 @@ function setUpSbots(state, emitter) {
 
       document.getElementById('add-to-list').addEventListener('click', () => {
         const textField = document.getElementById('post')
+        console.log(config.caps.shs)
         sbot.publish({
           type: 'post',
           text: textField.value
