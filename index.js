@@ -55,7 +55,7 @@ function view(state) {
       <br>
       <button id="publish">say "hello world"</button>
       <ol>
-        ${state.messages.map(msg => {
+        ${state.messages[currentApp].map(msg => {
     const m = msg.value
     let author = m.author.slice(1, 4)
     if (m.content.type === 'post') {
@@ -72,7 +72,11 @@ function view(state) {
 function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
   state.sbot = shelf[state.activeApp]
-  state.messages = []
+  state.messages = {}
+  appIds.reduce((acc, curr) => {
+    acc[curr] = []
+    return acc
+  }, state.messages)
 
   emitter.on('DOMContentLoaded', () => {
     document.getElementById('publish').addEventListener('click', () => {
@@ -115,7 +119,7 @@ function prepareStateAndListeners(state, emitter) {
         sbot.createFeedStream({live: true}),
         pull.drain(msg => {
           if (!msg.value) return
-          state.messages.unshift(msg)
+          state.messages[appName].unshift(msg)
           emitter.emit('render')
         })
       )
