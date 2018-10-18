@@ -33,8 +33,6 @@ const shelf = appIds.reduce((acc, appName) => {
   return acc
 }, {})
 
-console.log(shelf)
-
 // choo app
 
 const app = choo()
@@ -80,7 +78,7 @@ function prepareStateAndListeners(state, emitter) {
     document.getElementById('publish').addEventListener('click', () => {
       state.sbot.publish({
         type: 'hello-world'
-      })
+      }, err => console.log(err)) // sbot from createSbot needs a cb
     })
 
     document.getElementById('add-to-list').addEventListener('click', () => {
@@ -88,7 +86,7 @@ function prepareStateAndListeners(state, emitter) {
       state.sbot.publish({
         type: 'post',
         text: textField.value
-      })
+      }, err => console.log(err))
       textField.value = ''
     })
 
@@ -117,8 +115,7 @@ function prepareStateAndListeners(state, emitter) {
         sbot.createFeedStream({live: true}),
         pull.drain(msg => {
           if (!msg.value) return
-          console.log('got message')
-          state.messages.push(msg)
+          state.messages.unshift(msg)
           emitter.emit('render')
         })
       )
