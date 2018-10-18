@@ -73,26 +73,29 @@ function view(state) {
 
 function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
+  state.sbot = shelf[state.activeApp]
+  state.messages = []
 
   emitter.on('DOMContentLoaded', () => {
     document.getElementById('publish').addEventListener('click', () => {
-      // sbot.publish({
-      //   type: 'hello-world'
-      // })
+      state.sbot.publish({
+        type: 'hello-world'
+      })
     })
 
     document.getElementById('add-to-list').addEventListener('click', () => {
       const textField = document.getElementById('post')
-      // sbot.publish({
-      //   type: 'post',
-      //   text: textField.value
-      // })
+      state.sbot.publish({
+        type: 'post',
+        text: textField.value
+      })
       textField.value = ''
     })
 
     document.getElementById('switch-app').addEventListener('click', () => {
       const otherAppId = appIds.find(id => id !== state.activeApp)
       state.activeApp = otherAppId
+      state.sbot = shelf[state.activeApp]
       emitter.emit('render')
     })
   })
@@ -101,7 +104,6 @@ function prepareStateAndListeners(state, emitter) {
     const ssbConfig = config(appName)
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
-    state.messages = []
     const sbotFile = shelf[appName]
     ssbConfig.remote = sbotFile.getAddress()
     ssbClient(keys, ssbConfig, (err, sbot) => {
@@ -115,6 +117,7 @@ function prepareStateAndListeners(state, emitter) {
         sbot.createFeedStream({live: true}),
         pull.drain(msg => {
           if (!msg.value) return
+          console.log('got message')
           state.messages.push(msg)
           emitter.emit('render')
         })
