@@ -1,5 +1,6 @@
 html, body {
     margin: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -47,6 +48,25 @@ div.post-msg, div.say-hello, div.show-peers {
     background: papayawhip;
 }
 
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.FeedEvent {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-height: 35px;
+    padding: 10px;
+}
+
 button {
     background: lightgrey;
     color: #3f3f3f;
@@ -61,8 +81,4 @@ input {
     padding: 4px;
     margin: 4px;
     margin-left: 15px;
-}
-
-.feed ul {
-    list-style-type: none;
 }

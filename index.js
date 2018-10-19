@@ -72,17 +72,17 @@ function view(state) {
               </ul>
             </div>
             <div class="feed">
-              <ul>
+              <section class="content">
                 ${state.messages[currentApp].map(msg => {
                 const m = msg.value
                 let author = m.author.slice(1, 4)
                 if (m.content.type === 'post') {
-                  return html`<li>${author} says: ${m.content.text}</li>`
+                  return html`<div class="FeedEvent">${author} says: ${m.content.text}</div>`
                 } else if (m.content.type === 'hello-world') {
-                  return html`<li>${author} says: ${m.content.type}</li>`
+                  return html`<div class="FeedEvent">${author} says: ${m.content.type}</div>`
                 }
                 })}
-              </ul>
+              </section>
             </div>
           </div>
         </div>
