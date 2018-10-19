@@ -2,7 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 const scuttleBot = require('scuttlebot')
-const ssbClient = require('ssb-client')
+const Connection = require('ssb-client')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
 const pull = require('pull-stream')
@@ -49,32 +49,47 @@ function view(state) {
   const bg = `background-color:${colors[appIndex]}`
   return html`
     <body style=${bg}>
-      <button id="switch-app">Switch to other app</button><br>  
-      <input type="text" id="post" name="your message"/><br>
-      <button id="add-to-list">Post message</button>  
-      <br>
-      <button id="publish">say "hello world"</button>
-      <ol>
-        ${state.peers[currentApp].map(peer => {
-          return html`<li>${peer.key}</li>`
-        })}
-      </ol>
-      <hr>
-      <ol>
-        ${state.messages[currentApp].map(msg => {
-    const m = msg.value
-    let author = m.author.slice(1, 4)
-    if (m.content.type === 'post') {
-      return html`<li>${author} says: ${m.content.text}</li>`
-    } else if (m.content.type === 'hello-world') {
-      return html`<li>${author} says: ${m.content.type}</li>`
-    }
-  })}
-      </ol>
+      <div class="MainWindow">
+        <div class="SplitView">
+          <div class="side">
+            <div class="switch-app">
+              <button id="switch-app">Switch to other app</button><br>  
+            </div>
+          </div>
+          <div class="main">
+            <div class="post-msg">
+              <input type="text" id="post" name="your message"/><br>
+              <button id="add-to-list">Post message</button>  
+            </div>
+            <div class="say-hello">
+              <button id="publish">say "hello world"</button>
+            </div>
+            <div class="show-peers">
+              <ul>
+                ${state.peers[currentApp].map(peer => {
+                  return html`<li>${peer.key}</li>`
+                })}
+              </ul>
+            </div>
+            <div class="feed">
+              <ul>
+                ${state.messages[currentApp].map(msg => {
+                const m = msg.value
+                let author = m.author.slice(1, 4)
+                if (m.content.type === 'post') {
+                  return html`<li>${author} says: ${m.content.text}</li>`
+                } else if (m.content.type === 'hello-world') {
+                  return html`<li>${author} says: ${m.content.type}</li>`
+                }
+                })}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </body>
   `
 }
-
 function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
   state.sbot = shelf[state.activeApp]
@@ -120,11 +135,11 @@ function prepareStateAndListeners(state, emitter) {
     const sbotFile = shelf[appName]
     ssbConfig.remote = sbotFile.getAddress()
     console.log(ssbConfig)
-    ssbClient(keys, ssbConfig, (err, sbot) => {
+    Connection(keys, ssbConfig, (err, server) => {
       if (err) return console.log(err)
       setInterval(function () {
         console.log('lïoft!' + appName)
-        sbot.gossip.peers((err, peers) => {
+        server.gossip.peers((err, peers) => {
           console.log(peers, appName)
           if(err) {
             console.log(err)
@@ -137,7 +152,7 @@ function prepareStateAndListeners(state, emitter) {
       
 
       pull(
-        sbot.createFeedStream({live: true}),
+        server.createFeedStream({live: true}),
         pull.drain(msg => {
           if (!msg.value) return
           state.messages[appName].unshift(msg)
