@@ -55,6 +55,14 @@ function view(state) {
             <div class="switch-app">
               <button id="switch-app">Switch to other app</button><br>  
             </div>
+            <div class="show-peers">
+              <h4>Online peers: </h4>
+              <ul>
+                ${state.peers[currentApp].map(peer => {
+                  return html`<li>${peer.key}</li>`
+                })}
+              </ul>
+            </div>
           </div>
           <div class="main">
             <div class="post-msg">
@@ -63,13 +71,6 @@ function view(state) {
             </div>
             <div class="say-hello">
               <button id="publish">say "hello world"</button>
-            </div>
-            <div class="show-peers">
-              <ul>
-                ${state.peers[currentApp].map(peer => {
-                  return html`<li>${peer.key}</li>`
-                })}
-              </ul>
             </div>
             <div class="feed">
               <section class="content">

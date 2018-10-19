@@ -44,7 +44,7 @@ body {
 
 }
 
-div.post-msg, div.say-hello, div.show-peers {
+div.post-msg, div.say-hello {
     background: papayawhip;
 }
 
