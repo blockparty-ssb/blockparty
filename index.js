@@ -1,39 +1,14 @@
 'use strict'
-const path = require('path')
-const fs = require('fs')
-const scuttleBot = require('scuttlebot')
+
+const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
-const ssbKeys = require('ssb-keys')
-const config = require('ssb-config/inject')
 const pull = require('pull-stream')
 const choo = require('choo')
 const h = require('hyperscript')
 const { div, ul, body, li, input, button, section, h4 } =
   require('hyperscript-helpers')(h)
-
-
-const createSbot = scuttleBot
-  .use(require('scuttlebot/plugins/master'))
-  .use(require('scuttlebot/plugins/gossip'))
-  .use(require('scuttlebot/plugins/local'))
-  .use(require('scuttlebot/plugins/logging'))
-  .use(require('ssb-ws'))
-
-const appIds =
-  fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
-    .trim()
-    .split('\n')
-
-// sbot regal
-
-const shelf = appIds.reduce((acc, appName) => {
-  const ssbConfig = config(appName)
-  const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
-  ssbConfig.keys = keys
-  const sbot = createSbot(ssbConfig)
-  acc[appName]=sbot
-  return acc
-}, {})
+const wsUrl = 'ws://localhost:10101'
+const wsClient = require('pull-ws/client')
 
 // choo app
 
@@ -87,9 +62,11 @@ function view(state) {
     )
   )
 }
+
+const appIds = ['test-network-1']
 function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
-  state.sbot = shelf[state.activeApp]
+  // state.sbot = shelf[state.activeApp]
   state.messages = {}
   state.peers = {}
   appIds.reduce((acc, curr) => {
@@ -120,42 +97,48 @@ function prepareStateAndListeners(state, emitter) {
     document.getElementById('switch-app').addEventListener('click', () => {
       const otherAppId = appIds.find(id => id !== state.activeApp)
       state.activeApp = otherAppId
-      state.sbot = shelf[state.activeApp]
+      // state.sbot = shelf[state.activeApp]
       emitter.emit('render')
     })
   })
 
-  appIds.forEach(appName => {
-    const ssbConfig = config(appName)
-    const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
-    ssbConfig.keys = keys
-    const sbotFile = shelf[appName]
-    ssbConfig.remote = sbotFile.getAddress()
-    console.log(ssbConfig)
-    connection(keys, ssbConfig, (err, server) => {
-      if (err) return console.log(err)
-      setInterval(function () {
-        console.log('lïoft!' + appName)
-        server.gossip.peers((err, peers) => {
-          console.log(peers, appName)
-          if (err) {
-            console.log(err)
-            return
-          }
-          state.peers[appName] = peers
-          emitter.emit('render')
-        })
-      }, 8000) // peers als live-stream
-
-
-      pull(
-        server.createFeedStream({live: true}),
-        pull.drain(msg => {
-          if (!msg.value) return
-          state.messages[appName].unshift(msg)
-          emitter.emit('render')
-        })
-      )
-    })
+  wsClient(wsUrl, (err, stream) => {
+    if (err) return console.log(err)
+    console.log('got stream!')
   })
+
+  ipcRenderer.on('ssb-configs', (event, arg) => {
+    console.log('ipc renderer')
+    console.log(arg)
+  })
+
+  // appIds.forEach(appName => {
+  //   const ssbConfig = config(appName)
+  //   ssbConfig.keys = keys
+  //   // const sbotFile = shelf[appName]
+  //   // ssbConfig.remote = sbotFile.getAddress()
+  //   connection(keys, ssbConfig, (err, server) => {
+  //     if (err) return console.log(err)
+  //     setInterval(function () {
+  //       server.gossip.peers((err, peers) => {
+  //         if (err) {
+  //           console.log(err)
+  //           return
+  //         }
+  //         state.peers[appName] = peers
+  //         emitter.emit('render')
+  //       })
+  //     }, 8000) // peers als live-stream
+
+
+  //     pull(
+  //       server.createFeedStream({live: true}),
+  //       pull.drain(msg => {
+  //         if (!msg.value) return
+  //         state.messages[appName].unshift(msg)
+  //         emitter.emit('render')
+  //       })
+  //     )
+  //   })
+  // })
 }

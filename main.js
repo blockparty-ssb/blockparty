@@ -1,17 +1,42 @@
 'use strict'
-const {app, BrowserWindow} = require('electron')
+const path = require('path')
+const fs = require('fs')
+const {app, BrowserWindow, ipcMain} = require('electron')
+const startSbots = require('./server.js')
+const ssbKeys = require('ssb-keys')
+const config = require('ssb-config/inject')
 
 let mainWindow
 
-function createWindow () {
+function createWindow (ssbConfigs) {
   mainWindow = new BrowserWindow({width: 800, height: 600})
 
   mainWindow.loadFile('index.html')
 
   mainWindow.webContents.openDevTools()
+  mainWindow.webContents.on('dom-ready', () => {
+    mainWindow.webContents.send('ssb-configs', ssbConfigs)
+  })
 }
 
-app.on('ready', createWindow)
+app.on('ready', () => {
+  const appIds =
+    fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
+      .trim()
+      .split('\n')
+
+  const ssbConfigs = appIds.map(appName => {
+    const ssbConfig = config(appName)
+    const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
+    ssbConfig.keys = keys
+    ssbConfig.appName = appName
+    return ssbConfig
+  })
+
+  startSbots(ssbConfigs)
+  createWindow(ssbConfigs)
+})
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
