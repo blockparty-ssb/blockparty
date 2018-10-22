@@ -2,12 +2,14 @@
 const path = require('path')
 const fs = require('fs')
 const scuttleBot = require('scuttlebot')
-const Connection = require('ssb-client')
+const connection = require('ssb-client')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
 const pull = require('pull-stream')
 const choo = require('choo')
-const html = require('choo/html')
+const h = require('hyperscript')
+const { div, ul, body, li, input, button, section, h4 } =
+  require('hyperscript-helpers')(h)
 
 
 const createSbot = scuttleBot
@@ -47,49 +49,43 @@ function view(state) {
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(currentApp)
   const bg = `background-color:${colors[appIndex]}`
-  return html`
-    <body style=${bg}>
-      <div class="MainWindow">
-        <div class="SplitView">
-          <div class="side">
-            <div class="switch-app">
-              <button id="switch-app">Switch to other app</button><br>  
-            </div>
-            <div class="show-peers">
-              <h4>Online peers: </h4>
-              <ul>
-                ${state.peers[currentApp].map(peer => {
-                  return html`<li>${peer.key}</li>`
-                })}
-              </ul>
-            </div>
-          </div>
-          <div class="main">
-            <div class="post-msg">
-              <input type="text" id="post" name="your message"/><br>
-              <button id="add-to-list">Post message</button>  
-            </div>
-            <div class="say-hello">
-              <button id="publish">say "hello world"</button>
-            </div>
-            <div class="feed">
-              <section class="content">
-                ${state.messages[currentApp].map(msg => {
+  return body({style: bg},
+    div('.MainWindow',
+      div('.SplitView',
+        div('.side',
+          div('.switch-app',
+            button('#switch-app', 'Switch to other app')
+          ),
+          div('.show-peers',
+            h4('Online peers:'),
+            ul(state.peers[currentApp].map(peer => li(peer.key)))
+          )
+        ),
+        div('.main',
+          div('.post-msg',
+            input({type: "text", id: "post", name: "your message"}),
+            button({ id: 'add-to-list' }, 'Post message')
+          ),
+          div('.say-hello',
+            button({id: 'publish'}, 'say "hello world"')
+          ),
+          div('.feed',
+            section('.content',
+              state.messages[currentApp].map(msg => {
                 const m = msg.value
                 let author = m.author.slice(1, 4)
                 if (m.content.type === 'post') {
-                  return html`<div class="FeedEvent">${author} says: ${m.content.text}</div>`
+                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
                 } else if (m.content.type === 'hello-world') {
-                  return html`<div class="FeedEvent">${author} says: ${m.content.type}</div>`
+                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
                 }
-                })}
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>
-    </body>
-  `
+              })
+            )
+          )
+        )
+      )
+    )
+  )
 }
 function prepareStateAndListeners(state, emitter) {
   state.activeApp = appIds[0]
@@ -136,21 +132,21 @@ function prepareStateAndListeners(state, emitter) {
     const sbotFile = shelf[appName]
     ssbConfig.remote = sbotFile.getAddress()
     console.log(ssbConfig)
-    Connection(keys, ssbConfig, (err, server) => {
+    connection(keys, ssbConfig, (err, server) => {
       if (err) return console.log(err)
       setInterval(function () {
         console.log('lïoft!' + appName)
         server.gossip.peers((err, peers) => {
           console.log(peers, appName)
-          if(err) {
+          if (err) {
             console.log(err)
             return
-          } 
+          }
           state.peers[appName] = peers
           emitter.emit('render')
         })
-      }, 8000) //peers als live-stream 
-      
+      }, 8000) // peers als live-stream
+
 
       pull(
         server.createFeedStream({live: true}),
