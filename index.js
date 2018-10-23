@@ -24,7 +24,8 @@ function waitForConfigs(state, emitter) {
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
-        state.server[config.appName] = server
+        state.servers[config.appName] = server
+        // we need to set the initial activeServer once we have it
         setInterval(function () {
           server.gossip.peers((err, peers) => {
             if (err) {
@@ -52,7 +53,7 @@ function waitForConfigs(state, emitter) {
 
 function prepareStateAndListeners(state, emitter, appIds) {
   state.activeApp = appIds[0]
-  state.sbot = state.server[state.activeApp]
+  state.servers = {}
   state.messages = {}
   state.peers = {}
   appIds.reduce((acc, curr) => {
@@ -66,14 +67,14 @@ function prepareStateAndListeners(state, emitter, appIds) {
 
   emitter.on('DOMContentLoaded', () => {
     document.getElementById('publish').addEventListener('click', () => {
-      state.sbot.publish({
+      state.activeServer.publish({
         type: 'hello-world'
-      }, err => console.log(err)) // sbot from createSbot needs a cb
+      }, err => console.log(err))
     })
 
     document.getElementById('add-to-list').addEventListener('click', () => {
       const textField = document.getElementById('post')
-      state.sbot.publish({
+      state.activeServer.publish({
         type: 'post',
         text: textField.value
       }, err => console.log(err))
@@ -83,6 +84,7 @@ function prepareStateAndListeners(state, emitter, appIds) {
     document.getElementById('switch-app').addEventListener('click', () => {
       const otherAppId = appIds.find(id => id !== state.activeApp)
       state.activeApp = otherAppId
+      state.activeServer = state.servers[state.activeApp]
       // state.sbot = shelf[state.activeApp]
       emitter.emit('render')
     })
