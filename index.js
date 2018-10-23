@@ -24,7 +24,7 @@ function waitForConfigs(state, emitter) {
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
-
+        state.server[config.appName] = server
         setInterval(function () {
           server.gossip.peers((err, peers) => {
             if (err) {
@@ -52,7 +52,7 @@ function waitForConfigs(state, emitter) {
 
 function prepareStateAndListeners(state, emitter, appIds) {
   state.activeApp = appIds[0]
-  // state.sbot = shelf[state.activeApp]
+  state.sbot = state.server[state.activeApp]
   state.messages = {}
   state.peers = {}
   appIds.reduce((acc, curr) => {
