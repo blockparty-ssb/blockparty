@@ -7,64 +7,50 @@ const choo = require('choo')
 const h = require('hyperscript')
 const { div, ul, body, li, input, button, section, h4 } =
   require('hyperscript-helpers')(h)
-const wsUrl = 'ws://localhost:10101'
-//const wsClient = require('pull-ws/client')
 
 // choo app
 
 const app = choo()
-app.use(prepareStateAndListeners)
+app.use(waitForConfigs)
 app.route('/', view)
 app.route('/test-network-1', view)
 app.route('/test-network-2', view)
 app.mount('body')
 
-function view(state) {
-  const currentApp = state.activeApp
-  const colors = ['lightyellow', 'lightblue']
-  const appIndex = appIds.indexOf(currentApp)
-  const bg = `background-color:${colors[appIndex]}`
-  return body({style: bg},
-    div('.MainWindow',
-      div('.SplitView',
-        div('.side',
-          div('.switch-app',
-            button('#switch-app', 'Switch to other app')
-          ),
-          div('.show-peers',
-            h4('Online peers:'),
-            ul(state.peers[currentApp].map(peer => li(peer.key)))
-          )
-        ),
-        div('.main',
-          div('.post-msg',
-            input({type: "text", id: "post", name: "your message"}),
-            button({ id: 'add-to-list' }, 'Post message')
-          ),
-          div('.say-hello',
-            button({id: 'publish'}, 'say "hello world"')
-          ),
-          div('.feed',
-            section('.content',
-              state.messages[currentApp].map(msg => {
-                const m = msg.value
-                let author = m.author.slice(1, 4)
-                if (m.content.type === 'post') {
-                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
-                } else if (m.content.type === 'hello-world') {
-                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
-                }
-              })
-            )
-          )
+function waitForConfigs(state, emitter) {
+  ipcRenderer.on('ssb-configs', (event, configs) => {
+    const appIds = configs.map(c => c.appName)
+    prepareStateAndListeners(state, emitter, appIds)
+    configs.forEach(config => {
+      connection(config.keys, config, (err, server) => {
+        if (err) return console.log(err)
+
+        setInterval(function () {
+          server.gossip.peers((err, peers) => {
+            if (err) {
+              console.log(err)
+              return
+            }
+            state.peers[config.appName] = peers
+            emitter.emit('render')
+          })
+        }, 8000) // peers als live-stream
+
+        pull(
+          server.createFeedStream({live: true}),
+          pull.drain(msg => {
+            if (!msg.value) return
+            state.messages[config.appName].unshift(msg)
+            emitter.emit('render')
+          })
         )
-      )
-    )
-  )
+        console.log('Success! Connected.')
+      })
+    })
+  })
 }
 
-const appIds = ['test-network-1']
-function prepareStateAndListeners(state, emitter) {
+function prepareStateAndListeners(state, emitter, appIds) {
   state.activeApp = appIds[0]
   // state.sbot = shelf[state.activeApp]
   state.messages = {}
@@ -106,53 +92,50 @@ function prepareStateAndListeners(state, emitter) {
   //   if (err) return console.log(err)
   //   console.log('got stream!')
   // })
+}
 
-  ipcRenderer.on('ssb-configs', (event, configs) => {
-    console.log('ipc renderer')
-    console.log(configs)
-    connection(configs[0].keys, configs[0], (err, server) => {
-      if (err) return console.log(err)
-      // setInterval(function () {
-      //   server.gossip.peers((err, peers) => {
-      //     if (err) {
-      //       console.log(err)
-      //       return
-      //     }
-      //     state.peers[appName] = peers
-      //     emitter.emit('render')
-      //   })
-      // }, 8000) // peers als live-stream
-      console.log('Success! Connected.')
-    })
-  })
-
-  // appIds.forEach(appName => {
-  //   const ssbConfig = config(appName)
-  //   ssbConfig.keys = keys
-  //   // const sbotFile = shelf[appName]
-  //   // ssbConfig.remote = sbotFile.getAddress()
-  // connection(keys, ssbConfig, (err, server) => {
-  //   if (err) return console.log(err)
-  //   setInterval(function () {
-  //     server.gossip.peers((err, peers) => {
-  //       if (err) {
-  //         console.log(err)
-  //         return
-  //       }
-  //       state.peers[appName] = peers
-  //       emitter.emit('render')
-  //     })
-  //   }, 8000) // peers als live-stream
-
-
-  //     pull(
-  //       server.createFeedStream({live: true}),
-  //       pull.drain(msg => {
-  //         if (!msg.value) return
-  //         state.messages[appName].unshift(msg)
-  //         emitter.emit('render')
-  //       })
-  //     )
-  //   })
-  // })
+const appIds = ['test-network-1', 'test-network-2']
+function view(state) {
+  // later we'll need some kind of loading screen
+  const currentApp = state.activeApp || 'test-network-1'
+  const colors = ['lightyellow', 'lightblue']
+  const appIndex = appIds.indexOf(currentApp)
+  const bg = `background-color:${colors[appIndex]}`
+  return body({style: bg},
+    div('.MainWindow',
+      div('.SplitView',
+        div('.side',
+          div('.switch-app',
+            button('#switch-app', 'Switch to other app')
+          ),
+          div('.show-peers',
+            h4('Online peers:'),
+            ul(state.peers && state.peers[currentApp].map(peer => li(peer.key)))
+          )
+        ),
+        div('.main',
+          div('.post-msg',
+            input({type: "text", id: "post", name: "your message"}),
+            button({ id: 'add-to-list' }, 'Post message')
+          ),
+          div('.say-hello',
+            button({id: 'publish'}, 'say "hello world"')
+          ),
+          div('.feed',
+            section('.content',
+              state.messages && state.messages[currentApp].map(msg => {
+                const m = msg.value
+                let author = m.author.slice(1, 4)
+                if (m.content.type === 'post') {
+                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
+                } else if (m.content.type === 'hello-world') {
+                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
+                }
+              })
+            )
+          )
+        )
+      )
+    )
+  )
 }
