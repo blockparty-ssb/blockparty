@@ -8,7 +8,7 @@ const h = require('hyperscript')
 const { div, ul, body, li, input, button, section, h4 } =
   require('hyperscript-helpers')(h)
 const wsUrl = 'ws://localhost:10101'
-const wsClient = require('pull-ws/client')
+//const wsClient = require('pull-ws/client')
 
 // choo app
 
@@ -102,14 +102,28 @@ function prepareStateAndListeners(state, emitter) {
     })
   })
 
-  wsClient(wsUrl, (err, stream) => {
-    if (err) return console.log(err)
-    console.log('got stream!')
-  })
+  // wsClient(wsUrl, (err, stream) => {
+  //   if (err) return console.log(err)
+  //   console.log('got stream!')
+  // })
 
-  ipcRenderer.on('ssb-configs', (event, arg) => {
+  ipcRenderer.on('ssb-configs', (event, configs) => {
     console.log('ipc renderer')
-    console.log(arg)
+    console.log(configs)
+    connection(configs[0].keys, configs[0], (err, server) => {
+      if (err) return console.log(err)
+      // setInterval(function () {
+      //   server.gossip.peers((err, peers) => {
+      //     if (err) {
+      //       console.log(err)
+      //       return
+      //     }
+      //     state.peers[appName] = peers
+      //     emitter.emit('render')
+      //   })
+      // }, 8000) // peers als live-stream
+      console.log('Success! Connected.')
+    })
   })
 
   // appIds.forEach(appName => {
@@ -117,18 +131,18 @@ function prepareStateAndListeners(state, emitter) {
   //   ssbConfig.keys = keys
   //   // const sbotFile = shelf[appName]
   //   // ssbConfig.remote = sbotFile.getAddress()
-  //   connection(keys, ssbConfig, (err, server) => {
-  //     if (err) return console.log(err)
-  //     setInterval(function () {
-  //       server.gossip.peers((err, peers) => {
-  //         if (err) {
-  //           console.log(err)
-  //           return
-  //         }
-  //         state.peers[appName] = peers
-  //         emitter.emit('render')
-  //       })
-  //     }, 8000) // peers als live-stream
+  // connection(keys, ssbConfig, (err, server) => {
+  //   if (err) return console.log(err)
+  //   setInterval(function () {
+  //     server.gossip.peers((err, peers) => {
+  //       if (err) {
+  //         console.log(err)
+  //         return
+  //       }
+  //       state.peers[appName] = peers
+  //       emitter.emit('render')
+  //     })
+  //   }, 8000) // peers als live-stream
 
 
   //     pull(
