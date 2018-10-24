@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
 const pull = require('pull-stream')
 const choo = require('choo')
+const onLoad = require('on-load')
 const h = require('hyperscript')
 const { div, ul, body, li, input, button, section, h4 } =
   require('hyperscript-helpers')(h)
@@ -18,15 +19,10 @@ app.route('/test-network-2', appView)
 app.mount('body')
 
 function waitForConfig(state, emitter) {
-  window.onerror = function(error) {
-    console.log('IPCError', error)
-  }
+  window.onerror = function() {}
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
-    prepareStateAndListeners(state, emitter, appIds)
-    state.servers = {}
-    state.messages = {}
-    state.peers = {}
+    prepareState(state, emitter, appIds)
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
@@ -40,7 +36,7 @@ function waitForConfig(state, emitter) {
             state.peers[config.appName] = peers
             emitter.emit('render')
           })
-        }, 8000) // peers als live-stream
+        }, 8000) // peers as live-stream
 
         pull(
           server.createFeedStream({live: true}),
@@ -51,7 +47,6 @@ function waitForConfig(state, emitter) {
             emitter.emit('replaceState', '/test-network-1')
           })
         )
-        console.log('Success! Connected.')
       })
     })
   })
@@ -61,7 +56,7 @@ function loadingScreen () {
   return body('')
 }
 
-function prepareStateAndListeners(state, emitter, appIds) {
+function prepareState(state, emitter, appIds) {
   state.activeApp = appIds[0]
   state.servers = {}
   state.messages = {}
@@ -74,41 +69,38 @@ function prepareStateAndListeners(state, emitter, appIds) {
     acc[curr] = []
     return acc
   }, state.peers)
+}
 
-  emitter.on('DOMContentLoaded', () => {
-    document.getElementById('publish').addEventListener('click', () => {
-      state.activeServer.publish({
-        type: 'hello-world'
-      }, err => console.log(err))
-    })
+function setupDOMListeners(state, emit) {
+  document.getElementById('publish').addEventListener('click', () => {
+    state.servers[state.activeApp].publish({
+      type: 'hello-world'
+    }, err => console.log(err))
+  })
 
-    document.getElementById('add-to-list').addEventListener('click', () => {
-      const textField = document.getElementById('post')
-      state.activeServer.publish({
-        type: 'post',
-        text: textField.value
-      }, err => console.log(err))
-      textField.value = ''
-    })
+  document.getElementById('add-to-list').addEventListener('click', () => {
+    const textField = document.getElementById('post')
+    state.servers[state.activeApp].publish({
+      type: 'post',
+      text: textField.value
+    }, err => console.log(err))
+    textField.value = ''
+  })
 
-    document.getElementById('switch-app').addEventListener('click', () => {
-      const otherAppId = appIds.find(id => id !== state.activeApp)
-      state.activeApp = otherAppId
-      state.activeServer = state.servers[state.activeApp]
-      emitter.emit('render')
-    })
+  document.getElementById('switch-app').addEventListener('click', () => {
+    const otherAppId = appIds.find(id => id !== state.activeApp)
+    state.activeApp = otherAppId
+    emit('render')
   })
 }
 
 const appIds = ['test-network-1', 'test-network-2']
-function appView(state) {
-  // later we'll need some kind of loading screen
+function appView(state, emit) {
   const currentApp = state.activeApp || 'test-network-1'
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(currentApp)
-  console.log(state.peers)
   const bg = `background-color:${colors[appIndex]}`
-  return body({style: bg},
+  const app = body({style: bg},
     div('.MainWindow',
       div('.SplitView',
         div('.side',
@@ -145,4 +137,6 @@ function appView(state) {
       )
     )
   )
+  onLoad(app, () => setupDOMListeners(state, emit))
+  return app
 }
