@@ -11,18 +11,22 @@ const { div, ul, body, li, input, button, section, h4 } =
 // choo app
 
 const app = choo()
+app.use(waitForConfig)
 app.route('/', loadingScreen)
 app.route('/test-network-1', appView)
 app.route('/test-network-2', appView)
 app.mount('body')
 
-function loadingScreen(state, emit) {
+function waitForConfig(state, emitter) {
+  window.onerror = function(error) {
+    console.log('IPCError', error)
+  }
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
-    // TODO how to set this up?
-    // prepareStateAndListeners(state, emitter, appIds)
+    prepareStateAndListeners(state, emitter, appIds)
     state.servers = {}
     state.messages = {}
+    state.peers = {}
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
@@ -34,8 +38,7 @@ function loadingScreen(state, emit) {
               return
             }
             state.peers[config.appName] = peers
-            //TODO bring this back
-            //emitter.emit('render')
+            emitter.emit('render')
           })
         }, 8000) // peers als live-stream
 
@@ -45,13 +48,16 @@ function loadingScreen(state, emit) {
             if (!msg.value) return
             state.messages[config.appName] = state.messages[config.appName] || []
             state.messages[config.appName].unshift(msg)
-            emit('replaceState', '/test-network-1')
+            emitter.emit('replaceState', '/test-network-1')
           })
         )
         console.log('Success! Connected.')
       })
     })
   })
+}
+
+function loadingScreen () {
   return body('')
 }
 
@@ -96,11 +102,11 @@ function prepareStateAndListeners(state, emitter, appIds) {
 
 const appIds = ['test-network-1', 'test-network-2']
 function appView(state) {
-  console.log('i never get called')
   // later we'll need some kind of loading screen
   const currentApp = state.activeApp || 'test-network-1'
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(currentApp)
+  console.log(state.peers)
   const bg = `background-color:${colors[appIndex]}`
   return body({style: bg},
     div('.MainWindow',
@@ -111,7 +117,7 @@ function appView(state) {
           ),
           div('.show-peers',
             h4('Online peers:'),
-            ul(state.peers && state.peers[currentApp].map(peer => li(peer.key)))
+            ul(state.peers[currentApp] && state.peers[currentApp].map(peer => li(peer.key)))
           )
         ),
         div('.main',
@@ -124,7 +130,7 @@ function appView(state) {
           ),
           div('.feed',
             section('.content',
-              state.messages && state.messages[currentApp].map(msg => {
+              state.messages[currentApp] && state.messages[currentApp].map(msg => {
                 const m = msg.value
                 let author = m.author.slice(1, 4)
                 if (m.content.type === 'post') {
