@@ -21,15 +21,16 @@ function waitForConfig(state, emitter) {
     prepareState(state, emitter, appIds)
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
+        const app = state.apps[config.appName]
         if (err) return console.log(err)
-        state.servers[config.appName] = server
+        app.server = server
         setInterval(function () {
           server.gossip.peers((err, peers) => {
             if (err) {
               console.log(err)
               return
             }
-            state.peers[config.appName] = peers
+            app.peers = peers
             emitter.emit('render')
           })
         }, 8000) // peers as live-stream
@@ -38,8 +39,7 @@ function waitForConfig(state, emitter) {
           server.createFeedStream({live: true}),
           pull.drain(msg => {
             if (!msg.value) return
-            state.messages[config.appName] = state.messages[config.appName] || []
-            state.messages[config.appName].unshift(msg)
+            app.messages.unshift(msg)
             emitter.emit('replaceState', '/app')
           })
         )
@@ -50,15 +50,11 @@ function waitForConfig(state, emitter) {
 
 function prepareState(state, emitter, appIds) {
   state.activeApp = appIds[0]
-  state.servers = {}
-  state.messages = {}
-  state.peers = {}
-  appIds.reduce((acc, curr) => {
-    acc[curr] = []
-    return acc
-  }, state.messages)
-  appIds.reduce((acc, curr) => {
-    acc[curr] = []
-    return acc
-  }, state.peers)
+  state.apps = appIds.reduce((apps, id) => {
+    apps[id] = {
+      messages: [],
+      peers: []
+    }
+    return apps
+  }, {})
 }

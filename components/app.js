@@ -6,9 +6,9 @@ const onLoad = require('on-load')
 
 module.exports = (state, emit) => {
   const appIds = ['test-network-1', 'test-network-2']
-  const currentApp = state.activeApp || 'test-network-1'
+  const currentApp = state.apps[state.activeApp]
   const colors = ['lightyellow', 'lightblue']
-  const appIndex = appIds.indexOf(currentApp)
+  const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const app = body({style: bg},
     div('.MainWindow',
@@ -19,7 +19,7 @@ module.exports = (state, emit) => {
           ),
           div('.show-peers',
             h4('Online peers:'),
-            ul(state.peers[currentApp] && state.peers[currentApp].map(peer => li(peer.key)))
+            ul(currentApp.peers.map(peer => li(peer.key)))
           )
         ),
         div('.main',
@@ -32,7 +32,7 @@ module.exports = (state, emit) => {
           ),
           div('.feed',
             section('.content',
-              state.messages[currentApp] && state.messages[currentApp].map(msg => {
+              currentApp.messages.map(msg => {
                 const m = msg.value
                 let author = m.author.slice(1, 4)
                 if (m.content.type === 'post') {
@@ -47,20 +47,20 @@ module.exports = (state, emit) => {
       )
     )
   )
-  onLoad(app, () => setupDOMListeners(state, emit, appIds))
+  onLoad(app, () => setupDOMListeners(currentApp, state, emit, appIds))
   return app
 }
 
-function setupDOMListeners(state, emit, appIds) {
+function setupDOMListeners(app, state, emit, appIds) {
   document.getElementById('publish').addEventListener('click', () => {
-    state.servers[state.activeApp].publish({
+    app.server.publish({
       type: 'hello-world'
     }, err => console.log(err))
   })
 
   document.getElementById('add-to-list').addEventListener('click', () => {
     const textField = document.getElementById('post')
-    state.servers[state.activeApp].publish({
+    app.server.publish({
       type: 'post',
       text: textField.value
     }, err => console.log(err))
