@@ -12,9 +12,9 @@ const { div, ul, body, li, input, button, section, h4 } =
 
 const app = choo()
 app.use(waitForConfigs)
-app.route('/', view)
-app.route('/test-network-1', view)
-app.route('/test-network-2', view)
+app.route('/', loadingScreen)
+app.route('/test-network-1', appView)
+app.route('/test-network-2', appView)
 app.mount('body')
 
 function waitForConfigs(state, emitter) {
@@ -25,7 +25,6 @@ function waitForConfigs(state, emitter) {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
         state.servers[config.appName] = server
-        // we need to set the initial activeServer once we have it
         setInterval(function () {
           server.gossip.peers((err, peers) => {
             if (err) {
@@ -42,6 +41,7 @@ function waitForConfigs(state, emitter) {
           pull.drain(msg => {
             if (!msg.value) return
             state.messages[config.appName].unshift(msg)
+            
             emitter.emit('render')
           })
         )
@@ -85,19 +85,16 @@ function prepareStateAndListeners(state, emitter, appIds) {
       const otherAppId = appIds.find(id => id !== state.activeApp)
       state.activeApp = otherAppId
       state.activeServer = state.servers[state.activeApp]
-      // state.sbot = shelf[state.activeApp]
       emitter.emit('render')
     })
   })
-
-  // wsClient(wsUrl, (err, stream) => {
-  //   if (err) return console.log(err)
-  //   console.log('got stream!')
-  // })
+}
+function loadingScreen(state) {
+  return body()
 }
 
 const appIds = ['test-network-1', 'test-network-2']
-function view(state) {
+function appView(state) {
   // later we'll need some kind of loading screen
   const currentApp = state.activeApp || 'test-network-1'
   const colors = ['lightyellow', 'lightblue']
