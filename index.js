@@ -11,8 +11,7 @@ const loadingScreen = require('./components/loading-screen')
 const app = choo()
 app.use(waitForConfig)
 app.route('/', loadingScreen)
-app.route('/test-network-1', appView)
-app.route('/test-network-2', appView)
+app.route('/app', appView)
 app.mount('body')
 
 function waitForConfig(state, emitter) {
@@ -41,7 +40,7 @@ function waitForConfig(state, emitter) {
             if (!msg.value) return
             state.messages[config.appName] = state.messages[config.appName] || []
             state.messages[config.appName].unshift(msg)
-            emitter.emit('replaceState', '/test-network-1')
+            emitter.emit('replaceState', '/app')
           })
         )
       })
