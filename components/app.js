@@ -5,7 +5,7 @@ const { div, ul, body, li, input, button, section, h4 } =
 const onLoad = require('on-load')
 
 module.exports = (state, emit) => {
-  const appIds = ['test-network-1', 'test-network-2']
+  const appIds = Object.keys(state.apps)
   const currentApp = state.apps[state.activeApp]
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
