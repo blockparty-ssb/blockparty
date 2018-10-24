@@ -11,16 +11,18 @@ const { div, ul, body, li, input, button, section, h4 } =
 // choo app
 
 const app = choo()
-app.use(waitForConfigs)
 app.route('/', loadingScreen)
 app.route('/test-network-1', appView)
 app.route('/test-network-2', appView)
 app.mount('body')
 
-function waitForConfigs(state, emitter) {
+function loadingScreen(state, emit) {
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
-    prepareStateAndListeners(state, emitter, appIds)
+    // TODO how to set this up?
+    // prepareStateAndListeners(state, emitter, appIds)
+    state.servers = {}
+    state.messages = {}
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
@@ -32,7 +34,8 @@ function waitForConfigs(state, emitter) {
               return
             }
             state.peers[config.appName] = peers
-            emitter.emit('render')
+            //TODO bring this back
+            //emitter.emit('render')
           })
         }, 8000) // peers als live-stream
 
@@ -40,15 +43,16 @@ function waitForConfigs(state, emitter) {
           server.createFeedStream({live: true}),
           pull.drain(msg => {
             if (!msg.value) return
+            state.messages[config.appName] = state.messages[config.appName] || []
             state.messages[config.appName].unshift(msg)
-            
-            emitter.emit('render')
+            emit('replaceState', '/test-network-1')
           })
         )
         console.log('Success! Connected.')
       })
     })
   })
+  return body('')
 }
 
 function prepareStateAndListeners(state, emitter, appIds) {
@@ -89,12 +93,10 @@ function prepareStateAndListeners(state, emitter, appIds) {
     })
   })
 }
-function loadingScreen(state) {
-  return body()
-}
 
 const appIds = ['test-network-1', 'test-network-2']
 function appView(state) {
+  console.log('i never get called')
   // later we'll need some kind of loading screen
   const currentApp = state.activeApp || 'test-network-1'
   const colors = ['lightyellow', 'lightblue']
