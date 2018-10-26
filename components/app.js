@@ -6,9 +6,7 @@ const onLoad = require('on-load')
 
 module.exports = (state, emit) => {
   const appIds = Object.keys(state.apps)
-  // console.log(appIds[0])
   const currentApp = state.apps[state.activeApp]
-  console.log(currentApp)
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
@@ -17,7 +15,7 @@ module.exports = (state, emit) => {
       ul('.list-blockparties',
         li('.blockparty',
           a('#blockparty1-link',
-            {href: '#blockparty1-link'},
+            {href: '#'},
             div('.blockparty-icon',
               img('.blockparty-img',
                 {src: `https://ui-avatars.com/api/?name=${appIds[0]}&background=f9f7bb&color=fff`}
@@ -27,7 +25,7 @@ module.exports = (state, emit) => {
         ),
         li('.blockparty',
           a('#blockparty2-link',
-            {href: '#blockparty2-link'},
+            {href: '#'},
             div('.blockparty-icon',
               img('.blockparty-img',
                 {src: `https://ui-avatars.com/api/?name=${appIds[1]}&background=c7ddfc&color=fff`}
