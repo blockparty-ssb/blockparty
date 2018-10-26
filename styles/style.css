@@ -8,6 +8,51 @@ body {
     font-size: 16px;
 }
 
+/********************** side Blockparties ******************/
+
+div.blockparties {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 68px;
+    padding-top: 27px;
+    background-color: #2F343D;
+    color: #FFF;
+    z-index: 100000;
+}
+
+ul.list-blockparties {
+    padding: 0px;
+    margin: 7px;
+    z-index: 2;
+    position: relative;
+}
+
+li.blockparty {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 55px;
+    position: relative;
+    margin-bottom: 17px;
+}
+
+.blockparty-img {
+    margin: 5px;
+    margin-bottom: 15px;
+    width: 45px;
+    height: 45px;
+}
+
+.MainWindow {
+    position: fixed;
+    top: 0;
+    left: 68px;
+    right: 0;
+    bottom: 0;
+}
+
 .MainWindow > div.main {
     position: absolute;
     top: 0;
@@ -81,4 +126,8 @@ input {
     padding: 4px;
     margin: 4px;
     margin-left: 15px;
+}
+
+li {
+    list-style-type: none;
 }

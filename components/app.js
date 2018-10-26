@@ -1,22 +1,45 @@
 'use strict'
 const h = require('hyperscript')
-const { div, ul, body, li, input, button, section, h4 } =
+const { div, ul, body, li, input, button, section, h4, a, img } =
   require('hyperscript-helpers')(h)
 const onLoad = require('on-load')
 
 module.exports = (state, emit) => {
   const appIds = Object.keys(state.apps)
+  // console.log(appIds[0])
   const currentApp = state.apps[state.activeApp]
+  console.log(currentApp)
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const app = body({style: bg},
+    div('.blockparties',
+      ul('.list-blockparties',
+        li('.blockparty',
+          a('#blockparty1-link',
+            {href: '#blockparty1-link'},
+            div('.blockparty-icon',
+              img('.blockparty-img',
+                {src: `https://ui-avatars.com/api/?name=${appIds[0]}&background=f9f7bb&color=fff`}
+              )
+            )
+          )
+        ),
+        li('.blockparty',
+          a('#blockparty2-link',
+            {href: '#blockparty2-link'},
+            div('.blockparty-icon',
+              img('.blockparty-img',
+                {src: `https://ui-avatars.com/api/?name=${appIds[1]}&background=c7ddfc&color=fff`}
+              )
+            )
+          )
+        )
+      )
+    ),
     div('.MainWindow',
       div('.SplitView',
-        div('.side',
-          div('.switch-app',
-            button('#switch-app', 'Switch to other app')
-          ),
+        div('.sidebar',
           div('.show-peers',
             h4('Online peers:'),
             ul(currentApp.peers.map(peer => li(peer.key)))
@@ -67,9 +90,13 @@ function setupDOMListeners(app, state, emit, appIds) {
     textField.value = ''
   })
 
-  document.getElementById('switch-app').addEventListener('click', () => {
-    const otherAppId = appIds.find(id => id !== state.activeApp)
-    state.activeApp = otherAppId
+  document.getElementById('blockparty1-link').addEventListener('click', () => {
+    state.activeApp = appIds[0]
+    emit('render')
+  })
+
+  document.getElementById('blockparty2-link').addEventListener('click', () => {
+    state.activeApp = appIds[1]
     emit('render')
   })
 }
