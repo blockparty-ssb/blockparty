@@ -40,9 +40,14 @@ function waitForConfig(state, emitter) {
 
         // collect posts
         pull(
-          server.createFeedStream({live: true}),
+          server.query.read({
+            live: true,
+            query: [{$filter: {
+              value: { content: { type: 'post' }}
+            }}]
+          }),
           pull.drain(msg => {
-            if (!msg.value || msg.value.content.type !== 'post') return
+            if (!msg.value) return
             app.messages.unshift(msg)
             emitter.emit('render')
           })
