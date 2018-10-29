@@ -3,8 +3,10 @@ const h = require('hyperscript')
 const { div, ul, body, li, input, button, section, h4, a, img } =
   require('hyperscript-helpers')(h)
 const onLoad = require('on-load')
+const loadingScreen = require('./loading-screen')
 
 module.exports = (state, emit) => {
+  if (!state.apps) return loadingScreen()
   const appIds = Object.keys(state.apps)
   const currentApp = state.apps[state.activeApp]
   const colors = ['lightyellow', 'lightblue']

@@ -5,17 +5,14 @@ const connection = require('ssb-client')
 const pull = require('pull-stream')
 const choo = require('choo')
 const appView = require('./components/app')
-const loadingScreen = require('./components/loading-screen')
-// choo app
 
+// choo app
 const app = choo()
 app.use(waitForConfig)
-app.route('/', loadingScreen)
-app.route('/app', appView)
+app.route('/', appView)
 app.mount('body')
 
 function waitForConfig(state, emitter) {
-  window.onerror = function() {}
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
     prepareState(state, emitter, appIds)
@@ -36,7 +33,7 @@ function waitForConfig(state, emitter) {
         }, 8000) // peers as live-stream
 
         // TODO don't do this twice
-        emitter.emit('replaceState', '/app')
+        emitter.emit('render')
 
         // collect posts
         pull(
