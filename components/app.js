@@ -41,6 +41,12 @@ module.exports = (state, emit) => {
           div('.show-peers',
             h4('Online peers:'),
             ul(currentApp.peers.map(peer => li(peer.key)))
+          ),
+          div('.switch-app',
+            h4('You are:'),
+            ul(currentApp.userNames.map(name => li(name))),
+            input({type: "text", id: "username"}),
+            button({ id: 'add-username' }, 'Add username')
           )
         ),
         div('.main',
@@ -96,5 +102,14 @@ function setupDOMListeners(app, state, emit, appIds) {
   document.getElementById('blockparty2-link').addEventListener('click', () => {
     state.activeApp = appIds[1]
     emit('render')
+  })
+
+  document.getElementById('add-username').addEventListener('click', () => {
+    const textField = document.getElementById('username')
+    app.server.publish({
+      type: 'about',
+      name: textField.value
+    }, err => console.log(err))
+    textField.value = ''
   })
 }

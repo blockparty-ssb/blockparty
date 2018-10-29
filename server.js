@@ -7,6 +7,7 @@ module.exports = function(ssbConfigs) {
     .use(require('scuttlebot/plugins/gossip'))
     .use(require('scuttlebot/plugins/local'))
     .use(require('scuttlebot/plugins/logging'))
+    .use(require('ssb-query'))
     .use(require('ssb-ws'))
 
   // sbot regal

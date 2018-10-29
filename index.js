@@ -35,12 +35,29 @@ function waitForConfig(state, emitter) {
           })
         }, 8000) // peers as live-stream
 
+        // TODO don't do this twice
+        emitter.emit('replaceState', '/app')
+
+        // collect posts
         pull(
           server.createFeedStream({live: true}),
           pull.drain(msg => {
-            if (!msg.value) return
+            if (!msg.value || msg.value.content.type !== 'post') return
             app.messages.unshift(msg)
-            emitter.emit('replaceState', '/app')
+            emitter.emit('render')
+          })
+        )
+        // collect own username(s)
+        pull(
+          server.query.read({query: [{$filter: {
+            value: {
+              author: config.keys.id,
+              content: { type: 'about' }
+            }
+          }}]}),
+          pull.drain(msg => {
+            app.userNames.unshift(msg.value.content.name)
+            emitter.emit('render')
           })
         )
       })
@@ -53,7 +70,8 @@ function prepareState(state, emitter, appIds) {
   state.apps = appIds.reduce((apps, id) => {
     apps[id] = {
       messages: [],
-      peers: []
+      peers: [],
+      userNames: []
     }
     return apps
   }, {})

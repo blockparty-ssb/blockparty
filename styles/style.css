@@ -69,10 +69,9 @@ li.blockparty {
 }
 
 .SplitView > div.side {
-    width: 120px;
+    min-width: 120px;
     padding: 20px;
     background: #efefef;
-
 }
 
 .SplitView >div.main {
@@ -86,7 +85,10 @@ li.blockparty {
     opacity: 0.7;
     padding-top: 10px;
     padding-bottom: 10px;
+}
 
+.switch-app {
+    width: 100%;
 }
 
 div.post-msg, div.say-hello {
@@ -112,20 +114,14 @@ div.post-msg, div.say-hello {
     padding: 10px;
 }
 
-button {
-    background: lightgrey;
-    color: #3f3f3f;
-    padding: 5px;
-    border-radius: 4px;
-    margin: 4px;
-    font-size: 15px;
-    margin-left: 15px;
-}
-
-input {
+#post {
     padding: 4px;
     margin: 4px;
     margin-left: 15px;
+}
+
+#username {
+    display: block;
 }
 
 li {
