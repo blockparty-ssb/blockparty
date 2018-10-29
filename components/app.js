@@ -1,9 +1,10 @@
 'use strict'
 const h = require('hyperscript')
-const { div, ul, body, li, input, button, section, h4, a, img } =
+const { div, ul, body, li, button, section, h4, a, img } =
   require('hyperscript-helpers')(h)
 const onLoad = require('on-load')
 const loadingScreen = require('./loading-screen')
+const textField = require('./input-field')
 
 module.exports = (state, emit) => {
   if (!state.apps) return loadingScreen()
@@ -47,13 +48,13 @@ module.exports = (state, emit) => {
           div('.switch-app',
             h4('You are:'),
             ul(currentApp.userNames.map(name => li(name))),
-            input({type: "text", id: "username"}),
+            textField({id: "username"}),
             button({ id: 'add-username' }, 'Add username')
           )
         ),
         div('.main',
           div('.post-msg',
-            input({type: "text", id: "post", name: "your message"}),
+            textField({id: "post", name: "your message" }),
             button({ id: 'add-to-list' }, 'Post message')
           ),
           div('.say-hello',

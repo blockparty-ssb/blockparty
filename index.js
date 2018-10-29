@@ -28,7 +28,7 @@ function waitForConfig(state, emitter) {
               return
             }
             app.peers = peers
-            // emitter.emit('render')
+            emitter.emit('render')
           })
         }, 8000) // peers as live-stream
 
