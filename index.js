@@ -31,7 +31,7 @@ function waitForConfig(state, emitter) {
               return
             }
             app.peers = peers
-            emitter.emit('render')
+            // emitter.emit('render')
           })
         }, 8000) // peers as live-stream
 
@@ -49,13 +49,17 @@ function waitForConfig(state, emitter) {
         )
         // collect own username(s)
         pull(
-          server.query.read({query: [{$filter: {
-            value: {
-              author: config.keys.id,
-              content: { type: 'about' }
-            }
-          }}]}),
+          server.query.read({
+            live: true,
+            query: [{$filter: {
+              value: {
+                author: config.keys.id,
+                content: { type: 'about' }
+              }
+            }}]
+          }),
           pull.drain(msg => {
+            if (!msg.value) return
             app.userNames.unshift(msg.value.content.name)
             emitter.emit('render')
           })

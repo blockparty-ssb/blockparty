@@ -10,7 +10,7 @@ module.exports = (state, emit) => {
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
-  const app = body({style: bg},
+  const appMarkup = body({style: bg},
     div('.blockparties',
       ul('.list-blockparties',
         li('.blockparty',
@@ -74,20 +74,20 @@ module.exports = (state, emit) => {
       )
     )
   )
-  onLoad(app, () => setupDOMListeners(currentApp, state, emit, appIds))
-  return app
+  onLoad(appMarkup, () => setupDOMListeners(state, emit, appIds))
+  return appMarkup
 }
 
-function setupDOMListeners(app, state, emit, appIds) {
+function setupDOMListeners(state, emit, appIds) {
   document.getElementById('publish').addEventListener('click', () => {
-    app.server.publish({
+    getActiveApp().server.publish({
       type: 'hello-world'
     }, err => console.log(err))
   })
 
   document.getElementById('add-to-list').addEventListener('click', () => {
     const textField = document.getElementById('post')
-    app.server.publish({
+    getActiveApp().server.publish({
       type: 'post',
       text: textField.value
     }, err => console.log(err))
@@ -106,10 +106,14 @@ function setupDOMListeners(app, state, emit, appIds) {
 
   document.getElementById('add-username').addEventListener('click', () => {
     const textField = document.getElementById('username')
-    app.server.publish({
+    getActiveApp().server.publish({
       type: 'about',
       name: textField.value
     }, err => console.log(err))
     textField.value = ''
   })
+
+  function getActiveApp() {
+    return state.apps[state.activeApp]
+  }
 }
