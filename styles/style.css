@@ -11,22 +11,16 @@ body {
 /********************** side Blockparties ******************/
 
 div.blockparties {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    height: 100%;
-    width: 68px;
-    padding-top: 27px;
     background-color: #2F343D;
     color: #FFF;
-    z-index: 100000;
+    padding-left: 7px;
+    padding-right: 7px;
 }
 
 ul.list-blockparties {
+    position: sticky;
+    top: 30px;
     padding: 0px;
-    margin: 7px;
-    z-index: 2;
-    position: relative;
 }
 
 li.blockparty {
@@ -45,24 +39,6 @@ li.blockparty {
     height: 45px;
 }
 
-.MainWindow {
-    position: fixed;
-    top: 0;
-    left: 68px;
-    right: 0;
-    bottom: 0;
-}
-
-.MainWindow > div.main {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-}
-
 .SplitView {
     display: flex;
     flex: 3;
@@ -72,13 +48,6 @@ li.blockparty {
     min-width: 120px;
     padding: 20px;
     background: #efefef;
-}
-
-.SplitView >div.main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow-y: auto;
 }
 
 .show-peers {
@@ -96,17 +65,10 @@ div.post-msg, div.say-hello {
 }
 
 .content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
     padding: 0 20px;
 }
 
 .FeedEvent {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
     margin-top: 10px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);

@@ -14,63 +14,65 @@ module.exports = (state, emit) => {
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const appMarkup = body({style: bg},
-    div('.blockparties',
-      ul('.list-blockparties',
-        li('.blockparty',
-          a('#blockparty1-link',
-            {href: '#'},
-            div('.blockparty-icon',
-              img('.blockparty-img',
-                {src: `https://ui-avatars.com/api/?name=${appIds[0]}&background=f9f7bb&color=fff`}
+    div('.SplitView',
+      div('.blockparties',
+        ul('.list-blockparties',
+          li('.blockparty',
+            a('#blockparty1-link',
+              {href: '#'},
+              div('.blockparty-icon',
+                img('.blockparty-img',
+                  {src: `https://ui-avatars.com/api/?name=${appIds[0]}&background=f9f7bb&color=fff`}
+                )
               )
             )
-          )
-        ),
-        li('.blockparty',
-          a('#blockparty2-link',
-            {href: '#'},
-            div('.blockparty-icon',
-              img('.blockparty-img',
-                {src: `https://ui-avatars.com/api/?name=${appIds[1]}&background=c7ddfc&color=fff`}
+          ),
+          li('.blockparty',
+            a('#blockparty2-link',
+              {href: '#'},
+              div('.blockparty-icon',
+                img('.blockparty-img',
+                  {src: `https://ui-avatars.com/api/?name=${appIds[1]}&background=c7ddfc&color=fff`}
+                )
               )
             )
           )
         )
-      )
-    ),
-    div('.MainWindow',
-      div('.SplitView',
-        div('.sidebar',
-          div('.show-peers',
-            h4('Online peers:'),
-            ul(currentApp.peers.map(peer => li(peer.key)))
+      ),
+      div('.MainWindow',
+        div('.SplitView',
+          div('.sidebar',
+            div('.show-peers',
+              h4('Online peers:'),
+              ul(currentApp.peers.map(peer => li(peer.key)))
+            ),
+            div('.switch-app',
+              h4('You are:'),
+              ul(currentApp.userNames.map(name => li(name))),
+              textField({id: "username"}),
+              button({ id: 'add-username' }, 'Add username')
+            )
           ),
-          div('.switch-app',
-            h4('You are:'),
-            ul(currentApp.userNames.map(name => li(name))),
-            textField({id: "username"}),
-            button({ id: 'add-username' }, 'Add username')
-          )
-        ),
-        div('.main',
-          div('.post-msg',
-            textField({id: "post", name: "your message" }),
-            button({ id: 'add-to-list' }, 'Post message')
-          ),
-          div('.say-hello',
-            button({id: 'publish'}, 'say "hello world"')
-          ),
-          div('.feed',
-            section('.content',
-              currentApp.messages.map(msg => {
-                const m = msg.value
-                let author = m.author.slice(1, 4)
-                if (m.content.type === 'post') {
-                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
-                } else if (m.content.type === 'hello-world') {
-                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
-                }
-              })
+          div('.main',
+            div('.post-msg',
+              textField({id: "post", name: "your message" }),
+              button({ id: 'add-to-list' }, 'Post message')
+            ),
+            div('.say-hello',
+              button({id: 'publish'}, 'say "hello world"')
+            ),
+            div('.feed',
+              section('.content',
+                currentApp.messages.map(msg => {
+                  const m = msg.value
+                  let author = m.author.slice(1, 4)
+                  if (m.content.type === 'post') {
+                    return div('.FeedEvent',`${author} says: ${m.content.text}`)
+                  } else if (m.content.type === 'hello-world') {
+                    return div('.FeedEvent', `${author} says: ${m.content.type}`)
+                  }
+                })
+              )
             )
           )
         )
