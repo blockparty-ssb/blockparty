@@ -111,7 +111,7 @@ function setUpMessageStream(state, emitter) {
             cb(null, msg)
           })
         )
-      }),
+      }, 1),
       read => {
         getOneMessage(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {
