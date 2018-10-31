@@ -94,22 +94,23 @@ function setUpMessageStream(state, emitter) {
 
 function getUserNames(state, emitter) {
   emitter.on('get-user-names', () => {
-    const app = state.apps[state.activeApp]
-    pull(
-      app.server.query.read({
-        live: true,
-        query: [{$filter: {
-          value: {
-            author: app.ownId,
-            content: { type: 'about' }
-          }
-        }}]
-      }),
-      pull.drain(msg => {
-        if (!msg.value) return
-        app.userNames.unshift(msg.value.content.name)
-        emitter.emit('render')
-      })
-    )
+    Object.values(state.apps).forEach(app => {
+      pull(
+        app.server.query.read({
+          live: true,
+          query: [{$filter: {
+            value: {
+              author: app.ownId,
+              content: { type: 'about' }
+            }
+          }}]
+        }),
+        pull.drain(msg => {
+          if (!msg.value) return
+          app.userNames.unshift(msg.value.content.name)
+          emitter.emit('render')
+        })
+      )
+    })
   })
 }
