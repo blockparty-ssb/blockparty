@@ -1,6 +1,6 @@
 'use strict'
 const h = require('hyperscript')
-const { div, ul, body, li, button, section, h4, a, img } =
+const { div, ul, body, li, button, h4, a, img } =
   require('hyperscript-helpers')(h)
 const onLoad = require('on-load')
 const loadingScreen = require('./loading-screen')
@@ -62,18 +62,17 @@ module.exports = (state, emit) => {
               button({id: 'publish'}, 'say "hello world"')
             ),
             div('.feed',
-              section('.content',
-                currentApp.messages.map(msg => {
-                  const m = msg.value
-                  let author = m.author.slice(1, 4)
-                  if (m.content.type === 'post') {
-                    return div('.FeedEvent',`${author} says: ${m.content.text}`)
-                  } else if (m.content.type === 'hello-world') {
-                    return div('.FeedEvent', `${author} says: ${m.content.type}`)
-                  }
-                })
-              )
-            )
+              currentApp.messages.map(msg => {
+                const m = msg.value
+                let author = m.author.slice(1, 4)
+                if (m.content.type === 'post') {
+                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
+                } else if (m.content.type === 'hello-world') {
+                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
+                }
+              })
+            ),
+            button('#load-more', 'Load more')
           )
         )
       )
@@ -116,6 +115,10 @@ function setupDOMListeners(state, emit, appIds) {
       name: textField.value
     }, err => console.log(err))
     textField.value = ''
+  })
+
+  document.getElementById('load-more').addEventListener('click', () => {
+    emit('get-messages')
   })
 
   function getActiveApp() {

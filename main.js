@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
-const {app, BrowserWindow, ipcMain} = require('electron')
+const {app, BrowserWindow} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
@@ -20,16 +20,20 @@ function createWindow (ssbConfigs) {
 }
 
 app.on('ready', () => {
-  const appIds =
-    fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
+  let appIds
+  if (process.argv[2] === 'global') {
+    appIds = [undefined]
+  } else {
+    appIds = fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
       .trim()
       .split('\n')
+  }
 
   const ssbConfigs = appIds.map(appName => {
-    const ssbConfig = config(appName)
+    const ssbConfig = appName ? config(appName) : config()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
-    ssbConfig.appName = appName
+    ssbConfig.appName = appName || 'global-scuttlebutt'
     return ssbConfig
   })
 
