@@ -10,11 +10,31 @@ body {
 
 /********************** side Blockparties ******************/
 
+.MainWindow {
+    width: 100%;
+    flex: 11;
+}
+
+.main {
+    flex: 4;
+}
+
 div.blockparties {
     background-color: #2F343D;
     color: #FFF;
     padding-left: 7px;
     padding-right: 7px;
+    height: 100%;
+    flex: 1;
+}
+
+div.sidebar {
+    background-color: #ABD1BB;
+    padding-left: 7px;
+    padding-right: 7px;
+    height: 100%;
+    overflow: hidden;
+    flex: 1;
 }
 
 ul.list-blockparties {
@@ -41,7 +61,6 @@ li.blockparty {
 
 .SplitView {
     display: flex;
-    flex: 3;
 }
 
 .SplitView > div.side {
