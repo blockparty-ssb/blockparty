@@ -44,7 +44,7 @@ module.exports = (state, emit) => {
           div('.sidebar',
             div('.show-peers',
               h4('Online peers:'),
-              ul(currentApp.peers.map(peer => li(peer.key)))
+              ul(currentApp.peers.map(peer => li(peer.displayName)))
             ),
             div('.switch-app',
               h4('You are:'),

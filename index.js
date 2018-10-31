@@ -34,10 +34,18 @@ function waitForConfig(state, emitter) {
               console.log(err)
               return
             }
-            app.peers = peers
-            emitter.emit('render')
+            let peersWithDisplayName = 0
+            peers.forEach(peer => {
+              getDisplayNameForUserId(peer.key, server, (err, name) => {
+                peer.displayName = name
+                peersWithDisplayName++
+                if (peersWithDisplayName === peers.length - 1) {
+                  emitter.emit('render')
+                }
+              })
+            })
           })
-        }, 8000) // peers as live-stream
+        }, 4000) // peers as live-stream
 
         // TODO later this needs to become an async-map or similar
         if (Object.keys(state.apps).every(app => state.apps[app].server)) {
@@ -145,4 +153,33 @@ function getUserNames(state, emitter) {
       )
     })
   })
+}
+
+function getDisplayNameForUserId(userId, server, cb) {
+  pull(
+    server.query.read({
+      reverse: true,
+      limit: 1,
+      query: [
+        {
+          $filter: {
+            value: {
+              author: userId,
+              content: {
+                type: 'about',
+                name: {$is: 'string'}
+              }
+            },
+            timestamp: { $gt: 0}
+          }
+        },
+        {
+          $map: {
+            name: ['value', 'content', 'name']
+          }
+        }
+      ]
+    }),
+    pull.drain(res => cb(null, res.name))
+  )
 }
