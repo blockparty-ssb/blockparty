@@ -14,6 +14,8 @@ app.use(getUserNames)
 app.route('/', appView)
 app.mount('body')
 
+window.onerror = function() {}
+
 function waitForConfig(state, emitter) {
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
@@ -31,7 +33,7 @@ function waitForConfig(state, emitter) {
               console.log(err)
               return
             }
-            app.peers = [peers[0]]
+            app.peers = peers
             emitter.emit('render')
           })
         }, 8000) // peers as live-stream
