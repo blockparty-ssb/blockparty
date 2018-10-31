@@ -64,11 +64,10 @@ module.exports = (state, emit) => {
             div('.feed',
               currentApp.messages.map(msg => {
                 const m = msg.value
-                let author = m.author.slice(1, 4)
                 if (m.content.type === 'post') {
-                  return div('.FeedEvent',`${author} says: ${m.content.text}`)
+                  return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)
                 } else if (m.content.type === 'hello-world') {
-                  return div('.FeedEvent', `${author} says: ${m.content.type}`)
+                  return div('.FeedEvent', `${m.displayName} says: ${m.content.type}`)
                 }
               })
             ),

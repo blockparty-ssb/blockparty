@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
 const choo = require('choo')
 const pull = require('pull-stream')
+const paramap = require('pull-paramap')
 const appView = require('./components/app')
 
 // choo app
@@ -40,7 +41,6 @@ function waitForConfig(state, emitter) {
 
         // TODO later this needs to become an async-map or similar
         if (Object.keys(state.apps).every(app => state.apps[app].server)) {
-          console.log('all good to go, firing')
           emitter.emit('set-up-message-stream')
           emitter.emit('get-user-names')
           emitter.emit('render')
@@ -64,13 +64,45 @@ function prepareState(state, appIds) {
 
 function setUpMessageStream(state, emitter) {
   emitter.on('set-up-message-stream', () => {
-    console.log('setting up mesage stream')
+    const getResultFromDatabase = state.apps[state.activeApp].server.query.read
     pull(
-      state.apps[state.activeApp].server.query.read({
+      getResultFromDatabase({
         reverse: true,
         query: [{$filter: {
           value: { content: { type: 'post' }}
         }}]
+      }),
+      paramap(function(msg, cb) {
+        const userId = msg.value.author
+        pull(
+          getResultFromDatabase({
+            reverse: true,
+            limit: 1,
+            query: [
+              {
+                $filter: {
+                  value: {
+                    author: userId,
+                    content: {
+                      type: 'about',
+                      name: {$is: 'string'}
+                    }
+                  },
+                  timestamp: { $gt: 0}
+                }
+              },
+              {
+                $map: {
+                  name: ['value', 'content', 'name']
+                }
+              }
+            ]
+          }),
+          pull.drain(name => {
+            msg.value.displayName = name.name
+            cb(null, msg)
+          })
+        )
       }),
       read => {
         getOneMessage(state.apps[state.activeApp].messages)
