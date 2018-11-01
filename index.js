@@ -7,6 +7,8 @@ const pull = require('pull-stream')
 const paramap = require('pull-paramap')
 const appView = require('./components/app')
 
+const batchSize = 50
+
 // choo app
 const app = choo()
 app.use(waitForConfig)
@@ -111,21 +113,26 @@ function setUpMessageStream(state, emitter) {
             cb(null, msg)
           })
         )
-      }, 1),
+      }, batchSize),
       read => {
-        getOneMessage(state.apps[state.activeApp].messages)
+        getBatchOfMessages(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {
-          getOneMessage(state.apps[state.activeApp].messages)
+          getBatchOfMessages(state.apps[state.activeApp].messages)
         })
 
-        function getOneMessage(messages) {
-          read(null, function next(end, msg) {
-            if (end === true) return console.log('end')
-            if (end) throw end
-            if (!msg.value) return
-            messages.push(msg)
-            emitter.emit('render')
-          })
+        function getBatchOfMessages(messages) {
+          let counter = 0
+          while (counter < batchSize) {
+            console.log(counter)
+            read(null, function next(end, msg) {
+              if (end === true) return console.log('end')
+              if (end) throw end
+              if (!msg.value) return
+              messages.push(msg)
+            })
+            counter++
+          }
+          emitter.emit('render')
         }
       }
     )
