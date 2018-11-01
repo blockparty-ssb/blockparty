@@ -4,7 +4,6 @@ const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
 const choo = require('choo')
 const pull = require('pull-stream')
-const paramap = require('pull-paramap')
 const appView = require('./components/app')
 
 const batchSize = 3
@@ -82,38 +81,45 @@ function setUpMessageStream(state, emitter) {
           value: { content: { type: 'post' }}
         }}]
       }),
-      paramap(function(msg, cb) {
-        const userId = msg.value.author
-        pull(
-          getResultFromDatabase({
-            reverse: true,
-            limit: 1,
-            query: [
-              {
-                $filter: {
-                  value: {
-                    author: userId,
-                    content: {
-                      type: 'about',
-                      name: {$is: 'string'}
+      function getDisplayNameForMsg(read) {
+        return function readable (end, cb) {
+          read(end, function (end, msg) {
+            if (end === true) cb(true)
+            if (end) throw end
+            const userId = msg.value.author
+            pull(
+              getResultFromDatabase({
+                reverse: true,
+                limit: 8,
+                query: [
+                  {
+                    $filter: {
+                      value: {
+                        author: userId,
+                        content: {
+                          type: 'about',
+                          about: userId,
+                          name: {$is: 'string'}
+                        }
+                      },
+                      timestamp: { $gt: 0}
                     }
                   },
-                  timestamp: { $gt: 0}
-                }
-              },
-              {
-                $map: {
-                  name: ['value', 'content', 'name']
-                }
-              }
-            ]
-          }),
-          pull.drain(name => {
-            msg.value.displayName = name.name
-            cb(null, msg)
+                  {
+                    $map: {
+                      name: ['value', 'content', 'name']
+                    }
+                  }
+                ]
+              }),
+              pull.drain(name => {
+                msg.value.displayName = name.name
+                cb(null, msg)
+              })
+            )
           })
-        )
-      }, batchSize),
+        }
+      },
       read => {
         getBatchOfMessages(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {
