@@ -90,7 +90,7 @@ function setUpMessageStream(state, emitter) {
             pull(
               getResultFromDatabase({
                 reverse: true,
-                limit: 8,
+                limit: 1,
                 query: [
                   {
                     $filter: {
@@ -133,7 +133,6 @@ function setUpMessageStream(state, emitter) {
             if (end) throw end
             if (!msg.value) return
             messages.push(msg)
-            console.log('length', messages.length)
             if (counter < batchSize) {
               read(null, next)
             }
