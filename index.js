@@ -36,17 +36,19 @@ function waitForConfig(state, emitter) {
               return
             }
             let peersWithDisplayName = 0
+            app.peers = peers
+            emitter.emit('render')
             peers.forEach(peer => {
-              getDisplayNameForUserId(peer.key, server, (err, name) => {
-                peer.displayName = name
-                peersWithDisplayName++
-                if (peersWithDisplayName === peers.length - 1) {
-                  emitter.emit('render')
-                }
-              })
+              // getDisplayNameForUserId(peer.key, server, (err, name) => {
+              //   peer.displayName = name
+              //   peersWithDisplayName++
+              //   if (peersWithDisplayName === peers.length - 1) {
+              //     emitter.emit('render')
+              //   }
+              // })
             })
           })
-        }, 4000) // peers as live-stream
+        }, 1000) // peers as live-stream
 
         // TODO later this needs to become an async-map or similar
         if (Object.keys(state.apps).every(app => state.apps[app].server)) {

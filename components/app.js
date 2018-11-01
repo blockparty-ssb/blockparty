@@ -44,7 +44,17 @@ module.exports = (state, emit) => {
           div('.sidebar',
             div('.show-peers',
               h4('Online peers:'),
-              ul(currentApp.peers.map(peer => li(peer.displayName)))
+              ul(currentApp.peers.map(peer => {
+                return li(
+                  a(peer.key, {href: '#', onclick: () => {
+                    currentApp.server.publish({
+                      type: 'contact',
+                      contact: peer.key,
+                      following: true
+                    }, err => console.log(err))
+                  }})
+                )
+              }))
             ),
             div('.switch-app',
               h4('You are:'),
@@ -111,7 +121,8 @@ function setupDOMListeners(state, emit, appIds) {
     const textField = document.getElementById('username')
     getActiveApp().server.publish({
       type: 'about',
-      name: textField.value
+      name: textField.value,
+      about: getActiveApp().ownId
     }, err => console.log(err))
     textField.value = ''
   })
@@ -119,6 +130,7 @@ function setupDOMListeners(state, emit, appIds) {
   document.getElementById('load-more').addEventListener('click', () => {
     emit('get-messages')
   })
+
 
   function getActiveApp() {
     return state.apps[state.activeApp]
