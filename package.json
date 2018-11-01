@@ -14,7 +14,6 @@
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.3",
     "on-load": "^4.0.1",
-    "pull-paramap": "^1.2.2",
     "pull-stream": "^3.6.9",
     "pull-ws": "^3.3.1",
     "scuttlebot": "^12.2.3",
