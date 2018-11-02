@@ -6,7 +6,7 @@ const choo = require('choo')
 const pull = require('pull-stream')
 const appView = require('./components/app')
 
-const batchSize = 3
+const batchSize = 100
 
 // choo app
 const app = choo()
@@ -24,6 +24,7 @@ function waitForConfig(state, emitter) {
     prepareState(state, appIds)
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
+        
         const app = state.apps[config.appName]
         if (err) return console.log(err)
         app.server = server
@@ -83,7 +84,7 @@ function setUpMessageStream(state, emitter) {
           value: { content: { type: 'post' }}
         }}]
       }),
-      function getDisplayNameForMsg(read) {
+      /* function getDisplayNameForMsg(read) {
         return function readable (end, cb) {
           read(end, function (end, msg) {
             if (end === true) cb(true)
@@ -121,7 +122,7 @@ function setUpMessageStream(state, emitter) {
             )
           })
         }
-      },
+      }, */
       read => {
         getBatchOfMessages(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {

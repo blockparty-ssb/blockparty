@@ -75,7 +75,7 @@ module.exports = (state, emit) => {
               currentApp.messages.map(msg => {
                 const m = msg.value
                 if (m.content.type === 'post') {
-                  return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)
+                  return div('.FeedEvent',`${m.author} says: ${m.content.text}`)
                 } else if (m.content.type === 'hello-world') {
                   return div('.FeedEvent', `${m.displayName} says: ${m.content.type}`)
                 }
