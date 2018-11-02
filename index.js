@@ -31,18 +31,18 @@ function waitForConfig(state, emitter) {
         setInterval(function () {
           // TODO find out how to filter for local peers only
           server.gossip.peers((err, peers) => {
+            console.log(peers)
             if (err) {
               console.log(err)
               return
             }
             let peersWithDisplayName = 0
             app.peers = peers
-            emitter.emit('render')
             peers.forEach(peer => {
               getDisplayNameForUserId(peer.key, server, (err, name) => {
                 peer.displayName = name
                 peersWithDisplayName++
-                if (peersWithDisplayName === peers.length - 1) {
+                if (peersWithDisplayName === peers.length ) {
                   emitter.emit('render')
                 }
               })
