@@ -24,13 +24,12 @@ function waitForConfig(state, emitter) {
     prepareState(state, appIds)
     configs.forEach(config => {
       connection(config.keys, config, (err, server) => {
-        
         const app = state.apps[config.appName]
         if (err) return console.log(err)
         app.server = server
         app.ownId = config.keys.id
         setInterval(function () {
-          // TODO find out how to filter for local peers
+          // TODO find out how to filter for local peers only
           server.gossip.peers((err, peers) => {
             if (err) {
               console.log(err)
@@ -40,16 +39,16 @@ function waitForConfig(state, emitter) {
             app.peers = peers
             emitter.emit('render')
             peers.forEach(peer => {
-              // getDisplayNameForUserId(peer.key, server, (err, name) => {
-              //   peer.displayName = name
-              //   peersWithDisplayName++
-              //   if (peersWithDisplayName === peers.length - 1) {
-              //     emitter.emit('render')
-              //   }
-              // })
+              getDisplayNameForUserId(peer.key, server, (err, name) => {
+                peer.displayName = name
+                peersWithDisplayName++
+                if (peersWithDisplayName === peers.length - 1) {
+                  emitter.emit('render')
+                }
+              })
             })
           })
-        }, 1000) // peers as live-stream
+        }, 5000) // peers as live-stream
 
         // TODO later this needs to become an async-map or similar
         if (Object.keys(state.apps).every(app => state.apps[app].server)) {
@@ -84,10 +83,10 @@ function setUpMessageStream(state, emitter) {
           value: { content: { type: 'post' }}
         }}]
       }),
-      /* function getDisplayNameForMsg(read) {
+      function getDisplayNameForMsg(read) {
         return function readable (end, cb) {
           read(end, function (end, msg) {
-            if (end === true) cb(true)
+            if (end === true) return cb(true)
             if (end) throw end
             const userId = msg.value.author
             pull(
@@ -122,7 +121,7 @@ function setUpMessageStream(state, emitter) {
             )
           })
         }
-      }, */
+      },
       read => {
         getBatchOfMessages(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {
