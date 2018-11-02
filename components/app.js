@@ -47,13 +47,20 @@ module.exports = (state, emit) => {
               ul(currentApp.peers.map(peer => {
                 return div('.list-of-peers',
                   li(peer.displayName,
-                    button('.follow-peer', { onclick: () => {
+                    button({ onclick: () => {
                       currentApp.server.publish({
                         type: 'contact',
                         contact: peer.key,
                         following: true
                       }, err => console.log(err))
-                    }}, 'Follow')
+                    }}, 'Follow'),
+                    button({ onclick: () => {
+                      currentApp.server.publish({
+                        type: 'contact',
+                        contact: peer.key,
+                        following: false
+                      }, err => console.log(err))
+                    }}, 'Unfollow')
                   )
                 )
               }))
