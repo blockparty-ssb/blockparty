@@ -1,5 +1,7 @@
 'use strict'
 const scuttleBot = require('scuttlebot')
+const manifest = require('ssb-friends')
+console.log(manifest)
 
 module.exports = function(ssbConfigs) {
   const createSbot = scuttleBot
@@ -14,7 +16,11 @@ module.exports = function(ssbConfigs) {
 
   // sbot regal
   const shelf = ssbConfigs.reduce((acc, ssbConfig) => {
-    const sbot = createSbot(ssbConfig)
+    const sbot = createSbot(Object.assign(ssbConfig, {
+      logging: {
+        level: 'info'
+      }
+     }))
     acc[ssbConfig.appName]=sbot
     return acc
   }, {})
