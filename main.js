@@ -37,7 +37,10 @@ app.on('ready', () => {
     return ssbConfig
   })
 
-  startSbots(ssbConfigs)
+  const sbots = startSbots(ssbConfigs)
+  ssbConfigs.forEach(config => {
+    config.manifest = sbots[config.appName].getManifest()
+  })
   createWindow(ssbConfigs)
 })
 

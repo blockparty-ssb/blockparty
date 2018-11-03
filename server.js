@@ -14,13 +14,12 @@ module.exports = function(ssbConfigs) {
     .use(require('ssb-ws'))
     .use(require('ssb-friends'))
 
-  // sbot regal
-  const shelf = ssbConfigs.reduce((acc, ssbConfig) => {
+  return ssbConfigs.reduce((acc, ssbConfig) => {
     const sbot = createSbot(Object.assign(ssbConfig, {
       logging: {
         level: 'info'
       }
-     }))
+    }))
     acc[ssbConfig.appName]=sbot
     return acc
   }, {})
