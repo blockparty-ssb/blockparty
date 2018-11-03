@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
 const choo = require('choo')
 const pull = require('pull-stream')
+const paraMap = require('pull-paramap')
 const appView = require('./components/app')
 
 const batchSize = 100
@@ -31,7 +32,6 @@ function waitForConfig(state, emitter) {
         setInterval(function () {
           // TODO find out how to filter for local peers only
           server.gossip.peers((err, peers) => {
-            console.log(peers)
             if (err) {
               console.log(err)
               return
@@ -48,7 +48,7 @@ function waitForConfig(state, emitter) {
               })
             })
           })
-        }, 5000) // peers as live-stream
+        }, 5000)
 
         // TODO later this needs to become an async-map or similar
         if (Object.keys(state.apps).every(app => state.apps[app].server)) {
@@ -83,45 +83,39 @@ function setUpMessageStream(state, emitter) {
           value: { content: { type: 'post' }}
         }}]
       }),
-      function getDisplayNameForMsg(read) {
-        return function readable (end, cb) {
-          read(end, function (end, msg) {
-            if (end === true) return cb(true)
-            if (end) throw end
-            const userId = msg.value.author
-            pull(
-              getResultFromDatabase({
-                reverse: true,
-                limit: 1,
-                query: [
-                  {
-                    $filter: {
-                      value: {
-                        author: userId,
-                        content: {
-                          type: 'about',
-                          about: userId,
-                          name: {$is: 'string'}
-                        }
-                      },
-                      timestamp: { $gt: 0}
+      paraMap((msg, cb) => {
+        const userId = msg.value.author
+        pull(
+          getResultFromDatabase({
+            reverse: true,
+            limit: 1,
+            query: [
+              {
+                $filter: {
+                  value: {
+                    author: userId,
+                    content: {
+                      type: 'about',
+                      about: userId,
+                      name: {$is: 'string'}
                     }
                   },
-                  {
-                    $map: {
-                      name: ['value', 'content', 'name']
-                    }
-                  }
-                ]
-              }),
-              pull.drain(name => {
-                msg.value.displayName = name.name
-                cb(null, msg)
-              })
-            )
+                  timestamp: { $gt: 0}
+                }
+              },
+              {
+                $map: {
+                  name: ['value', 'content', 'name']
+                }
+              }
+            ]
+          }),
+          pull.drain(name => {
+            msg.value.displayName = name.name
+            cb(null, msg)
           })
-        }
-      },
+        )
+      }, batchSize),
       read => {
         getBatchOfMessages(state.apps[state.activeApp].messages)
         emitter.on('get-messages', () => {
@@ -129,17 +123,14 @@ function setUpMessageStream(state, emitter) {
         })
 
         function getBatchOfMessages(messages) {
-          let counter = 0
+          let i = 0
           read(null, function next(end, msg) {
-            if (end === true) return console.log('end')
+            if (end === true) return emitter.emit('render')
             if (end) throw end
             if (!msg.value) return
             messages.push(msg)
-            if (counter < batchSize) {
-              read(null, next)
-            }
-            counter++
-            emitter.emit('render')
+            if (++i === batchSize) return emitter.emit('render')
+            read(null, next)
           })
         }
       }
