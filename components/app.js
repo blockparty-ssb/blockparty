@@ -49,11 +49,13 @@ function setupDOMListeners(state, emit, appIds) {
 
   document.getElementById('blockparty1-link').addEventListener('click', () => {
     state.activeApp = appIds[0]
+    state.wizardActive = false
     emit('render')
   })
 
   document.getElementById('blockparty2-link').addEventListener('click', () => {
     state.activeApp = appIds[1]
+    state.wizardActive = false
     emit('render')
   })
 
