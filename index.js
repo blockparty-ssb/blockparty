@@ -71,6 +71,7 @@ function prepareState(state, appIds) {
     }
     return apps
   }, {})
+  state.wizard = {}
 }
 
 function setUpMessageStream(state, emitter) {
