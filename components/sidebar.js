@@ -4,7 +4,8 @@ const { div, ul, li, a, img } =
   require('hyperscript-helpers')(h)
 
 
-module.exports = function (appIds) {
+module.exports = function (state, emit) {
+  const appIds = Object.keys(state.apps)
   return div('.blockparties',
     ul('.list-blockparties',
       li('.blockparty',
@@ -29,7 +30,8 @@ module.exports = function (appIds) {
       )
     ),
     div('#add-network', '+', {onclick: () => {
-      console.log('new network')
+      state.wizardActive = true
+      emit('render')
     }}),
   )
 }

@@ -6,18 +6,25 @@ const onLoad = require('on-load')
 const loadingScreen = require('./loading-screen')
 const makeSidebar = require('./sidebar')
 const makeAppView = require('./main-view')
+const makeWizardView = require('./wizard-view')
 
 module.exports = (state, emit) => {
   if (!state.apps) return loadingScreen()
   const appIds = Object.keys(state.apps)
   const currentApp = state.apps[state.activeApp]
+  let mainViewContent
+  if (state.wizardActive) {
+    mainViewContent = makeWizardView(state, emit)
+  } else {
+    mainViewContent = makeAppView(currentApp)
+  }
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const appMarkup = body({style: bg},
     div('.SplitView',
-      makeSidebar(appIds),
-      makeAppView(currentApp)
+      makeSidebar(state, emit),
+      mainViewContent
     )
   )
   onLoad(appMarkup, () => setupDOMListeners(state, emit, appIds))
