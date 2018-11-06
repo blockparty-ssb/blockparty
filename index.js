@@ -22,13 +22,15 @@ window.onerror = function() {}
 function waitForConfig(state, emitter) {
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
+    const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
     prepareState(state, appIds)
-    configs.forEach(config => {
+    configs.forEach((config, i) => {
       connection(config.keys, config, (err, server) => {
-        const app = state.apps[config.appName]
         if (err) return console.log(err)
+        const app = state.apps[config.appName]
         app.server = server
         app.ownId = config.keys.id
+        app.tabColor = colors[i]
         setInterval(function () {
           // TODO find out how to filter for local peers only
           server.gossip.peers((err, peers) => {
