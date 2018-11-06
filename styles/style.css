@@ -37,31 +37,22 @@ div.sidebar {
     flex: 1;
 }
 
-ul.list-blockparties {
+.list-blockparties {
     position: sticky;
     top: 30px;
     padding: 0px;
 }
 
-li.blockparty {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 55px;
-    position: relative;
+div.blockparty {
+    height: 70px;
     margin-bottom: 17px;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 #add-network {
     color: #fff;
     font-size: 45px;
-}
-
-.blockparty-img {
-    margin: 5px;
-    margin-bottom: 15px;
-    width: 45px;
-    height: 45px;
 }
 
 .SplitView {

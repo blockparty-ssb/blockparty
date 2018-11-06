@@ -12,26 +12,20 @@ module.exports = (state, emit) => {
   if (!state.apps) return loadingScreen()
   const appIds = Object.keys(state.apps)
   const currentApp = state.apps[state.activeApp]
-  let mainViewContent
-  if (state.wizardActive) {
-    mainViewContent = makeWizardView(state, emit)
-  } else {
-    mainViewContent = makeAppView(currentApp)
-  }
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const appMarkup = body({style: bg},
     div('.SplitView',
       makeSidebar(state, emit),
-      mainViewContent
+      state.wizardActive ? makeWizardView(state, emit) : makeAppView(currentApp)
     )
   )
   onLoad(appMarkup, () => setupDOMListeners(state, emit, appIds))
   return appMarkup
 }
 
-function setupDOMListeners(state, emit, appIds) {
+function setupDOMListeners(state, emit) {
   document.getElementById('publish').addEventListener('click', () => {
     getActiveApp().server.publish({
       type: 'hello-world'
@@ -45,18 +39,6 @@ function setupDOMListeners(state, emit, appIds) {
       text: textField.value
     }, err => console.log(err))
     textField.value = ''
-  })
-
-  document.getElementById('blockparty1-link').addEventListener('click', () => {
-    state.activeApp = appIds[0]
-    state.wizardActive = false
-    emit('render')
-  })
-
-  document.getElementById('blockparty2-link').addEventListener('click', () => {
-    state.activeApp = appIds[1]
-    state.wizardActive = false
-    emit('render')
   })
 
   document.getElementById('add-username').addEventListener('click', () => {

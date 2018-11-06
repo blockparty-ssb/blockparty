@@ -1,33 +1,24 @@
 'use strict'
 const h = require('hyperscript')
-const { div, ul, li, a, img } =
-  require('hyperscript-helpers')(h)
-
+const { div } = require('hyperscript-helpers')(h)
 
 module.exports = function (state, emit) {
   const appIds = Object.keys(state.apps)
   return div('.blockparties',
-    ul('.list-blockparties',
-      li('.blockparty',
-        a('#blockparty1-link',
-          {href: '#'},
-          div('.blockparty-icon',
-            img('.blockparty-img',
-              {src: `https://ui-avatars.com/api/?name=${appIds[0]}&background=f9f7bb&color=fff`}
-            )
-          )
-        )
-      ),
-      li('.blockparty',
-        a('#blockparty2-link',
-          {href: '#'},
-          div('.blockparty-icon',
-            img('.blockparty-img',
-              {src: `https://ui-avatars.com/api/?name=${appIds[1]}&background=c7ddfc&color=fff`}
-            )
-          )
-        )
-      )
+    div('.list-blockparties',
+      appIds.map(id => {
+        const displayId = id.slice(0, 2)
+        return div('.blockparty', displayId, {
+          onclick: () => {
+            state.activeApp = id
+            state.wizardActive = false
+            emit('render')
+          },
+          style: {
+            'background-color': state.apps[id].tabColor
+          }
+        })
+      })
     ),
     div('#add-network', '+', {onclick: () => {
       state.wizardActive = true
