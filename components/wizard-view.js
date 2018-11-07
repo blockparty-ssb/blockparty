@@ -22,7 +22,7 @@ module.exports = function (state, emit) {
     apiKey: div(labels.giveApiKey,
       textField({id: 'wizard-api-key'}),
       button(labels.continue, {id: '2', onclick: () => {
-        state.wizard.appId = document.getElementById('wizard-api-key').value
+        state.wizard.apiKey = document.getElementById('wizard-api-key').value
         goTo('confirmation')
       }})
     ),
