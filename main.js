@@ -8,6 +8,7 @@ const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
 
+const blockpartyDir = path.join(os.homedir(), '.blockparty')
 
 let mainWindow
 
@@ -27,9 +28,7 @@ app.on('ready', () => {
   if (process.argv[2] === 'global') {
     appIds = [undefined]
   } else {
-    appIds = fs.readFileSync(path.join(process.env.HOME, '.blockparty'), 'utf-8')
-      .trim()
-      .split('\n')
+    appIds = fs.readdirSync(blockpartyDir)
   }
 
   const ssbConfigs = appIds.map(appName => {
@@ -63,8 +62,12 @@ app.on('window-all-closed', function () {
 
 function makeAppDirectory (appId) {
   const slugifiedId = slugify(appId)
+  if (!fs.existsSync(blockpartyDir)) {
+    // TODO error handling
+    fs.mkdirSync(blockpartyDir)
+  }
   try {
-    fs.mkdirSync(path.join(os.homedir(), `.${slugifiedId}`))
+    fs.mkdirSync(path.join(blockpartyDir, slugifiedId))
   } catch (err) {
     console.log(err)
     console.log('ups')
