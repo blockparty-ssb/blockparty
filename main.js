@@ -2,6 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
+const slugify = require('slugify')
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
@@ -61,8 +62,9 @@ app.on('window-all-closed', function () {
 })
 
 function makeAppDirectory (appId) {
+  const slugifiedId = slugify(appId)
   try {
-    fs.mkdirSync(os.homedir() + '/.' + appId)
+    fs.mkdirSync(path.join(os.homedir(), `.${slugifiedId}`))
   } catch (err) {
     console.log(err)
     console.log('ups')
