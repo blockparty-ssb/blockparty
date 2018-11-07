@@ -1,4 +1,5 @@
 'use strict'
+const { ipcRenderer } = require('electron')
 const h = require('hyperscript')
 const { div, button, p } =
   require('hyperscript-helpers')(h)
@@ -29,7 +30,9 @@ module.exports = function (state, emit) {
     confirmation: div(labels.confirmation,
       p(state.wizard.appId),
       p(state.wizard.apiKey),
-      button(labels.yesCreate, {onclick: () => {}}),
+      button(labels.yesCreate, {onclick: () => {
+        ipcRenderer.send('create-network', state.wizard.appId)
+      }}),
       button(labels.cancel)
     )
   }

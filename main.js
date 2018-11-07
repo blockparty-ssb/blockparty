@@ -1,10 +1,11 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
+
 
 let mainWindow
 
@@ -42,6 +43,10 @@ app.on('ready', () => {
     config.manifest = sbots[config.appName].getManifest()
   })
   createWindow(ssbConfigs)
+
+  ipcMain.on('create-network', (event, appId) => {
+    console.log(appId)
+  })
 })
 
 
