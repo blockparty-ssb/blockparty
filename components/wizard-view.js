@@ -16,12 +16,12 @@ module.exports = function (state, emit) {
       }})
     ),
     hasAccount: div(labels.haveAccount,
-      button(labels.accountYes, { onclick: () => goTo('apiKey')}),
+      button(labels.accountYes, { id: '1', onclick: () => goTo('apiKey')}),
       button(labels.accountNo)
     ),
     apiKey: div(labels.giveApiKey,
       textField({id: 'wizard-api-key'}),
-      div(labels.continue, {onclick: () => {
+      button(labels.continue, {id: '2', onclick: () => {
         state.wizard.appId = document.getElementById('wizard-api-key').value
         goTo('confirmation')
       }})
@@ -29,7 +29,7 @@ module.exports = function (state, emit) {
     confirmation: div(labels.confirmation,
       p(state.wizard.appId),
       p(state.wizard.apiKey),
-      button(labels.yesCreate, { onclick: () => {}}),
+      button(labels.yesCreate, {onclick: () => {}}),
       button(labels.cancel)
     )
   }
