@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
+const os = require('os')
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
@@ -45,7 +46,7 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', (event, appId) => {
-    console.log(appId)
+    makeAppDirectory(appId)
   })
 })
 
@@ -58,3 +59,12 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
+
+function makeAppDirectory (appId) {
+  try {
+    fs.mkdirSync(os.homedir() + '/.' + appId)
+  } catch (err) {
+    console.log(err)
+    console.log('ups')
+  }
+}
