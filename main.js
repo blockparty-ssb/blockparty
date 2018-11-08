@@ -30,8 +30,10 @@ app.on('ready', () => {
   let appIds
   if (process.argv[2] === 'global') {
     appIds = [undefined]
-  } else {
+  } else if (fs.existsSync(blockpartyDir)) {
     appIds = fs.readdirSync(blockpartyDir)
+  } else {
+    appIds = []
   }
 
   const ssbConfigs = appIds.map(appName => {
@@ -59,6 +61,7 @@ app.on('ready', () => {
     config.manifest = sbots[config.appName].getManifest()
   })
   createWindow(ssbConfigs)
+  console.log(ssbConfigs)
 
   ipcMain.on('create-network', (event, appId) => {
     const blockpartyDir = makeAppDirectory(appId)
