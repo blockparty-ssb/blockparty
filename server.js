@@ -1,7 +1,5 @@
 'use strict'
 const scuttleBot = require('scuttlebot')
-const manifest = require('ssb-friends')
-console.log(manifest)
 
 module.exports = function(ssbConfigs) {
   const createSbot = scuttleBot

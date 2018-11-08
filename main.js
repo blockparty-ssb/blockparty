@@ -35,7 +35,19 @@ app.on('ready', () => {
   }
 
   const ssbConfigs = appIds.map(appName => {
-    const ssbConfig = appName ? config(appName) : config()
+    const appDir = path.join(blockpartyDir, appName)
+    const fileContents = fs.readFileSync(path.join(appDir, 'config'), 'utf8')
+    let appConfig
+    try {
+      appConfig = JSON.parse(fileContents)
+    } catch (err) {
+      return console.log('could not parse config file')
+    }
+    // config merges the given config with the default boilerplate
+    // it uses rc to find the app's config file but can't find ours,
+    // because it's nested in the .blockparty directory
+    appConfig.path = appDir
+    const ssbConfig = appName ? config(appName, appConfig) : config()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
     ssbConfig.appName = appName || 'global-scuttlebutt'
@@ -68,7 +80,7 @@ app.on('ready', () => {
         }
       }
     }
-    fs.writeFileSync(path.join(blockpartyDir, 'config'), networkConfig)
+    fs.writeFileSync(path.join(blockpartyDir, 'config'), JSON.stringify(networkConfig, null, 4))
   })
 })
 
@@ -84,6 +96,7 @@ app.on('window-all-closed', function () {
 
 function makeAppDirectory (appId) {
   const slugifiedId = slugify(appId)
+  // TODO check and handle if .blockparty is a file, not a directory
   if (!fs.existsSync(blockpartyDir)) {
     // TODO error handling
     fs.mkdirSync(blockpartyDir)
