@@ -1,8 +1,11 @@
+/* eslint-disable quote-props */
 'use strict'
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const slugify = require('slugify')
+const crypto = require('crypto')
+
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
@@ -46,7 +49,26 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', (event, appId) => {
-    makeAppDirectory(appId)
+    const blockpartyDir = makeAppDirectory(appId)
+    const shsKey = crypto.randomBytes(32).toString('base64')
+    const port = Math.floor(50000 + 15000 * Math.random())
+    const wsPort = port + 1
+    const networkConfig = {
+      "caps": {
+        "shs": shsKey
+      },
+      "port": port,
+      "allowPrivate": true,
+      "ws": {
+        "port": wsPort
+      },
+      "connections": {
+        "incoming": {
+          "net": [{ "port": port, "scope": "public", "transform": "shs" }]
+        }
+      }
+    }
+    fs.writeFileSync(path.join(blockpartyDir, 'config'), networkConfig)
   })
 })
 
@@ -67,7 +89,9 @@ function makeAppDirectory (appId) {
     fs.mkdirSync(blockpartyDir)
   }
   try {
-    fs.mkdirSync(path.join(blockpartyDir, slugifiedId))
+    const appDirectory = path.join(blockpartyDir, slugifiedId)
+    fs.mkdirSync(appDirectory)
+    return appDirectory
   } catch (err) {
     console.log(err)
     console.log('ups')
