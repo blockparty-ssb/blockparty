@@ -4,11 +4,14 @@ const { div, body } =
   require('hyperscript-helpers')(h)
 const onLoad = require('on-load')
 const loadingScreen = require('./loading-screen')
+const welcomeScreen = require('./welcome-screen')
 const makeSidebar = require('./sidebar')
 const makeAppView = require('./main-view')
 const makeWizardView = require('./wizard-view')
 
 module.exports = (state, emit) => {
+  if (state.noApps && state.wizardActive) return body(makeWizardView(state, emit))
+  if (state.noApps) return welcomeScreen(state, emit)
   if (!state.apps) return loadingScreen()
   const appIds = Object.keys(state.apps)
   const currentApp = state.apps[state.activeApp]

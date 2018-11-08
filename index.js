@@ -22,8 +22,13 @@ window.onerror = function() {}
 function waitForConfig(state, emitter) {
   ipcRenderer.on('ssb-configs', (event, configs) => {
     const appIds = configs.map(c => c.appName)
-    const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
     prepareState(state, appIds)
+    if (!configs.length) {
+      state.noApps = true
+      emitter.emit('render')
+      return
+    }
+    const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
     configs.forEach((config, i) => {
       connection(config.keys, config, (err, server) => {
         if (err) return console.log(err)
@@ -64,6 +69,7 @@ function waitForConfig(state, emitter) {
 }
 
 function prepareState(state, appIds) {
+  console.log('prepare state runs')
   state.activeApp = appIds[0]
   state.apps = appIds.reduce((apps, id) => {
     apps[id] = {
