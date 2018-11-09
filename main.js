@@ -10,6 +10,8 @@ const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
+const setUpNetworkLocally = require('./set-up-locally')
+const installOnDigitalOcean = require('./install-on-digital-ocean')
 
 const blockpartyDir = path.join(os.homedir(), '.blockparty')
 
@@ -61,29 +63,25 @@ app.on('ready', () => {
     config.manifest = sbots[config.appName].getManifest()
   })
   createWindow(ssbConfigs)
-  console.log(ssbConfigs)
 
-  ipcMain.on('create-network', (event, appId) => {
-    const blockpartyDir = makeAppDirectory(appId)
+  ipcMain.on('create-network', (event, {appName, apiToken}) => {
+    const slugifiedId = slugify(appName)
     const shsKey = crypto.randomBytes(32).toString('base64')
     const port = Math.floor(50000 + 15000 * Math.random())
-    const wsPort = port + 1
-    const networkConfig = {
-      "caps": {
-        "shs": shsKey
-      },
-      "port": port,
-      "allowPrivate": true,
-      "ws": {
-        "port": wsPort
-      },
-      "connections": {
-        "incoming": {
-          "net": [{ "port": port, "scope": "public", "transform": "shs" }]
-        }
-      }
-    }
-    fs.writeFileSync(path.join(blockpartyDir, 'config'), JSON.stringify(networkConfig, null, 4))
+
+    const appDir = setUpNetworkLocally(slugifiedId, shsKey, port, blockpartyDir)
+    // also TODO: use same key for all, or not?
+    const keys = ssbKeys.loadOrCreateSync(appDir, 'secret')
+    // TODO get these dynamically and let user choose
+    installOnDigitalOcean({
+      apiToken,
+      name: slugifiedId,
+      region: 'nyc3',
+      size: 's-1vcpu-1gb',
+      appId: shsKey,
+      port,
+      userKey: keys.id
+    })
   })
 })
 
@@ -96,20 +94,3 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
-
-function makeAppDirectory (appId) {
-  const slugifiedId = slugify(appId)
-  // TODO check and handle if .blockparty is a file, not a directory
-  if (!fs.existsSync(blockpartyDir)) {
-    // TODO error handling
-    fs.mkdirSync(blockpartyDir)
-  }
-  try {
-    const appDirectory = path.join(blockpartyDir, slugifiedId)
-    fs.mkdirSync(appDirectory)
-    return appDirectory
-  } catch (err) {
-    console.log(err)
-    console.log('ups')
-  }
-}

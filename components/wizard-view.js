@@ -31,7 +31,10 @@ module.exports = function (state, emit) {
       p(state.wizard.appId),
       p(state.wizard.apiKey),
       button(labels.yesCreate, {onclick: () => {
-        ipcRenderer.send('create-network', state.wizard.appId)
+        ipcRenderer.send('create-network', {
+          appName: state.wizard.appId,
+          apiToken: state.wizard.apiKey
+        })
       }}),
       button(labels.cancel)
     )
