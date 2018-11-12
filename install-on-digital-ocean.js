@@ -18,9 +18,23 @@ module.exports = async function ({apiToken, name, region, size, appId, port, use
   }
   try {
     const res = await request(opts)
-    console.log(res)
-    // what do we want to return from the response?
+    const ip = await getIP(res.droplet)
+    return ip
   } catch (err) {
     console.log(err)
+  }
+
+  async function getIP(droplet) {
+    // it sometimes takes a while until DO tells us about the IP adress, so we
+    // keep asking until we have it
+    if (droplet.networks.v4.length) return droplet.networks.v4[0].ip_address
+    const dropletUrl = `https://api.digitalocean.com/v2/droplets/${droplet.id}`
+    const res2 = await request({
+      method: 'GET',
+      url: dropletUrl,
+      auth: {bearer: apiToken},
+      json: true
+    })
+    return await getIP(res2.droplet)
   }
 }

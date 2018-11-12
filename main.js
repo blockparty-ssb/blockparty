@@ -64,7 +64,7 @@ app.on('ready', () => {
   })
   createWindow(ssbConfigs)
 
-  ipcMain.on('create-network', (event, {appName, apiToken}) => {
+  ipcMain.on('create-network', async (event, {appName, apiToken}) => {
     const slugifiedId = slugify(appName)
     const shsKey = crypto.randomBytes(32).toString('base64')
     const port = Math.floor(50000 + 15000 * Math.random())
@@ -73,7 +73,7 @@ app.on('ready', () => {
     // also TODO: use same key for all, or not?
     const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
     // TODO get these dynamically and let user choose
-    installOnDigitalOcean({
+    const remoteIp = await installOnDigitalOcean({
       apiToken,
       name: slugifiedId,
       region: 'nyc3',
@@ -82,6 +82,8 @@ app.on('ready', () => {
       port,
       userKey: keys.id
     })
+
+    console.log(remoteIp)
   })
 })
 
