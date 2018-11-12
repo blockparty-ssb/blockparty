@@ -71,7 +71,7 @@ app.on('ready', () => {
 
     const appDir = setUpNetworkLocally(slugifiedId, shsKey, port, blockpartyDir)
     // also TODO: use same key for all, or not?
-    const keys = ssbKeys.loadOrCreateSync(appDir, 'secret')
+    const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
     // TODO get these dynamically and let user choose
     installOnDigitalOcean({
       apiToken,
