@@ -3,15 +3,12 @@
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
-const slugify = require('slugify')
-const crypto = require('crypto')
 
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbots = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
-const setUpNetworkLocally = require('./set-up-locally')
-const installOnDigitalOcean = require('./install-on-digital-ocean')
+const createNetwork = require('./create-network')
 
 const blockpartyDir = path.join(os.homedir(), '.blockparty')
 
@@ -65,25 +62,7 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', async (event, {appName, apiToken}) => {
-    const slugifiedId = slugify(appName)
-    const shsKey = crypto.randomBytes(32).toString('base64')
-    const port = Math.floor(50000 + 15000 * Math.random())
-
-    const appDir = setUpNetworkLocally(slugifiedId, shsKey, port, blockpartyDir)
-    // also TODO: use same key for all, or not?
-    const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
-    // TODO get these dynamically and let user choose
-    const remoteIp = await installOnDigitalOcean({
-      apiToken,
-      name: slugifiedId,
-      region: 'nyc3',
-      size: 's-1vcpu-1gb',
-      appId: shsKey,
-      port,
-      userKey: keys.id
-    })
-
-    console.log(remoteIp)
+    createNetwork(appName, apiToken, blockpartyDir)
   })
 })
 
