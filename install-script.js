@@ -1,4 +1,5 @@
 // modified from https://github.com/ahdinosaur/ssb-pub/blob/master/install.sh
+// double backslashes for escaping because js removes the first one
 
 /* eslint-disable no-useless-escape */
 /* eslint-disable max-len */
@@ -48,16 +49,19 @@ cat > ./create-sbot <<EOF
 #!/bin/sh
 
 ssb_host=$(dig +short myip.opendns.com @resolver1.opendns.com)
-memory_limit=$(($(free -b --si | awk '/Mem\:/ { print $2 }') - 200*(10**6)))
+memory_limit=$(($(free -b --si | awk '/Mem\\:/ { print $2 }') - 200*(10**6)))
 
-docker run -d --name sbot \
-   -v ${appDir}/:/home/node/.ssb/ \
-   -e ssb_host="\$ssb_host" \
-   -p ${appPort}:8008 \
-   --restart unless-stopped \
-   --memory "\$memory_limit" \
+docker run -d --name sbot \\
+   -v ${appDir}/:/home/node/.ssb/ \\
+   -e ssb_host="\\$ssb_host" \\
+   -p ${appPort}:8008 \\
+   --restart unless-stopped \\
+   --memory "\\$memory_limit" \\
    ahdinosaur/ssb-pub
+
+sbot plugins.install ssb-whoareyou-http
 EOF
+
 # make the script executable
 chmod +x ./create-sbot
 # run the script
@@ -67,7 +71,7 @@ chmod +x ./create-sbot
 cat > ./sbot <<EOF
 #!/bin/sh
 
-docker exec -it sbot sbot "\$@"
+docker exec -it sbot sbot "\\$@"
 EOF
 
 # make the script executable
@@ -77,14 +81,14 @@ chmod +x ./sbot
 # setup auto-healer
 #
 docker pull ahdinosaur/healer
-docker run -d --name healer \
-  -v /var/run/docker.sock:/tmp/docker.sock \
-  --restart unless-stopped \
+docker run -d --name healer \\
+  -v /var/run/docker.sock:/tmp/docker.sock \\
+  --restart unless-stopped \\
   ahdinosaur/healer
 
 # ensure containers are always running
-printf '#!/bin/sh\n\ndocker start sbot\n' | tee /etc/cron.hourly/sbot && chmod +x /etc/cron.hourly/sbot
-printf '#!/bin/sh\n\ndocker start healer\n' | tee /etc/cron.hourly/healer && chmod +x /etc/cron.hourly/healer
+printf '#!/bin/sh\\n\\ndocker start sbot\\n' | tee /etc/cron.hourly/sbot && chmod +x /etc/cron.hourly/sbot
+printf '#!/bin/sh\\n\\ndocker start healer\\n' | tee /etc/cron.hourly/healer && chmod +x /etc/cron.hourly/healer
 
 `
 }
