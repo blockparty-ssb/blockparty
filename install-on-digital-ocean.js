@@ -2,7 +2,7 @@
 const request = require('request-promise-native')
 const makeInstallScript = require('./install-script')
 
-module.exports = async function ({apiToken, name, region, size, appId, port, userKey}) {
+module.exports = async function ({apiToken, name, region, size, appId, port, wsPort, userKey}) {
   const opts = {
     method: 'POST',
     url: 'https://api.digitalocean.com/v2/droplets',
@@ -11,7 +11,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, use
       region,
       size,
       image: 'debian-9-x64',
-      user_data: makeInstallScript(name, appId, port, userKey)
+      user_data: makeInstallScript(name, appId, port, wsPort, userKey)
     },
     auth: { bearer: apiToken },
     json: true

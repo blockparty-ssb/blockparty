@@ -2,9 +2,8 @@
 const path = require('path')
 const fs = require('fs')
 
-module.exports = (appName, shsKey, port, blockpartyDir) => {
+module.exports = (appName, shsKey, port, wsPort, blockpartyDir) => {
   const appDir = makeAppDirectory(appName)
-  const wsPort = port + 1
   const networkConfig = {
     caps: {
       shs: shsKey
