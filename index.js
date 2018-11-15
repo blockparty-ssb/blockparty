@@ -41,7 +41,7 @@ function waitForConfig(state, emitter) {
       const app = state.apps[config.appName]
       app.server = server
       app.ownId = config.keys.id
-      app.tabColor = colors[Math.round(Math.random() * colors.length - 1)]
+      app.tabColor = colors[Math.round(Math.random() * (colors.length - 1))]
       setInterval(function () {
         // TODO find out how to filter for local peers only
         server.gossip.peers((err, peers) => {

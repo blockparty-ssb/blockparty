@@ -77,7 +77,7 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', async (event, {appName, apiToken}) => {
-    createNetwork(appName, apiToken, blockpartyDir)
+    createNetwork(appName, apiToken, blockpartyDir, mainWindow)
   })
 })
 
@@ -91,4 +91,3 @@ app.on('window-all-closed', function () {
   }
 })
 
-module.exports = sendToWindow
