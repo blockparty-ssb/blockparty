@@ -21,8 +21,12 @@ function createWindow (ssbConfigs) {
 
   mainWindow.webContents.openDevTools()
   mainWindow.webContents.on('dom-ready', () => {
-    mainWindow.webContents.send('ssb-configs', ssbConfigs)
+    sendToWindow('ssb-configs', ssbConfigs)
   })
+}
+
+module.exports = function sendToWindow(channel, content) {
+  mainWindow.webContents.send(channel, content)
 }
 
 app.on('ready', () => {

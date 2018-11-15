@@ -20,9 +20,10 @@ app.mount('body')
 window.onerror = function() {}
 
 function waitForConfig(state, emitter) {
-  ipcRenderer.on('ssb-configs', (event, configs) => {
-    const appIds = configs.map(c => c.appName)
-    prepareState(state, appIds)
+  // TODO move state.wizard?
+  state.wizard = {}
+  ipcRenderer.on('ssb-config', (event, config) => {
+    addAppToState(state, config.appName)
     if (!configs.length) {
       state.noApps = true
       emitter.emit('render')
@@ -68,18 +69,13 @@ function waitForConfig(state, emitter) {
   })
 }
 
-function prepareState(state, appIds) {
-  console.log('prepare state runs')
-  state.activeApp = appIds[0]
-  state.apps = appIds.reduce((apps, id) => {
-    apps[id] = {
-      messages: [],
-      peers: [],
-      userNames: []
-    }
-    return apps
-  }, {})
-  state.wizard = {}
+function addAppToState(state, appId) {
+  state.apps = state.apps || {}
+  state.apps[appId] = {
+    messages: [],
+    peers: [],
+    userNames: []
+  }
 }
 
 function setUpMessageStream(state, emitter) {

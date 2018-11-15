@@ -6,6 +6,7 @@ const ssbKeys = require('ssb-keys')
 const setUpNetworkLocally = require('./set-up-locally')
 const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
+const sendToWindow = require('./main')
 
 module.exports = async (appName, apiToken, blockpartyDir) => {
   const slugifiedId = slugify(appName)
@@ -39,6 +40,7 @@ module.exports = async (appName, apiToken, blockpartyDir) => {
   const newSbot = startSbot(networkConfig)
   networkConfig.manifest = newSbot.getManifest()
   // TODO send network config to client
+    sendToWindow()
 
   // TODO get these dynamically and let user choose
   const remoteIp = await installOnDigitalOcean({
