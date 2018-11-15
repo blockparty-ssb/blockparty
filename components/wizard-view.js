@@ -35,6 +35,10 @@ module.exports = function (state, emit) {
           appName: state.wizard.appId,
           apiToken: state.wizard.apiKey
         })
+        state.apps[state.wizard.appId] = {
+          tabColor: 'blue'
+        }
+        emit('render')
       }}),
       button(labels.cancel)
     )
