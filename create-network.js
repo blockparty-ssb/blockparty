@@ -13,6 +13,7 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   const port = Math.floor(50000 + 15000 * Math.random())
   const wsPort = port + 1
   const networkConfig = {
+    appName,
     caps: {
       shs: shsKey
     },
@@ -26,9 +27,8 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
         net: [{ port: port, scope: "public", transform: "shs" }]
       }
     },
-    path: path.join(blockpartyDir, appName)
+    path: path.join(blockpartyDir, slugifiedId)
   }
-
   const appDir = setUpNetworkLocally(
     slugifiedId,
     blockpartyDir,
@@ -36,9 +36,9 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   )
   // also TODO: use same key for all, or not?
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
+  networkConfig.keys = keys
 
   const newSbot = startSbot(networkConfig)
-  console.log('bis hierher jehts')
 
   networkConfig.manifest = newSbot.getManifest()
   mainWindow.webContents.send('ssb-config', networkConfig)
