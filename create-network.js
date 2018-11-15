@@ -39,8 +39,7 @@ module.exports = async (appName, apiToken, blockpartyDir) => {
 
   const newSbot = startSbot(networkConfig)
   networkConfig.manifest = newSbot.getManifest()
-  // TODO send network config to client
-    sendToWindow()
+  sendToWindow('ssb-config', networkConfig)
 
   // TODO get these dynamically and let user choose
   const remoteIp = await installOnDigitalOcean({

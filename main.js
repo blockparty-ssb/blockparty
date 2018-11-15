@@ -21,11 +21,18 @@ function createWindow (ssbConfigs) {
 
   mainWindow.webContents.openDevTools()
   mainWindow.webContents.on('dom-ready', () => {
-    sendToWindow('ssb-configs', ssbConfigs)
+    if (!ssbConfigs.length) {
+      sendToWindow('no-apps-found')
+      return
+    }
+    sendToWindow('initial-active', ssbConfigs[0].appName)
+    ssbConfigs.forEach(ssbConfig => {
+      sendToWindow('ssb-config', ssbConfig)
+    })
   })
 }
 
-module.exports = function sendToWindow(channel, content) {
+function sendToWindow(channel, content) {
   mainWindow.webContents.send(channel, content)
 }
 
@@ -83,3 +90,5 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
+
+module.exports = sendToWindow

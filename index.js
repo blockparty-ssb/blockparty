@@ -22,49 +22,53 @@ window.onerror = function() {}
 function waitForConfig(state, emitter) {
   // TODO move state.wizard?
   state.wizard = {}
+
+  ipcRenderer.on('no-apps-found', () => {
+    state.noApps = true
+    emitter.emit('render')
+  })
+
+  ipcRenderer.on('initial-active', (event, appName) => {
+    console.log('setting active app', appName)
+    state.activeApp = appName
+  })
+
   ipcRenderer.on('ssb-config', (event, config) => {
     addAppToState(state, config.appName)
-    if (!configs.length) {
-      state.noApps = true
-      emitter.emit('render')
-      return
-    }
     const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
-    configs.forEach((config, i) => {
-      connection(config.keys, config, (err, server) => {
-        if (err) return console.log(err)
-        const app = state.apps[config.appName]
-        app.server = server
-        app.ownId = config.keys.id
-        app.tabColor = colors[i]
-        setInterval(function () {
-          // TODO find out how to filter for local peers only
-          server.gossip.peers((err, peers) => {
-            if (err) {
-              console.log(err)
-              return
-            }
-            let peersWithDisplayName = 0
-            app.peers = peers
-            peers.forEach(peer => {
-              getDisplayNameForUserId(peer.key, server, (err, name) => {
-                peer.displayName = name
-                peersWithDisplayName++
-                if (peersWithDisplayName === peers.length ) {
-                  emitter.emit('render')
-                }
-              })
+    connection(config.keys, config, (err, server) => {
+      if (err) return console.log(err)
+      const app = state.apps[config.appName]
+      app.server = server
+      app.ownId = config.keys.id
+      app.tabColor = colors[Math.round(Math.random() * colors.length - 1)]
+      setInterval(function () {
+        // TODO find out how to filter for local peers only
+        server.gossip.peers((err, peers) => {
+          if (err) {
+            console.log(err)
+            return
+          }
+          let peersWithDisplayName = 0
+          app.peers = peers
+          peers.forEach(peer => {
+            getDisplayNameForUserId(peer.key, server, (err, name) => {
+              peer.displayName = name
+              peersWithDisplayName++
+              if (peersWithDisplayName === peers.length ) {
+                emitter.emit('render')
+              }
             })
           })
-        }, 5000)
+        })
+      }, 5000)
 
-        // TODO later this needs to become an async-map or similar
-        if (Object.keys(state.apps).every(app => state.apps[app].server)) {
-          emitter.emit('set-up-message-stream')
-          emitter.emit('get-user-names')
-          emitter.emit('render')
-        }
-      })
+      // TODO later this needs to become an async-map or similar
+      if (Object.keys(state.apps).every(app => state.apps[app].server)) {
+        emitter.emit('set-up-message-stream')
+        emitter.emit('get-user-names')
+        emitter.emit('render')
+      }
     })
   })
 }
@@ -80,6 +84,7 @@ function addAppToState(state, appId) {
 
 function setUpMessageStream(state, emitter) {
   emitter.on('set-up-message-stream', () => {
+    console.log('active', state.activeApp)
     const getResultFromDatabase = state.apps[state.activeApp].server.query.read
     pull(
       getResultFromDatabase({
