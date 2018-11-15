@@ -2,23 +2,8 @@
 const path = require('path')
 const fs = require('fs')
 
-module.exports = (appName, shsKey, port, wsPort, blockpartyDir) => {
+module.exports = (appName, blockpartyDir, networkConfig) => {
   const appDir = makeAppDirectory(appName)
-  const networkConfig = {
-    caps: {
-      shs: shsKey
-    },
-    port: port,
-    allowPrivate: true,
-    ws: {
-      port: wsPort
-    },
-    connections: {
-      incoming: {
-        net: [{ port: port, scope: "public", transform: "shs" }]
-      }
-    }
-  }
   fs.writeFileSync(path.join(appDir, 'config'), JSON.stringify(networkConfig, null, 4))
   return appDir
 

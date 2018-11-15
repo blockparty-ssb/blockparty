@@ -5,7 +5,7 @@ const fs = require('fs')
 const os = require('os')
 
 const {app, BrowserWindow, ipcMain} = require('electron')
-const startSbots = require('./server.js')
+const startSbot = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const config = require('ssb-config/inject')
 const createNetwork = require('./create-network')
@@ -55,7 +55,11 @@ app.on('ready', () => {
     return ssbConfig
   })
 
-  const sbots = startSbots(ssbConfigs)
+  const sbots = ssbConfigs.reduce((acc, config) => {
+    const sbot = startSbot(config)
+    acc[config.appName] = sbot
+    return acc
+  }, {})
   ssbConfigs.forEach(config => {
     config.manifest = sbots[config.appName].getManifest()
   })

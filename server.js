@@ -1,7 +1,7 @@
 'use strict'
 const scuttleBot = require('scuttlebot')
 
-module.exports = function(ssbConfigs) {
+module.exports = function(ssbConfig) {
   const createSbot = scuttleBot
     .use(require('scuttlebot/plugins/master'))
     .use(require('scuttlebot/plugins/gossip'))
@@ -12,13 +12,9 @@ module.exports = function(ssbConfigs) {
     .use(require('ssb-ws'))
     .use(require('ssb-friends'))
 
-  return ssbConfigs.reduce((acc, ssbConfig) => {
-    const sbot = createSbot(Object.assign(ssbConfig, {
-      logging: {
-        level: 'info'
-      }
-    }))
-    acc[ssbConfig.appName]=sbot
-    return acc
-  }, {})
+  return createSbot(Object.assign(ssbConfig, {
+    logging: {
+      level: 'notice'
+    }
+  }))
 }
