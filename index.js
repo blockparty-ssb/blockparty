@@ -12,7 +12,6 @@ const batchSize = 100
 // choo app
 const app = choo()
 app.use(waitForConfig)
-app.use(setUpMessageStream)
 app.use(getUserNames)
 app.route('/', appView)
 app.mount('body')
@@ -84,7 +83,6 @@ function addAppToState(state, appId) {
 }
 
 function setUpMessageStream(state, emitter, appName) {
-  console.log('active', appName)
   const getResultFromDatabase = state.apps[appName].server.query.read
   pull(
     getResultFromDatabase({
