@@ -62,10 +62,11 @@ function waitForConfig(state, emitter) {
           })
         })
       }, 5000)
+      setUpMessageStream(state, emitter, config.appName)
+      console.log(config.appName)
 
       // TODO later this needs to become an async-map or similar
       if (Object.keys(state.apps).every(app => state.apps[app].server)) {
-        emitter.emit('set-up-message-stream')
         emitter.emit('get-user-names')
         emitter.emit('render')
       }
@@ -82,70 +83,68 @@ function addAppToState(state, appId) {
   }
 }
 
-function setUpMessageStream(state, emitter) {
-  emitter.on('set-up-message-stream', () => {
-    console.log('active', state.activeApp)
-    const getResultFromDatabase = state.apps[state.activeApp].server.query.read
-    pull(
-      getResultFromDatabase({
-        reverse: true,
-        query: [{$filter: {
-          value: { content: { type: 'post' }}
-        }}]
-      }),
-      paraMap((msg, cb) => {
-        const userId = msg.value.author
-        pull(
-          getResultFromDatabase({
-            reverse: true,
-            limit: 1,
-            query: [
-              {
-                $filter: {
-                  value: {
-                    author: userId,
-                    content: {
-                      type: 'about',
-                      about: userId,
-                      name: {$is: 'string'}
-                    }
-                  },
-                  timestamp: { $gt: 0}
-                }
-              },
-              {
-                $map: {
-                  name: ['value', 'content', 'name']
-                }
+function setUpMessageStream(state, emitter, appName) {
+  console.log('active', appName)
+  const getResultFromDatabase = state.apps[appName].server.query.read
+  pull(
+    getResultFromDatabase({
+      reverse: true,
+      query: [{$filter: {
+        value: { content: { type: 'post' }}
+      }}]
+    }),
+    paraMap((msg, cb) => {
+      const userId = msg.value.author
+      pull(
+        getResultFromDatabase({
+          reverse: true,
+          limit: 1,
+          query: [
+            {
+              $filter: {
+                value: {
+                  author: userId,
+                  content: {
+                    type: 'about',
+                    about: userId,
+                    name: {$is: 'string'}
+                  }
+                },
+                timestamp: { $gt: 0}
               }
-            ]
-          }),
-          pull.drain(name => {
-            msg.value.displayName = name.name
-            cb(null, msg)
-          })
-        )
-      }, batchSize),
-      read => {
-        getBatchOfMessages(state.apps[state.activeApp].messages)
-        emitter.on('get-messages', () => {
-          getBatchOfMessages(state.apps[state.activeApp].messages)
+            },
+            {
+              $map: {
+                name: ['value', 'content', 'name']
+              }
+            }
+          ]
+        }),
+        pull.drain(name => {
+          msg.value.displayName = name.name
+          cb(null, msg)
         })
+      )
+    }, batchSize),
+    read => {
+      getBatchOfMessages(state.apps[appName].messages)
+      emitter.on('get-messages', () => {
+        getBatchOfMessages(state.apps[appName].messages)
+      })
 
-        function getBatchOfMessages(messages) {
-          let i = 0
-          read(null, function next(end, msg) {
-            if (end === true) return emitter.emit('render')
-            if (end) throw end
-            if (!msg.value) return
-            messages.push(msg)
-            if (++i === batchSize) return emitter.emit('render')
-            read(null, next)
-          })
-        }
+      function getBatchOfMessages(messages) {
+        let i = 0
+        read(null, function next(end, msg) {
+          if (end === true) return emitter.emit('render')
+          if (end) throw end
+          if (!msg.value) return
+          messages.push(msg)
+          if (++i === batchSize) return emitter.emit('render')
+          read(null, next)
+        })
       }
-    )
-  })
+    }
+  )
 }
 
 function getUserNames(state, emitter) {
