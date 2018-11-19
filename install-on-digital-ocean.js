@@ -21,7 +21,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
     const ip = await getIP(res.droplet)
     return ip
   } catch (err) {
-    console.log(err)
+    // console.log(err)
   }
 
   async function getIP(droplet) {

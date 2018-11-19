@@ -19,7 +19,6 @@ module.exports = (appName, blockpartyDir, networkConfig) => {
       return appDirectory
     } catch (err) {
       console.log(err)
-      console.log('ups')
     }
   }
 }

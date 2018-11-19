@@ -67,7 +67,6 @@ app.on('ready', () => {
   })
 
   const sbots = ssbConfigs.reduce((acc, config) => {
-    console.log("app start: ", config)
     const sbot = startSbot(config)
     acc[config.appName] = sbot
     return acc

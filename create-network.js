@@ -44,8 +44,8 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
 
   const newSbot = startSbot(injectedConfig)
 
-
   injectedConfig.manifest = newSbot.getManifest()
+  injectedConfig.remote = newSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
   const remoteIp = await installOnDigitalOcean({
