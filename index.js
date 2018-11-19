@@ -12,7 +12,6 @@ const batchSize = 100
 // choo app
 const app = choo()
 app.use(waitForConfig)
-app.use(getUserNames)
 app.route('/', appView)
 app.mount('body')
 
@@ -33,13 +32,11 @@ function waitForConfig(state, emitter) {
 
   ipcRenderer.on('ssb-config', (event, config) => {
     addAppToState(state, config.appName)
-    const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
       const app = state.apps[config.appName]
       app.server = server
       app.ownId = config.keys.id
-      app.tabColor = colors[Math.round(Math.random() * (colors.length - 1))]
       setInterval(function () {
         // TODO find out how to filter for local peers only
         server.gossip.peers((err, peers) => {
@@ -61,11 +58,8 @@ function waitForConfig(state, emitter) {
         })
       }, 5000)
       setUpMessageStream(state, emitter, config.appName)
-
-      if (Object.keys(state.apps).every(app => state.apps[app].server)) {
-        emitter.emit('get-user-names')
-        emitter.emit('render')
-      }
+      getUserNames(state, emitter, config.appName)
+      emitter.emit('render')
     })
   })
 }
@@ -150,26 +144,25 @@ function setUpMessageStream(state, emitter, appName) {
   )
 }
 
-function getUserNames(state, emitter) {
+function getUserNames(state, emitter, appName) {
+  const app = state.apps[appName]
   emitter.on('get-user-names', () => {
-    Object.values(state.apps).forEach(app => {
-      pull(
-        app.server.query.read({
-          live: true,
-          query: [{$filter: {
-            value: {
-              author: app.ownId,
-              content: { type: 'about' }
-            }
-          }}]
-        }),
-        pull.drain(msg => {
-          if (!msg.value) return
-          app.userNames.unshift(msg.value.content.name)
-          emitter.emit('render')
-        })
-      )
-    })
+    pull(
+      app.server.query.read({
+        live: true,
+        query: [{$filter: {
+          value: {
+            author: app.ownId,
+            content: { type: 'about' }
+          }
+        }}]
+      }),
+      pull.drain(msg => {
+        if (!msg.value) return
+        app.userNames.unshift(msg.value.content.name)
+        emitter.emit('render')
+      })
+    )
   })
 }
 
