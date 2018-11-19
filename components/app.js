@@ -14,21 +14,22 @@ module.exports = (state, emit) => {
   if (state.noApps) return welcomeScreen(state, emit)
   if (!state.apps) return loadingScreen()
   const appIds = Object.keys(state.apps)
-  const currentApp = state.apps[state.activeApp]
   const colors = ['lightyellow', 'lightblue']
   const appIndex = appIds.indexOf(state.activeApp)
   const bg = `background-color:${colors[appIndex]}`
   const appMarkup = body({style: bg},
     div('.SplitView',
       makeSidebar(state, emit),
-      state.wizardActive ? makeWizardView(state, emit) : makeAppView(currentApp)
+      state.wizardActive ?
+        makeWizardView(state, emit) :
+        makeAppView(state, emit)
     )
   )
   onLoad(appMarkup, () => setupDOMListeners(state, emit, appIds))
   return appMarkup
 }
 
-function setupDOMListeners(state, emit) {
+function setupDOMListeners(state) {
   document.getElementById('publish').addEventListener('click', () => {
     getActiveApp().server.publish({
       type: 'hello-world'
@@ -53,11 +54,6 @@ function setupDOMListeners(state, emit) {
     }, err => console.log(err))
     textField.value = ''
   })
-
-  document.getElementById('load-more').addEventListener('click', () => {
-    emit('get-messages')
-  })
-
 
   function getActiveApp() {
     return state.apps[state.activeApp]

@@ -4,7 +4,8 @@ const { div, ul, li, button, h4 } =
   require('hyperscript-helpers')(h)
 const textField = require('./input-field')
 
-module.exports = function (currentApp) {
+module.exports = function (state, emit) {
+  const currentApp = state.apps[state.activeApp]
   return div('.MainWindow',
     div('.SplitView',
       div('.sidebar',
@@ -56,7 +57,10 @@ module.exports = function (currentApp) {
             }
           })
         ),
-        button('#load-more', 'Load more')
+        button('Load more', {
+          id: 'load-more',
+          onclick: () => emit('get-messages', state.activeApp)
+        })
       )
     )
   )

@@ -62,9 +62,7 @@ function waitForConfig(state, emitter) {
         })
       }, 5000)
       setUpMessageStream(state, emitter, config.appName)
-      console.log(config.appName)
 
-      // TODO later this needs to become an async-map or similar
       if (Object.keys(state.apps).every(app => state.apps[app].server)) {
         emitter.emit('get-user-names')
         emitter.emit('render')
@@ -86,12 +84,16 @@ function setUpMessageStream(state, emitter, appName) {
   const getResultFromDatabase = state.apps[appName].server.query.read
   pull(
     getResultFromDatabase({
-      reverse: true,
+      live: true,
       query: [{$filter: {
         value: { content: { type: 'post' }}
       }}]
     }),
     paraMap((msg, cb) => {
+      if (!msg.value) {
+        cb(null, msg)
+        return
+      }
       const userId = msg.value.author
       pull(
         getResultFromDatabase({
@@ -126,18 +128,23 @@ function setUpMessageStream(state, emitter, appName) {
     }, batchSize),
     read => {
       getBatchOfMessages(state.apps[appName].messages)
-      emitter.on('get-messages', () => {
-        getBatchOfMessages(state.apps[appName].messages)
+      emitter.on('get-messages', targetApp => {
+        if (targetApp === appName) {
+          getBatchOfMessages(state.apps[appName].messages)
+        }
       })
 
       function getBatchOfMessages(messages) {
+        // TODO actually use batching again
         let i = 0
         read(null, function next(end, msg) {
+          console.log(end, msg)
           if (end === true) return emitter.emit('render')
           if (end) throw end
-          if (!msg.value) return
-          messages.push(msg)
-          if (++i === batchSize) return emitter.emit('render')
+          if (msg.value) {
+            messages.unshift(msg)
+          }
+          emitter.emit('render')
           read(null, next)
         })
       }
