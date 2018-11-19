@@ -36,16 +36,34 @@ module.exports = function (state, emit) {
           h4('You are:'),
           ul(currentApp.userNames.map(name => li(name))),
           textField({id: "username"}),
-          button({ id: 'add-username' }, 'Add username')
+          button('Add username', {
+            id: 'add-username',
+            onclick: () => {
+              const textField = document.getElementById('username')
+              currentApp.server.publish({
+                type: 'about',
+                name: textField.value,
+                about: currentApp.ownId
+              }, err => console.log(err))
+              textField.value = ''
+            }
+          })
         )
       ),
       div('.main',
         div('.post-msg',
           textField({id: "post", name: "your message" }),
-          button({ id: 'add-to-list' }, 'Post message')
-        ),
-        div('.say-hello',
-          button({id: 'publish'}, 'say "hello world"')
+          button( 'Post message', {
+            id: 'add-to-list',
+            onclick: () => {
+              const textField = document.getElementById('post')
+              currentApp.server.publish({
+                type: 'post',
+                text: textField.value
+              }, err => console.log(err))
+              textField.value = ''
+            }
+          })
         ),
         div('.feed',
           currentApp.messages.map(msg => {

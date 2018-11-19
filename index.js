@@ -146,24 +146,22 @@ function setUpMessageStream(state, emitter, appName) {
 
 function getUserNames(state, emitter, appName) {
   const app = state.apps[appName]
-  emitter.on('get-user-names', () => {
-    pull(
-      app.server.query.read({
-        live: true,
-        query: [{$filter: {
-          value: {
-            author: app.ownId,
-            content: { type: 'about' }
-          }
-        }}]
-      }),
-      pull.drain(msg => {
-        if (!msg.value) return
-        app.userNames.unshift(msg.value.content.name)
-        emitter.emit('render')
-      })
-    )
-  })
+  pull(
+    app.server.query.read({
+      live: true,
+      query: [{$filter: {
+        value: {
+          author: app.ownId,
+          content: { type: 'about' }
+        }
+      }}]
+    }),
+    pull.drain(msg => {
+      if (!msg.value) return
+      app.userNames.unshift(msg.value.content.name)
+      emitter.emit('render')
+    })
+  )
 }
 
 function getDisplayNameForUserId(userId, server, cb) {
