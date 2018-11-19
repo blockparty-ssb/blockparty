@@ -6,6 +6,7 @@ const ssbKeys = require('ssb-keys')
 const setUpNetworkLocally = require('./set-up-locally')
 const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
+const injectConfig = require('ssb-config/inject')
 
 module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   const slugifiedId = slugify(appName)
@@ -29,19 +30,23 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
     },
     path: path.join(blockpartyDir, slugifiedId)
   }
+
+  const injectedConfig = injectConfig(appName, networkConfig)
+
   const appDir = setUpNetworkLocally(
     slugifiedId,
     blockpartyDir,
-    networkConfig
+    injectedConfig
   )
   // also TODO: use same key for all, or not?
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
-  networkConfig.keys = keys
+  injectedConfig.keys = keys
 
-  const newSbot = startSbot(networkConfig)
+  const newSbot = startSbot(injectedConfig)
 
-  networkConfig.manifest = newSbot.getManifest()
-  mainWindow.webContents.send('ssb-config', networkConfig)
+
+  injectedConfig.manifest = newSbot.getManifest()
+  mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
   const remoteIp = await installOnDigitalOcean({
     apiToken,
@@ -53,6 +58,4 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
     wsPort,
     userKey: keys.id
   })
-
-  console.log(remoteIp)
 }

@@ -28,7 +28,6 @@ function waitForConfig(state, emitter) {
   })
 
   ipcRenderer.on('initial-active', (event, appName) => {
-    console.log('setting active app', appName)
     state.activeApp = appName
   })
 
@@ -138,7 +137,6 @@ function setUpMessageStream(state, emitter, appName) {
         // TODO actually use batching again
         let i = 0
         read(null, function next(end, msg) {
-          console.log(end, msg)
           if (end === true) return emitter.emit('render')
           if (end) throw end
           if (msg.value) {
