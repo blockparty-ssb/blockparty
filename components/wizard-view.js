@@ -1,7 +1,7 @@
 'use strict'
 const { ipcRenderer } = require('electron')
 const h = require('hyperscript')
-const { div, button, p } =
+const { div, button, img, p, h2, section } =
   require('hyperscript-helpers')(h)
 const textField = require('./input-field')
 const labels = require('./labels').wizard
@@ -9,12 +9,15 @@ const labels = require('./labels').wizard
 module.exports = function (state, emit) {
   const activePage = state.wizard.activePage || 'enterName'
   const wizardPages = {
-    enterName: div(labels.enterAppId,
-      textField({id: 'wizard-app-id'}),
-      button(labels.continue, { onclick: () => {
-        state.wizard.appId = document.getElementById('wizard-app-id').value
-        goTo('hasAccount')
-      }})
+    enterName: section('.enter-name-page',
+      img('.logo', `src='styles/img/logo.png'`),
+      div('.wrapper',
+        h2(labels.enterAppId),
+        textField({id: 'wizard-app-id'}),
+        button(labels.continue, { onclick: () => {
+          state.wizard.appId = document.getElementById('wizard-app-id').value
+          goTo('hasAccount')
+        }}))
     ),
     hasAccount: div(labels.haveAccount,
       button(labels.accountYes, { id: '1', onclick: () => goTo('apiKey')}),

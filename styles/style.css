@@ -9,25 +9,50 @@ body, button {
 }
 
 h1, h2, h3, h4 {
-    font-family: 'Merriweather', serif;
+    font-family: 'Lato', sans-serif;
+}
+
+h2 {
+    font-size: 28px;
+    font-weight: 200;
 }
 
 button {
-    background-color: #F9065F;
-    border: none;
-    color: white;
+    background-color: #fff;
+    border-width: 1px;
+    border-color: #F9065F;
+    color: #F9065F;
     padding: 10px 32px;
     text-align: center;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 15px;
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 8px;
 }
 
+button:hover {
+    background-color: #F9065F;
+    border: none;
+    color: #fff;
+}
+
+input {
+    padding: 4px;
+    margin: 4px;
+    margin-left: 15px;
+    width: 70%;
+    height: 40px;
+    display: block;
+    margin: auto;
+    border: none;
+    border-bottom: 1px solid #F9065F;
+    margin-bottom: 15px;
+}
+
 /********************** side Blockparties ******************/
 
-.MainWindow {
+.MainWindow, #wizard-view {
     width: 100%;
     left: 79px;
     position: fixed;
@@ -136,18 +161,45 @@ div.post-msg, div.say-hello {
     padding: 10px;
 }
 
-#post {
-    padding: 4px;
-    margin: 4px;
-    margin-left: 15px;
-    width: 50%;
-    height: 40px;
-}
-
 #username {
     display: block;
 }
 
 li {
     list-style-type: none;
+}
+
+
+
+/***************wizard******************/
+
+.enter-name-page {
+    position: fixed;
+    background: url('img/frame.png');
+    background-size: cover;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 79px;
+    text-align: center;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.wrapper {
+    padding: 4px;
+    display: block;
+    margin: 4px;
+    margin-top: 15%;
+    margin-left: 15px;
+    width: 70%;
+    height: 50%;
+    background-color: #fff;
+}
+
+.logo {
+    height: 100px;
+    width: 100px;
 }
