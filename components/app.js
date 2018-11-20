@@ -13,7 +13,7 @@ module.exports = (state, emit) => {
   if (state.noApps) return welcomeScreen(state, emit)
   if (!state.apps) return loadingScreen()
   const appMarkup = body(
-    div('.SplitView',
+    div('.SplitWindow',
       makeSidebar(state, emit),
       state.wizardActive ?
         makeWizardView(state, emit) :

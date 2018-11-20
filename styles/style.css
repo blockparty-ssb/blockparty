@@ -3,20 +3,45 @@ html, body {
     box-sizing: border-box;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
+body, button {
+    font-family: 'Lato', sans-serif;
     font-size: 16px;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Merriweather', serif;
+}
+
+button {
+    background-color: #F9065F;
+    border: none;
+    color: white;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
 }
 
 /********************** side Blockparties ******************/
 
 .MainWindow {
     width: 100%;
-    flex: 11;
+    left: 79px;
+    position: fixed;
+    height: 100%;
 }
 
-.main {
-    flex: 4;
+.SplitMainView {
+    display: flex;
+}
+
+div.main {
+    display: block;
+    flex: 8;
+    height: 100%;
 }
 
 div.blockparties {
@@ -25,17 +50,28 @@ div.blockparties {
     padding-left: 7px;
     padding-right: 7px;
     height: 100%;
-    flex: 1;
+    width: 65px;
+    position: fixed;
+}
+
+.show-blockparty {
+    text-align: center;
 }
 
 div.sidebar {
-    background-color: #ABD1BB;
+    background-color: #E8E8E8;
     padding-left: 7px;
     padding-right: 7px;
     height: 100%;
     overflow: hidden;
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    min-width: 120px;
+    min-height: 100%;
 }
+
+
 
 .list-blockparties {
     position: sticky;
@@ -44,39 +80,48 @@ div.sidebar {
 }
 
 div.blockparty {
-    height: 70px;
+    height: 60px;
+    width: 60px;
     margin-bottom: 17px;
     text-align: center;
     text-transform: uppercase;
+    border-radius: 50px;
 }
 
 #add-network {
     color: #fff;
     font-size: 45px;
-}
+    padding-top: 20px;
+    text-align: center;
 
-.SplitView {
-    display: flex;
-}
 
-.SplitView > div.side {
-    min-width: 120px;
-    padding: 20px;
-    background: #efefef;
 }
 
 .show-peers {
     opacity: 0.7;
     padding-top: 10px;
     padding-bottom: 10px;
+    display: flex;
+    flex: 1;
+    width: 100%;
+    flex-direction: column;
 }
 
-.switch-app {
+.username {
+    display: flex;
+    flex: 1;
     width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-direction: column;
 }
 
 div.post-msg, div.say-hello {
-    background: papayawhip;
+    background: #fff;
+    padding-top: 20px;
+    padding-bottom: 20px; 
+    border-bottom: #E8E8E8;
+    border-width: 1px;
 }
 
 .content {
@@ -95,6 +140,8 @@ div.post-msg, div.say-hello {
     padding: 4px;
     margin: 4px;
     margin-left: 15px;
+    width: 50%;
+    height: 40px;
 }
 
 #username {

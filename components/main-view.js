@@ -1,14 +1,16 @@
 'use strict'
 const h = require('hyperscript')
-const { div, ul, li, button, h4 } =
+const { div, ul, li, button, h4, h2 } =
   require('hyperscript-helpers')(h)
 const textField = require('./input-field')
 
 module.exports = function (state, emit) {
   const currentApp = state.apps[state.activeApp]
   return div('.MainWindow',
-    div('.SplitView',
+    div('.SplitMainView',
       div('.sidebar',
+        div('.show-blockparty',
+          h2(state.activeApp)),
         div('.show-peers',
           h4('Online peers:'),
           ul(currentApp.peers.map(peer => {
@@ -32,7 +34,7 @@ module.exports = function (state, emit) {
             )
           }))
         ),
-        div('.switch-app',
+        div('.username',
           h4('You are:'),
           ul(currentApp.userNames.map(name => li(name))),
           textField({id: "username"}),

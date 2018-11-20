@@ -4,7 +4,7 @@ const { div } = require('hyperscript-helpers')(h)
 
 module.exports = function (state, emit) {
   const appIds = Object.keys(state.apps)
-  const colors = ['#ff0093', '#00c9ca', '#ff9500', '#ffdf68']
+  const colors = ['#F9065F', '#1DA0E1', '#27A83F', '#F9B405']
   return div('.blockparties',
     div('.list-blockparties',
       appIds.map((id, i) => {
