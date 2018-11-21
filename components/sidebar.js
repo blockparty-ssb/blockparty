@@ -9,16 +9,19 @@ module.exports = function (state, emit) {
     div('.list-blockparties',
       appIds.map((id, i) => {
         const displayId = id.slice(0, 2)
-        return div('.blockparty', displayId, {
+        var blockpartyClass = '.blockparty'
+        return div(blockpartyClass, displayId, {
           onclick: () => {
             state.activeApp = id
             state.wizardActive = false
+            // blockpartyClass = '.active-network' not working this way
             emit('render')
           },
           style: {
-            'background-color': colors[i % colors.length]
+            color: colors[i % colors.length]
           }
-        })
+        }
+        )
       })
     ),
     div('#add-network', '+', {onclick: () => {

@@ -54,8 +54,8 @@ module.exports = function (state, emit) {
       ),
       div('.main',
         div('.post-msg',
-          textField({id: "post", name: "your message" }),
-          button( 'Post message', {
+          textField({id: "post", name: "your message", placeholder: 'Write a message in ' + state.activeApp }),
+          button( 'send', {
             id: 'add-to-list',
             onclick: () => {
               const textField = document.getElementById('post')

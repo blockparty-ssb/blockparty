@@ -39,15 +39,13 @@ button:hover {
 
 input {
     padding: 4px;
-    margin: 4px;
-    margin-left: 15px;
-    width: 70%;
     height: 40px;
-    display: block;
-    margin: auto;
+}
+
+input#username {
     border: none;
     border-bottom: 1px solid #F9065F;
-    margin-bottom: 15px;
+    width: 70%;
 }
 
 /********************** side Blockparties ******************/
@@ -97,7 +95,6 @@ div.sidebar {
 }
 
 
-
 .list-blockparties {
     position: sticky;
     top: 30px;
@@ -111,15 +108,23 @@ div.blockparty {
     text-align: center;
     text-transform: uppercase;
     border-radius: 50px;
+    border: 2px solid;
+}
+
+.active-network {
+    background-color: aliceblue;
 }
 
 #add-network {
     color: #fff;
     font-size: 45px;
-    padding-top: 20px;
+    margin-top: 50px;
     text-align: center;
+    cursor: pointer;
+}
 
-
+#add-network:hover {
+    color: #F9065F;
 }
 
 .show-peers {
@@ -147,10 +152,38 @@ div.post-msg, div.say-hello {
     padding-bottom: 20px; 
     border-bottom: #E8E8E8;
     border-width: 1px;
+    display: inline;
 }
+
+input#post {
+    margin: 0 5px 0 10px;
+    min-width: 40%;
+    max-width: 80%;
+    font-size: 15px;
+    resize: vertical;
+    overflow: auto;
+}
+
+button#add-to-list {
+    max-width: 20%;
+}
+
+button#load-more {
+    margin-top: 15px;
+    display: block;
+}
+
 
 .content {
     padding: 0 20px;
+}
+
+.feed {
+    overflow: scroll;
+    padding: 5px;
+    padding-top: 15px;
+    width: 90%;
+    height: 700px;
 }
 
 .FeedEvent {
@@ -199,7 +232,15 @@ div.wrapper {
     background-color: #fff;
 }
 
-.logo {
-    height: 100px;
-    width: 100px;
+input#wizard-app-id {
+    border: none;
+    border-bottom: 1px solid #F9065F;
+    width: 70%;
+    display: block;
+    margin: 20px auto;
+}
+
+input#wizard-app-id > button {
+    margin: auto;
+    display: block;
 }
