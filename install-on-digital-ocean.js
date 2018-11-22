@@ -19,9 +19,11 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
   try {
     const res = await request(opts)
     const ip = await getIP(res.droplet)
-    return ip
+    console.log('ip', ip)
+    const key = await getKey(ip, wsPort)
+    return {ip, key}
   } catch (err) {
-    // console.log(err)
+    console.log(err)
   }
 
   async function getIP(droplet) {
@@ -35,6 +37,26 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
       auth: {bearer: apiToken},
       json: true
     })
+    await promisifiedSetTimeout(10 * 1000)
+    console.log('requesting ip')
     return await getIP(res2.droplet)
   }
+}
+
+async function getKey(ip, port) {
+  const url = `http://${ip}:${port}/whoareyou`
+  try {
+    console.log('making request', url)
+    const key = await request(url)
+    return key
+  } catch (err) {
+    await promisifiedSetTimeout(20 * 1000)
+    return getKey(ip, port)
+  }
+}
+
+function promisifiedSetTimeout(ms) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms)
+  })
 }

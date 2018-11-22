@@ -48,7 +48,7 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   injectedConfig.remote = newSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
-  const remoteIp = await installOnDigitalOcean({
+  const ipAndKey = await installOnDigitalOcean({
     apiToken,
     name: slugifiedId,
     region: 'nyc3',
@@ -58,4 +58,5 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
     wsPort,
     userKey: keys.id
   })
+  console.log('ipandkey', ipAndKey)
 }

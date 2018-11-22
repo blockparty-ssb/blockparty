@@ -12,7 +12,7 @@ module.exports = (appName, appId, port, wsPort, userKey) => {
 cd ~
 
 #
-# install docker
+# install docker and node
 #
 sudo apt update
 sudo apt install -y curl dnsutils apt-transport-https ca-certificates software-properties-common
