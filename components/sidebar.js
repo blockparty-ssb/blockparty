@@ -8,18 +8,24 @@ module.exports = function (state, emit) {
   return div('.blockparties',
     div('.list-blockparties',
       appIds.map((id, i) => {
+        var isActive = id === state.activeApp
         const displayId = id.slice(0, 2)
-        var blockpartyClass = '.blockparty'
-        return div(blockpartyClass, displayId, {
+        const currentStyle = {}
+        const color = colors[i % colors.length]
+        if (isActive) {
+          currentStyle['background-color']= color
+          currentStyle.color = '#fff'
+          currentStyle.border = '1px solid' + color
+        } else {
+          currentStyle.color = color
+        }
+        return div('.blockparty', displayId, {
           onclick: () => {
             state.activeApp = id
             state.wizardActive = false
-            // blockpartyClass = '.active-network' not working this way
             emit('render')
           },
-          style: {
-            color: colors[i % colors.length]
-          }
+          style: currentStyle
         }
         )
       })
