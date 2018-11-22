@@ -1,5 +1,5 @@
 'use strict'
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, shell } = require('electron')
 const h = require('hyperscript')
 const { div, button, img, p, h2, section } =
   require('hyperscript-helpers')(h)
@@ -21,7 +21,12 @@ module.exports = function (state, emit) {
     ),
     hasAccount: div(labels.haveAccount,
       button(labels.accountYes, { id: '1', onclick: () => goTo('apiKey')}),
-      button(labels.accountNo)
+      button(labels.accountNo), { id: 'no-account', onclick: () => goTo('getAccount')}
+    ),
+    getAccount: div(
+      p(labels.getDOAccount),
+      button(labels.goToDO, { id: 'make-account', onclick: () => shell.openExternal(labels.dOURL)}),
+      button(labels.madeAccount, { id: 'made-account', onclick: () => goTo('apiKey')})
     ),
     apiKey: div(labels.giveApiKey,
       textField({id: 'wizard-api-key'}),
