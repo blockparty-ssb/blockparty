@@ -3,6 +3,7 @@ const slugify = require('slugify')
 const path = require('path')
 const crypto = require('crypto')
 const ssbKeys = require('ssb-keys')
+const client = require('ssb-client')
 const setUpNetworkLocally = require('./set-up-locally')
 const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
@@ -48,7 +49,7 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   injectedConfig.remote = newSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
-  const ipAndKey = await installOnDigitalOcean({
+  const {ip, key} = await installOnDigitalOcean({
     apiToken,
     name: slugifiedId,
     region: 'nyc3',
@@ -58,5 +59,19 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
     wsPort,
     userKey: keys.id
   })
-  console.log('ipandkey', ipAndKey)
+
+  // TODO have sbot-whoareyou return the whole address so we don't have to fiddle
+  // with the formatting
+  const formatted = key.replace('@', '').replace('.ed25519', '')
+  const pubConnectionConfig = Object.assign(injectedConfig, {
+    remote: `net:${ip}:${port}~shs:${formatted}`
+  })
+
+  client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
+    if (err) return console.log(err)
+    console.log(pubSbot.whoami((err, data) => {
+      console.log(err)
+      console.log(data)
+    }))
+  })
 }
