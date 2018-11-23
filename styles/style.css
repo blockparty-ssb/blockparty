@@ -33,7 +33,26 @@ button {
 
 button:hover {
     background-color: #F9065F;
-    border: none;
+    color: #fff;
+}
+
+button.button-cancel {
+    border-color: #B9BCC1;
+    color: #B9BCC1;
+}
+
+button.button-cancel:hover {
+    background-color: #B9BCC1;
+    color: #fff;
+}
+
+button.button-continue {
+    border-color: #27A83F;
+    color: #27A83F;
+}
+
+button.button-continue:hover {
+    background-color: #27A83F;
     color: #fff;
 }
 
@@ -206,7 +225,7 @@ li {
 
 /***************wizard******************/
 
-.enter-name-page {
+.wizard-page {
     position: fixed;
     background: url('img/frame.png');
     background-size: cover;
@@ -225,14 +244,17 @@ div.wrapper {
     padding: 4px;
     display: block;
     margin: 4px;
-    margin-top: 15%;
     margin-left: 15px;
     width: 70%;
-    height: 50%;
     background-color: #fff;
 }
 
-input#wizard-app-id {
+.box {
+    margin-top: 30px;
+    padding: 25px;
+}
+
+input#wizard-app-id, input#wizard-api-key {
     border: none;
     border-bottom: 1px solid #F9065F;
     width: 70%;
