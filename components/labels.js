@@ -14,6 +14,8 @@ module.exports = {
     cancel: 'Cancel',
     goToDO: 'Go To Digital Ocean',
     dOURL: 'https://www.digitalocean.com/',
-    madeAccount: 'I am logged in Digital Ocean now'
+    madeAccount: 'I am logged in Digital Ocean now',
+    paintWhileWaiting: 'Paint a nice picture, while waiting...',
+    takeSomeTime: 'The procedure of setting up your new blockparty will take about 3 minutes. Enjoy yourself while waiting and paint a little.'
   }
 }

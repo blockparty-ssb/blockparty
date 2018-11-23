@@ -60,8 +60,16 @@ module.exports = function (state, emit) {
             appName: state.wizard.appId,
             apiToken: state.wizard.apiKey
           })
+          goTo('wait')
         }}),
-        button('.button-cancel', labels.cancel)
+        button('.button-cancel', labels.cancel), {onclick: () => {
+        }}
+      )
+    ),
+    wait: section('.wizard-page',
+      div('.wrapper',
+        h2(labels.paintWhileWaiting),
+        p(labels.takeSomeTime)
       )
     )
   }
