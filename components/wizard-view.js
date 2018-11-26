@@ -69,9 +69,14 @@ module.exports = function (state, emit) {
 
   function makeCancelButton() {
     return button('.button-cancel', labels.cancel, {onclick: () => {
-      goTo('enterName')
       delete state.wizard.appId
       delete state.wizard.apiKey
+      if (state.apps) {
+        goTo('enterName')
+      } else {
+        state.wizardActive = false
+        emit('render')
+      }
     }})
   }
 
