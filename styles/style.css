@@ -140,6 +140,9 @@ div.blockparty {
     margin-top: 50px;
     text-align: center;
     cursor: pointer;
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
 }
 
 #add-network:hover {
