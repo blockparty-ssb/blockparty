@@ -69,9 +69,17 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
 
   client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
     if (err) return console.log(err)
-    console.log(pubSbot.whoami((err, data) => {
-      console.log(err)
-      console.log(data)
-    }))
+
+    pubSbot.publish({
+      type: 'contact',
+      contact: keys.id,
+      following: true
+    }, (err, msg) => {
+      if (err) {
+        return console.log(err)
+      } else {
+        console.log('juhuuuu', msg)
+      }
+    })
   })
 }
