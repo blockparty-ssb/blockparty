@@ -7,9 +7,16 @@ const textField = require('./input-field')
 const labels = require('./labels').wizard
 
 module.exports = function (state, emit) {
+  const cancelButton = button('.button-cancel', labels.cancel, {onclick: () => {
+    goTo('enterName')
+    delete state.wizard.appId
+    delete state.wizard.apiKey
+  }})
+  console.log(cancelButton)
   const activePage = state.wizard.activePage || 'enterName'
   const wizardPages = {
     enterName: section('.wizard-page',
+      cancelButton,
       img('.logo', `src='styles/img/logo.png'`),
       div('.wrapper',
         h2(labels.enterAppId),
@@ -34,22 +41,11 @@ module.exports = function (state, emit) {
           button('.button-continue', labels.continue, {id: '2', onclick: () => {
             state.wizard.apiKey = document.getElementById('wizard-api-key').value
             goTo('confirmation')
-          }})
+          }}),
+          cancelButton
         ),
       ),
     ),
-    // getAccount: div(
-    //   p(labels.getDOAccount),
-    //   button(labels.goToDO, { id: 'make-account', onclick: () => shell.openExternal(labels.dOURL)}),
-    //   button(labels.madeAccount, { id: 'made-account', onclick: () => goTo('apiKey')})
-    // ),
-    // apiKey: div(labels.giveApiKey,
-    //   textField({id: 'wizard-api-key'}),
-    //   button(labels.continue, {id: '2', onclick: () => {
-    //     state.wizard.apiKey = document.getElementById('wizard-api-key').value
-    //     goTo('confirmation')
-    //   }})
-    // ),
     confirmation: section('.wizard-page',
       div('.wrapper',
         h2(labels.confirmation),
@@ -62,8 +58,7 @@ module.exports = function (state, emit) {
           })
           goTo('wait')
         }}),
-        button('.button-cancel', labels.cancel), {onclick: () => {
-        }}
+        cancelButton
       )
     ),
     wait: section('.wizard-page',
@@ -82,3 +77,4 @@ module.exports = function (state, emit) {
   const currentWizardPage = wizardPages[activePage]
   return div('#wizard-view', currentWizardPage)
 }
+
