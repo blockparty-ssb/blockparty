@@ -7,16 +7,9 @@ const textField = require('./input-field')
 const labels = require('./labels').wizard
 
 module.exports = function (state, emit) {
-  const cancelButton = button('.button-cancel', labels.cancel, {onclick: () => {
-    goTo('enterName')
-    delete state.wizard.appId
-    delete state.wizard.apiKey
-  }})
-  console.log(cancelButton)
   const activePage = state.wizard.activePage || 'enterName'
   const wizardPages = {
     enterName: section('.wizard-page',
-      cancelButton,
       img('.logo', `src='styles/img/logo.png'`),
       div('.wrapper',
         h2(labels.enterAppId),
@@ -42,7 +35,7 @@ module.exports = function (state, emit) {
             state.wizard.apiKey = document.getElementById('wizard-api-key').value
             goTo('confirmation')
           }}),
-          cancelButton
+          makeCancelButton()
         ),
       ),
     ),
@@ -58,13 +51,13 @@ module.exports = function (state, emit) {
           })
           goTo('wait')
         }}),
-        cancelButton
+        makeCancelButton()
       )
     ),
     wait: section('.wizard-page',
       div('.wrapper',
         h2(labels.paintWhileWaiting),
-        p(labels.takeSomeTime)
+        p(labels.takeSomeTime),
       )
     )
   }
@@ -72,6 +65,14 @@ module.exports = function (state, emit) {
   function goTo(pageName) {
     state.wizard.activePage = pageName
     emit('render')
+  }
+
+  function makeCancelButton() {
+    return button('.button-cancel', labels.cancel, {onclick: () => {
+      goTo('enterName')
+      delete state.wizard.appId
+      delete state.wizard.apiKey
+    }})
   }
 
   const currentWizardPage = wizardPages[activePage]
