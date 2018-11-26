@@ -69,14 +69,11 @@ input#username {
 
 /********************** side Blockparties ******************/
 
-.MainWindow, #wizard-view {
-    width: 100%;
-    left: 79px;
-    position: fixed;
-    height: 100%;
+.SplitMainView {
+    display: flex;
 }
 
-.SplitMainView {
+.SplitWindow {
     display: flex;
 }
 
@@ -91,9 +88,8 @@ div.blockparties {
     color: #FFF;
     padding-left: 7px;
     padding-right: 7px;
-    height: 100%;
+    min-height: 100%;
     width: 65px;
-    position: fixed;
 }
 
 .show-blockparty {
@@ -115,7 +111,6 @@ div.sidebar {
 
 
 .list-blockparties {
-    position: sticky;
     top: 30px;
     padding: 0px;
 }
@@ -140,6 +135,9 @@ div.blockparty {
     margin-top: 50px;
     text-align: center;
     cursor: pointer;
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
 }
 
 #add-network:hover {
