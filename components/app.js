@@ -31,7 +31,7 @@ module.exports = (state) => {
       if (af) return body(
         div('.SplitWindow', [
           makeSidebar(state),
-          when(computed([state.wizardActive], wa => wa),
+          when(state.wizardActive,
             makeWizardView(state),
             makeAppView(state)
           )
