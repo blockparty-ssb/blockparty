@@ -1,46 +1,46 @@
 'use strict'
-const h = require('hyperscript')
-const { div, ul, li, button, h4, h2 } =
-  require('hyperscript-helpers')(h)
-const textField = require('./input-field')
+const { div, ul, li, button, h4, h2, input } =
+  require('../html-helpers')
 
-module.exports = function (state, emit) {
-  const currentApp = state.apps[state.activeApp]
+module.exports = function (state) {
+  const currentApp = state.apps.get(state.activeApp())
   return div('.MainWindow',
     div('.SplitMainView',
       div('.sidebar',
         div('.show-blockparty',
           h2(state.activeApp)),
-        div('.show-peers',
+        div('.show-peers', [
           h4('Online peers:'),
           ul(currentApp.peers.map(peer => {
             return div('.list-of-peers',
-              li(peer.displayName,
-                button({ onclick: () => {
+              li(peer.displayName, [
+                button({ 'ev-click': () => {
                   currentApp.server.publish({
                     type: 'contact',
                     contact: peer.key,
                     following: true
                   }, err => console.log(err))
                 }}, 'Follow'),
-                button({ onclick: () => {
+                button({ 'ev-click': () => {
                   currentApp.server.publish({
                     type: 'contact',
                     contact: peer.key,
                     following: false
                   }, err => console.log(err))
                 }}, 'Unfollow')
-              )
+              ])
             )
           }))
+          
+        ])
         ),
         div('.username',
           h4('You are:'),
           ul(currentApp.userNames.map(name => li(name))),
-          textField({id: "username"}),
+          input({id: "username"}),
           button('Add username', {
             id: 'add-username',
-            onclick: () => {
+            'ev-click': () => {
               const textField = document.getElementById('username')
               currentApp.server.publish({
                 type: 'about',
@@ -54,10 +54,10 @@ module.exports = function (state, emit) {
       ),
       div('.main',
         div('.post-msg',
-          textField({id: "post", name: "your message", placeholder: 'Write a message in ' + state.activeApp }),
+          input({id: "post", name: "your message", placeholder: 'Write a message in ' + state.activeApp }),
           button( 'send', {
             id: 'add-to-list',
-            onclick: () => {
+            'ev-click': () => {
               const textField = document.getElementById('post')
               currentApp.server.publish({
                 type: 'post',
@@ -78,8 +78,8 @@ module.exports = function (state, emit) {
           })
         ),
         button('Load more', {
-          id: 'load-more',
-          onclick: () => emit('get-messages', state.activeApp)
+          id: 'load-more'
+          // 'ev-click': () => emit('get-messages', state.activeApp)
         })
       )
     )

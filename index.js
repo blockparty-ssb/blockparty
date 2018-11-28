@@ -2,39 +2,36 @@
 
 const { ipcRenderer } = require('electron')
 const connection = require('ssb-client')
-const choo = require('choo')
 const pull = require('pull-stream')
 const paraMap = require('pull-paramap')
+const mutantStruct = require('mutant/struct')
+const mutantDict = require('mutant/dict')
 const appView = require('./components/app')
 
 const batchSize = 100
 
-// choo app
-const app = choo()
-app.use(waitForConfig)
-app.route('/', appView)
-app.mount('body')
+const state = mutantStruct({
+  wizard: {},
+  wizardActive: false,
+  activeApp: null,
+  noApps: false,
+  apps: mutantDict({})
+})
 
-window.onerror = function() {}
+waitForConfig(state)
 
-function waitForConfig(state, emitter) {
-  // TODO move state.wizard?
-  state.wizard = {}
-
-  ipcRenderer.on('no-apps-found', () => {
-    state.noApps = true
-    emitter.emit('render')
-  })
-
+function waitForConfig(state) {
+  ipcRenderer.on('no-apps-found', () => state.noApps.set(true))
   ipcRenderer.on('initial-active', (event, appName) => {
-    state.activeApp = appName
+    state.activeApp.set(appName)
   })
 
   ipcRenderer.on('ssb-config', (event, config) => {
+    console.log('got config')
     addAppToState(state, config.appName)
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
-      const app = state.apps[config.appName]
+      const app = state.apps.get(config.appName)
       app.server = server
       app.ownId = config.keys.id
       setInterval(function () {
@@ -44,37 +41,30 @@ function waitForConfig(state, emitter) {
             console.log(err)
             return
           }
-          let peersWithDisplayName = 0
           app.peers = peers
           peers.forEach(peer => {
             getDisplayNameForUserId(peer.key, server, (err, name) => {
               peer.displayName = name
-              peersWithDisplayName++
-              if (peersWithDisplayName === peers.length ) {
-                emitter.emit('render')
-              }
             })
           })
         })
       }, 5000)
-      setUpMessageStream(state, emitter, config.appName)
-      getUserNames(state, emitter, config.appName)
-      emitter.emit('render')
+      setUpMessageStream(state, config.appName)
+      getUserNames(state, config.appName)
     })
   })
 }
 
 function addAppToState(state, appId) {
-  state.apps = state.apps || {}
-  state.apps[appId] = {
+  state.apps.put(appId, {
     messages: [],
     peers: [],
     userNames: []
-  }
+  })
 }
 
-function setUpMessageStream(state, emitter, appName) {
-  const getResultFromDatabase = state.apps[appName].server.query.read
+function setUpMessageStream(state, appName) {
+  const getResultFromDatabase = state.apps.get(appName).server.query.read
   pull(
     getResultFromDatabase({
       live: true,
@@ -120,23 +110,21 @@ function setUpMessageStream(state, emitter, appName) {
       )
     }, batchSize),
     read => {
-      getBatchOfMessages(state.apps[appName].messages)
-      emitter.on('get-messages', targetApp => {
-        if (targetApp === appName) {
-          getBatchOfMessages(state.apps[appName].messages)
-        }
-      })
+      getBatchOfMessages(state.apps.get(appName).messages)
+      // emitter.on('get-messages', targetApp => {
+      //   if (targetApp === appName) {
+      //     getBatchOfMessages(state.apps.get(appName].messages)
+      //   }
+      // })
 
       function getBatchOfMessages(messages) {
         // TODO actually use batching again
-        let i = 0
         read(null, function next(end, msg) {
-          if (end === true) return emitter.emit('render')
+          if (end === true) return
           if (end) throw end
           if (msg.value) {
             messages.unshift(msg)
           }
-          emitter.emit('render')
           read(null, next)
         })
       }
@@ -144,8 +132,8 @@ function setUpMessageStream(state, emitter, appName) {
   )
 }
 
-function getUserNames(state, emitter, appName) {
-  const app = state.apps[appName]
+function getUserNames(state, appName) {
+  const app = state.apps.get(appName)
   pull(
     app.server.query.read({
       live: true,
@@ -159,7 +147,6 @@ function getUserNames(state, emitter, appName) {
     pull.drain(msg => {
       if (!msg.value) return
       app.userNames.unshift(msg.value.content.name)
-      emitter.emit('render')
     })
   )
 }
@@ -192,3 +179,6 @@ function getDisplayNameForUserId(userId, server, cb) {
     pull.drain(res => cb(null, res.name))
   )
 }
+
+const appMarkup = appView(state)
+document.body.appendChild(appMarkup)

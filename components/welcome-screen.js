@@ -1,12 +1,10 @@
 'use strict'
-const h = require('hyperscript')
-const { body, button } = require('hyperscript-helpers')(h)
+const { body, button } = require('../html-helpers')
 
-module.exports = (state, emit) => {
+module.exports = (state) => {
   return body('welcome!',
-    button('create a network!', {onclick: () => {
+    button({'ev-click': () => {
       state.wizardActive = true
-      emit('render')
-    }})
+    }}, 'create a network!')
   )
 }

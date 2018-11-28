@@ -1,5 +1,4 @@
 'use strict'
-const h = require('hyperscript')
-const { body } = require('hyperscript-helpers')(h)
+const { body } = require('../html-helpers')
 
 module.exports = () => body('loading...')
