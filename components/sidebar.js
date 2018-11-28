@@ -1,7 +1,7 @@
 'use strict'
 const { div } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
-const computed = require('mutant/computed')
+const map = require('mutant/map')
 
 module.exports = function (state) {
   console.log('runs')
@@ -13,27 +13,26 @@ module.exports = function (state) {
   const keyObs = mutantKeys(state.apps)
   return div('.blockparties', [
     div('.list-blockparties', [
-      computed([keyObs], appIds => {
-        return appIds.map((id, i) => {
-          var isActive = id === state.activeApp()
-          const displayId = id.slice(0, 2)
-          const currentStyle = {}
-          const color = colors[i % colors.length]
-          if (isActive && !state.wizardActive()) {
-            currentStyle['background-color']= color
-            currentStyle.color = '#fff'
-            currentStyle.border = '1px solid' + color
-          } else {
-            currentStyle.color = color
-          }
-          return div('.blockparty', {
-            'ev-click': () => {
-              state.activeApp.set(id)
-              state.wizardActive.set(false)
-            },
-            style: currentStyle
-          }, displayId)
-        })
+      map(keyObs, id => {
+        const i = keyObs().indexOf(id)
+        var isActive = id === state.activeApp()
+        const displayId = id.slice(0, 2)
+        const currentStyle = {}
+        const color = colors[i % colors.length]
+        if (isActive && !state.wizardActive()) {
+          currentStyle['background-color']= color
+          currentStyle.color = '#fff'
+          currentStyle.border = '1px solid' + color
+        } else {
+          currentStyle.color = color
+        }
+        return div('.blockparty', {
+          'ev-click': () => {
+            state.activeApp.set(id)
+            state.wizardActive.set(false)
+          },
+          style: currentStyle
+        }, displayId)
       })
     ]),
     div('#add-network', {
