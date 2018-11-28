@@ -27,7 +27,6 @@ function waitForConfig(state) {
   })
 
   ipcRenderer.on('ssb-config', (event, config) => {
-    console.log('got config')
     addAppToState(state, config.appName)
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)

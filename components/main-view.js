@@ -5,10 +5,11 @@ const { div, ul, li, button, h4, h2, input } =
 module.exports = function (state) {
   const currentApp = state.apps.get(state.activeApp())
   return div('.MainWindow',
-    div('.SplitMainView',
-      div('.sidebar',
+    div('.SplitMainView', [
+      div('.sidebar', [
         div('.show-blockparty',
-          h2(state.activeApp)),
+          h2(state.activeApp)
+        ),
         div('.show-peers', [
           h4('Online peers:'),
           ul(currentApp.peers.map(peer => {
@@ -31,14 +32,12 @@ module.exports = function (state) {
               ])
             )
           }))
-          
-        ])
-        ),
-        div('.username',
+        ]),
+        div('.username', [
           h4('You are:'),
           ul(currentApp.userNames.map(name => li(name))),
           input({id: "username"}),
-          button('Add username', {
+          button({
             id: 'add-username',
             'ev-click': () => {
               const textField = document.getElementById('username')
@@ -49,13 +48,13 @@ module.exports = function (state) {
               }, err => console.log(err))
               textField.value = ''
             }
-          })
-        )
-      ),
-      div('.main',
-        div('.post-msg',
-          input({id: "post", name: "your message", placeholder: 'Write a message in ' + state.activeApp }),
-          button( 'send', {
+          }, 'Add username')
+        ])
+      ]),
+      div('.main', [
+        div('.post-msg', [
+          input({id: "post", attributes: {name: "your message", placeholder: 'Write a message in ' + state.activeApp() }}),
+          button({
             id: 'add-to-list',
             'ev-click': () => {
               const textField = document.getElementById('post')
@@ -65,8 +64,8 @@ module.exports = function (state) {
               }, err => console.log(err))
               textField.value = ''
             }
-          })
-        ),
+          }, 'send')
+        ]),
         div('.feed',
           currentApp.messages.map(msg => {
             const m = msg.value
@@ -77,11 +76,11 @@ module.exports = function (state) {
             }
           })
         ),
-        button('Load more', {
+        button({
           id: 'load-more'
           // 'ev-click': () => emit('get-messages', state.activeApp)
-        })
-      )
-    )
+        }, 'Load more')
+      ])
+    ])
   )
 }
