@@ -1,6 +1,7 @@
 'use strict'
 const { div } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
+const computed = require('mutant/computed')
 
 module.exports = function (state) {
   console.log('runs')
@@ -9,14 +10,11 @@ module.exports = function (state) {
   if (state.wizardActive()) {
     maybeActiveStyle['background-color'] = '#F9065F'
   }
-  console.log()
-  console.log(mutantKeys(state.apps))
   const keyObs = mutantKeys(state.apps)
   return div('.blockparties', [
     div('.list-blockparties', [
-      keyObs((appIds) => {
-        console.log(appIds)
-        appIds.map((id, i) => {
+      computed([keyObs], appIds => {
+        return appIds.map((id, i) => {
           var isActive = id === state.activeApp()
           const displayId = id.slice(0, 2)
           const currentStyle = {}
