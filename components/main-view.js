@@ -1,9 +1,12 @@
 'use strict'
 const { div, ul, li, button, h4, h2, input } =
   require('../html-helpers')
+const computed = require('mutant/computed')
 
 module.exports = function (state) {
   const currentApp = state.apps.get(state.activeApp())
+  const placeholderObs = computed([state.activeApp], activeApp => 'Write a message in ' + activeApp)
+
   return div('.MainWindow',
     div('.SplitMainView', [
       div('.sidebar', [
@@ -53,7 +56,7 @@ module.exports = function (state) {
       ]),
       div('.main', [
         div('.post-msg', [
-          input({id: "post", attributes: {name: "your message", placeholder: 'Write a message in ' + state.activeApp() }}),
+          input({id: "post", attributes: {name: "your message", placeholder: placeholderObs}}),
           button({
             id: 'add-to-list',
             'ev-click': () => {
