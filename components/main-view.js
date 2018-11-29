@@ -25,13 +25,11 @@ module.exports = function (state) {
             'ev-click': () => {
               console.log('click')
               const textfield = document.getElementById('username')
-              computed([state.activeApp], a => {
-                a.server.publish( {
-                  type: 'about',
-                  name: textfield.value,
-                  about: computed([state.activeApp], a => a.ownId)
-                }, err => console.log(err))
-              })
+              state.activeApp().server.publish( {
+                type: 'about',
+                name: textfield.value,
+                about: state.activeApp().ownId
+              }, err => console.log(err))
               textfield.value = ''
             }
           }, 'add username')
