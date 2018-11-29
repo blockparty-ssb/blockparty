@@ -1,7 +1,7 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
 const mutantValue = require('mutant/value')
-const { div, button, img, p, h2, h3, section, input } =
+const { div, button, img, p, form, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 
@@ -13,9 +13,13 @@ module.exports = function (state) {
       img('.logo', {attributes: {src: 'styles/img/logo.png'}}),
       div('.wrapper', [
         h2(labels.enterAppId),
-        input('#wizard-app-id'),
+        input('#wizard-app-id', {attributes: {required: true}}),
         button('.button-continue', {'ev-click': () => {
-          appIdObs.set(document.getElementById('wizard-app-id').value)
+          const wizardInput = document.getElementById('wizard-app-id').value
+          if (!wizardInput) {
+            return
+          }
+          appIdObs.set(wizardInput)
           pageObs.set(wizardPages.hasAccount)
         }}, labels.continue)
       ])
