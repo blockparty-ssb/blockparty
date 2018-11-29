@@ -137,34 +137,5 @@ function getUserNames(state, app) {
   )
 }
 
-function getDisplayNameForUserId(userId, server, cb) {
-  pull(
-    server.query.read({
-      reverse: true,
-      limit: 1,
-      query: [
-        {
-          $filter: {
-            value: {
-              author: userId,
-              content: {
-                type: 'about',
-                name: {$is: 'string'}
-              }
-            },
-            timestamp: { $gt: 0}
-          }
-        },
-        {
-          $map: {
-            name: ['value', 'content', 'name']
-          }
-        }
-      ]
-    }),
-    pull.drain(res => cb(null, res.name))
-  )
-}
-
 const appMarkup = appView(state)
 document.body.appendChild(appMarkup)
