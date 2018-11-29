@@ -14,7 +14,7 @@ const batchSize = 100
 const state = mutantStruct({
   wizard: {},
   wizardActive: false,
-  activeApp: null,
+  activeApp: {},
   noApps: false,
   apps: mutantDict({})
 })
@@ -22,13 +22,15 @@ const state = mutantStruct({
 waitForConfig(state)
 
 function waitForConfig(state) {
+  let isFirst = true
   ipcRenderer.on('no-apps-found', () => state.noApps.set(true))
-  ipcRenderer.on('initial-active', (event, appName) => {
-    state.activeApp.set(appName)
-  })
 
   ipcRenderer.on('ssb-config', (event, config) => {
     addAppToState(state, config.appName)
+    if (isFirst) {
+      state.activeApp.set(state.apps.get(config.appName))
+      isFirst = false
+    }
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
       const app = state.apps.get(config.appName)
@@ -59,7 +61,8 @@ function addAppToState(state, appId) {
   state.apps.put(appId, {
     messages: mutantArray(),
     peers: [],
-    userNames: []
+    userNames: [],
+    name: appId
   })
 }
 
@@ -123,7 +126,6 @@ function setUpMessageStream(state, appName) {
           if (end === true) return
           if (end) throw end
           if (msg.value) {
-            console.log(msg)
             messages.insert(msg, 0)
           }
           read(null, next)

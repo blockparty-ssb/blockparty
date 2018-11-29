@@ -21,8 +21,9 @@ module.exports = function (state) {
         const colorObs = mutantValue(color)
         const borderObs = mutantValue()
         const bgColorObs = mutantValue()
-        watch(state.activeApp, activeApp => {
-          const isActive = id === activeApp
+        state.activeApp(activeApp => {
+          console.log(activeApp)
+          const isActive = id === activeApp.name
           if (isActive && !state.wizardActive()) {
             bgColorObs.set(color)
             colorObs.set('#fff')
@@ -34,7 +35,7 @@ module.exports = function (state) {
         })
         return div('.blockparty', {
           'ev-click': () => {
-            state.activeApp.set(id)
+            state.activeApp.set(state.apps.get(id))
             state.wizardActive.set(false)
           },
           style: {

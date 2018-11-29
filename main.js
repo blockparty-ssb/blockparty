@@ -25,7 +25,6 @@ function createWindow (ssbConfigs) {
       sendToWindow('no-apps-found')
       return
     }
-    sendToWindow('initial-active', ssbConfigs[0].appName)
     ssbConfigs.forEach(ssbConfig => {
       sendToWindow('ssb-config', ssbConfig)
     })

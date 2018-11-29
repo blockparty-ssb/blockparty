@@ -5,18 +5,18 @@ const computed = require('mutant/computed')
 const map = require('mutant/map')
 
 module.exports = function (state) {
-  const currentApp = state.apps.get(state.activeApp())
-  const placeholderObs = computed([state.activeApp], activeApp => 'Write a message in ' + activeApp)
+  const appNameObs = computed([state.activeApp], activeApp => activeApp.name)
+  const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
 
   return div('.MainWindow',
     div('.SplitMainView', [
       div('.sidebar', [
         div('.show-blockparty',
-          h2(state.activeApp)
+          h2(appNameObs)
         ),
         div('.show-peers', [
           h4('Online peers:'),
-          ul(currentApp.peers.map(peer => {
+          /* ul(currentApp.peers.map(peer => {
             return div('.list-of-peers',
               li(peer.displayName, [
                 button({ 'ev-click': () => {
@@ -35,11 +35,11 @@ module.exports = function (state) {
                 }}, 'Unfollow')
               ])
             )
-          }))
+          })) */
         ]),
         div('.username', [
           h4('You are:'),
-          ul(currentApp.userNames.map(name => li(name))),
+          /* ul(currentApp.userNames.map(name => li(name))),
           input({id: "username"}),
           button({
             id: 'add-username',
@@ -52,7 +52,7 @@ module.exports = function (state) {
               }, err => console.log(err))
               textField.value = ''
             }
-          }, 'Add username')
+          }, 'Add username') */
         ])
       ]),
       div('.main', [
@@ -62,16 +62,16 @@ module.exports = function (state) {
             id: 'add-to-list',
             'ev-click': () => {
               const textField = document.getElementById('post')
-              currentApp.server.publish({
+             /*  currentApp.server.publish({
                 type: 'post',
                 text: textField.value
-              }, err => console.log(err))
+              }, err => console.log(err)) */
               textField.value = ''
             }
           }, 'send')
         ]),
         div('.feed',
-          map(currentApp.messages, msg => {
+          map(state.activeApp.messages, msg => {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)
