@@ -2,10 +2,9 @@
 const { div } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
 const map = require('mutant/map')
-const computed = require('mutant/computed')
+const mutantValue = require('mutant/value')
 
 module.exports = function (state) {
-  console.log('runs')
   const colors = ['#F9065F', '#1DA0E1', '#27A83F', '#F9B405']
   let maybeActiveStyle = {}
   if (state.wizardActive()) {
@@ -17,25 +16,31 @@ module.exports = function (state) {
       map(keyObs, id => {
         const i = keyObs().indexOf(id)
         const displayId = id.slice(0, 2)
-        const currentStyleObs = computed([state.activeApp], activeApp => {
-          var isActive = id === activeApp
-          const currentStyle = {}
-          const color = colors[i % colors.length]
+        const color = colors[i % colors.length]
+        const colorObs = mutantValue(color)
+        const borderObs = mutantValue()
+        const bgColorObs = mutantValue()
+        state.activeApp(activeApp => {
+          const isActive = id === activeApp
           if (isActive && !state.wizardActive()) {
-            currentStyle['background-color']= color
-            currentStyle.color = '#fff'
-            currentStyle.border = '1px solid' + color
+            bgColorObs.set(color)
+            colorObs.set('#fff')
+            borderObs.set(color)
           } else {
-            currentStyle.color = color
+            colorObs.set(color)
+            bgColorObs.set('unset')
           }
-          return currentStyle
         })
         return div('.blockparty', {
           'ev-click': () => {
             state.activeApp.set(id)
             state.wizardActive.set(false)
           },
-          style: currentStyleObs
+          style: {
+            color: colorObs,
+            ['border-color']: borderObs,
+            ['background-color']: bgColorObs
+          }
         }, displayId)
       })
     ]),
