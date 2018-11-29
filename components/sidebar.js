@@ -3,6 +3,7 @@ const { div } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
 const map = require('mutant/map')
 const mutantValue = require('mutant/value')
+const watch = require('mutant/watch')
 
 module.exports = function (state) {
   const colors = ['#F9065F', '#1DA0E1', '#27A83F', '#F9B405']
@@ -20,7 +21,7 @@ module.exports = function (state) {
         const colorObs = mutantValue(color)
         const borderObs = mutantValue()
         const bgColorObs = mutantValue()
-        state.activeApp(activeApp => {
+        watch(state.activeApp, activeApp => {
           const isActive = id === activeApp
           if (isActive && !state.wizardActive()) {
             bgColorObs.set(color)
