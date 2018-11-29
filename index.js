@@ -12,7 +12,7 @@ const mutantArray = require('mutant/array')
 const batchSize = 100
 
 const state = mutantStruct({
-  wizard: {},
+  wizard: mutantDict(),
   wizardActive: false,
   activeApp: {},
   noApps: false,

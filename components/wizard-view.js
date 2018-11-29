@@ -1,16 +1,14 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
-const computed = require('mutant/computed')
+const mutantValue = require('mutant/value')
 const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 
 
 module.exports = function (state) {
-  const currentWizardPageObs = computed([state.wizard.activePage], activePageName => {
-    if (!activePageName) return wizardPages.enterName
-    return wizardPages[activePageName]
-  })
+  const appIdObs = mutantValue()
+  const apiKeyObs = mutantValue()
   const wizardPages = {
     enterName: section('.wizard-page', [
       img('.logo', {attributes: {src: 'styles/img/logo.png'}}),
@@ -18,8 +16,8 @@ module.exports = function (state) {
         h2(labels.enterAppId),
         input('#wizard-app-id'),
         button('.button-continue', {'ev-click': () => {
-          state.wizard.appId = document.getElementById('wizard-app-id').value
-          goTo('hasAccount')
+          appIdObs.set(document.getElementById('wizard-app-id').value)
+          pageObs.set(wizardPages.hasAccount)
         }}, labels.continue)
       ])
     ]),
@@ -36,8 +34,8 @@ module.exports = function (state) {
           p(labels.giveApiKey),
           input({id: 'wizard-api-key'}),
           button('.button-continue', {'ev-click': () => {
-            state.wizard.apiKey = document.getElementById('wizard-api-key').value
-            goTo('confirmation')
+            apiKeyObs.set(document.getElementById('wizard-api-key').value)
+            pageObs.set(wizardPages.confirmation)
           }}, labels.continue),
           makeCancelButton()
         ])
@@ -46,14 +44,14 @@ module.exports = function (state) {
     confirmation: section('.wizard-page', [
       div('.wrapper', [
         h2(labels.confirmation),
-        p(state.wizard.appId),
-        p(state.wizard.apiKey),
+        p(appIdObs),
+        p(apiKeyObs),
         button('.button-continue', {'ev-click': () => {
           ipcRenderer.send('create-network', {
-            appName: state.wizard.appId,
-            apiToken: state.wizard.apiKey
+            appName: appIdObs(),
+            apiToken: apiKeyObs()
           })
-          goTo('wait')
+          pageObs.set(wizardPages.wait)
         }}, labels.yesCreate),
         makeCancelButton()
       ])
@@ -65,23 +63,20 @@ module.exports = function (state) {
       ])
     ])
   }
-
-  function goTo(pageName) {
-    state.wizard.activePage.set(pageName)
-  }
+  const pageObs = mutantValue(wizardPages.enterName)
 
   function makeCancelButton() {
     return button('.button-cancel', {'ev-click': () => {
       delete state.wizard.appId
       delete state.wizard.apiKey
       if (state.apps) {
-        goTo('enterName')
+        pageObs.set(wizardPages.enterName)
       } else {
         state.wizardActive = false
       }
     }}, labels.cancel)
   }
 
-  return div('#wizard-view', currentWizardPageObs)
+  return div('#wizard-view', pageObs)
 }
 
