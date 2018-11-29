@@ -15,29 +15,6 @@ module.exports = function (state) {
         div('.show-blockparty',
           h2(appNameObs)
         ),
-        div('.show-peers', [
-          h4('Online peers:'),
-          /* ul(currentApp.peers.map(peer => {
-            return div('.list-of-peers',
-              li(peer.displayName, [
-                button({ 'ev-click': () => {
-                  currentApp.server.publish({
-                    type: 'contact',
-                    contact: peer.key,
-                    following: true
-                  }, err => console.log(err))
-                }}, 'Follow'),
-                button({ 'ev-click': () => {
-                  currentApp.server.publish({
-                    type: 'contact',
-                    contact: peer.key,
-                    following: false
-                  }, err => console.log(err))
-                }}, 'Unfollow')
-              ])
-            )
-          })) */
-        ]),
         div('.username', [
           h4('You are:'),
           /* ul(currentApp.userNames.map(name => li(name))),
