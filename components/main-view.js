@@ -8,6 +8,7 @@ module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.name)
   const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
   const messagesObs = computed([state.activeApp], a => a.messages)
+  const userNamesObs = computed([state.activeApp], a => a.userNames)
 
   return div('.MainWindow',
     div('.SplitMainView', [
@@ -17,20 +18,20 @@ module.exports = function (state) {
         ),
         div('.username', [
           h4('You are:'),
-          /* ul(currentApp.userNames.map(name => li(name))),
+          ul(map(userNamesObs, name => li(name))),
           input({id: "username"}),
-          button({
-            id: 'add-username',
-            'ev-click': () => {
-              const textField = document.getElementById('username')
-              currentApp.server.publish({
-                type: 'about',
-                name: textField.value,
-                about: currentApp.ownId
-              }, err => console.log(err))
-              textField.value = ''
-            }
-          }, 'Add username') */
+          // button({
+          //   id: 'add-username',
+          //   'ev-click': () => {
+          //     const textfield = document.getelementbyid('username')
+          //     currentapp.server.publish({
+          //       type: 'about',
+          //       name: textfield.value,
+          //       about: currentapp.ownid
+          //     }, err => console.log(err))
+          //     textfield.value = ''
+          //   }
+          // }, 'add username')
         ])
       ]),
       div('.main', [
@@ -40,7 +41,7 @@ module.exports = function (state) {
             id: 'add-to-list',
             'ev-click': () => {
               const textField = document.getElementById('post')
-             /*  currentApp.server.publish({
+              /*  currentApp.server.publish({
                 type: 'post',
                 text: textField.value
               }, err => console.log(err)) */

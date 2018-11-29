@@ -27,32 +27,17 @@ function waitForConfig(state) {
 
   ipcRenderer.on('ssb-config', (event, config) => {
     addAppToState(state, config.appName)
+    const app = state.apps.get(config.appName)
     if (isFirst) {
-      state.activeApp.set(state.apps.get(config.appName))
+      state.activeApp.set(app)
       isFirst = false
     }
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
-      const app = state.apps.get(config.appName)
       app.server = server
       app.ownId = config.keys.id
-      setInterval(function () {
-        // TODO find out how to filter for local peers only
-        server.gossip.peers((err, peers) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          app.peers = peers
-          peers.forEach(peer => {
-            getDisplayNameForUserId(peer.key, server, (err, name) => {
-              peer.displayName = name
-            })
-          })
-        })
-      }, 5000)
-      setUpMessageStream(state, config.appName)
-      getUserNames(state, config.appName)
+      setUpMessageStream(state, app)
+      getUserNames(state, app)
     })
   })
 }
@@ -61,13 +46,13 @@ function addAppToState(state, appId) {
   state.apps.put(appId, {
     messages: mutantArray(),
     peers: [],
-    userNames: [],
+    userNames: mutantArray(),
     name: appId
   })
 }
 
-function setUpMessageStream(state, appName) {
-  const getResultFromDatabase = state.apps.get(appName).server.query.read
+function setUpMessageStream(state, app) {
+  const getResultFromDatabase = app.server.query.read
   pull(
     getResultFromDatabase({
       live: true,
@@ -113,7 +98,7 @@ function setUpMessageStream(state, appName) {
       )
     }, batchSize),
     read => {
-      getBatchOfMessages(state.apps.get(appName).messages)
+      getBatchOfMessages(app.messages)
       // emitter.on('get-messages', targetApp => {
       //   if (targetApp === appName) {
       //     getBatchOfMessages(state.apps.get(appName].messages)
@@ -135,8 +120,7 @@ function setUpMessageStream(state, appName) {
   )
 }
 
-function getUserNames(state, appName) {
-  const app = state.apps.get(appName)
+function getUserNames(state, app) {
   pull(
     app.server.query.read({
       live: true,
@@ -149,7 +133,7 @@ function getUserNames(state, appName) {
     }),
     pull.drain(msg => {
       if (!msg.value) return
-      app.userNames.unshift(msg.value.content.name)
+      app.userNames.insert(msg.value.content.name, 0)
     })
   )
 }
