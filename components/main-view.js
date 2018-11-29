@@ -7,6 +7,7 @@ const map = require('mutant/map')
 module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.name)
   const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
+  const messagesObs = computed([state.activeApp], a => a.messages)
 
   return div('.MainWindow',
     div('.SplitMainView', [
@@ -71,7 +72,7 @@ module.exports = function (state) {
           }, 'send')
         ]),
         div('.feed',
-          map(state.activeApp.messages, msg => {
+          map(messagesObs, msg => {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)

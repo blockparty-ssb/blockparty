@@ -22,7 +22,6 @@ module.exports = function (state) {
         const borderObs = mutantValue()
         const bgColorObs = mutantValue()
         state.activeApp(activeApp => {
-          console.log(activeApp)
           const isActive = id === activeApp.name
           if (isActive && !state.wizardActive()) {
             bgColorObs.set(color)
