@@ -25,7 +25,7 @@ module.exports = function (state) {
             'ev-click': () => {
               console.log('click')
               const textfield = document.getElementById('username')
-              state.activeApp().server.publish( {
+              state.activeApp().server.publish({
                 type: 'about',
                 name: textfield.value,
                 about: state.activeApp().ownId
@@ -42,10 +42,10 @@ module.exports = function (state) {
             id: 'add-to-list',
             'ev-click': () => {
               const textField = document.getElementById('post')
-              /*  currentApp.server.publish({
+              state.activeApp().server.publish({
                 type: 'post',
                 text: textField.value
-              }, err => console.log(err)) */
+              }, err => console.log(err))
               textField.value = ''
             }
           }, 'send')
