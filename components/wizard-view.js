@@ -1,11 +1,16 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
+const computed = require('mutant/computed')
 const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 
+
 module.exports = function (state) {
-  const activePage = state.wizard.activePage || 'enterName'
+  const currentWizardPageObs = computed([state.wizard.activePage], activePageName => {
+    if (!activePageName) return wizardPages.enterName
+    return wizardPages[activePageName]
+  })
   const wizardPages = {
     enterName: section('.wizard-page', [
       img('.logo', {attributes: {src: 'styles/img/logo.png'}}),
@@ -62,7 +67,7 @@ module.exports = function (state) {
   }
 
   function goTo(pageName) {
-    state.wizard.activePage = pageName
+    state.wizard.activePage.set(pageName)
   }
 
   function makeCancelButton() {
@@ -77,7 +82,6 @@ module.exports = function (state) {
     }}, labels.cancel)
   }
 
-  const currentWizardPage = wizardPages[activePage]
-  return div('#wizard-view', currentWizardPage)
+  return div('#wizard-view', currentWizardPageObs)
 }
 
