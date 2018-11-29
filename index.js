@@ -45,7 +45,6 @@ function waitForConfig(state) {
 function addAppToState(state, appId) {
   state.apps.put(appId, {
     messages: mutantArray(),
-    peers: [],
     userNames: mutantArray(),
     name: appId
   })
