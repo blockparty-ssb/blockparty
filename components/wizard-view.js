@@ -5,7 +5,6 @@ const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 
-
 module.exports = function (state) {
   const appIdObs = mutantValue()
   const apiKeyObs = mutantValue()

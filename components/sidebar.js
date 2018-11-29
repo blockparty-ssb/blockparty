@@ -3,6 +3,8 @@ const { div } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
 const map = require('mutant/map')
 const mutantValue = require('mutant/value')
+const computed = require('mutant/computed')
+
 
 module.exports = function (state) {
   const colors = ['#F9065F', '#1DA0E1', '#27A83F', '#F9B405']
@@ -22,7 +24,7 @@ module.exports = function (state) {
         const bgColorObs = mutantValue()
         state.activeApp(activeApp => {
           const isActive = id === activeApp.name
-          if (isActive && !state.wizardActive()) {
+          if (isActive) {
             bgColorObs.set(color)
             colorObs.set('#fff')
             borderObs.set(color)
@@ -45,9 +47,15 @@ module.exports = function (state) {
       })
     ]),
     div('#add-network', {
-      style: maybeActiveStyle,
+      style: {
+        ['background-color']: computed([state.wizardActive], wa => {
+          if (wa) return '#F9065F'
+          return 'unset'
+        })
+      },
       'ev-click': () => {
         state.wizardActive.set(true)
+        state.activeApp.set({})
       }}, '+')
   ])
 }
