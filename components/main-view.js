@@ -2,6 +2,7 @@
 const { div, ul, li, button, h4, h2, input } =
   require('../html-helpers')
 const computed = require('mutant/computed')
+const map = require('mutant/map')
 
 module.exports = function (state) {
   const currentApp = state.apps.get(state.activeApp())
@@ -70,7 +71,7 @@ module.exports = function (state) {
           }, 'send')
         ]),
         div('.feed',
-          currentApp.messages.map(msg => {
+          map(currentApp.messages, msg => {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)

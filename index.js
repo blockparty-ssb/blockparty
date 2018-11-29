@@ -7,6 +7,7 @@ const paraMap = require('pull-paramap')
 const mutantStruct = require('mutant/struct')
 const mutantDict = require('mutant/dict')
 const appView = require('./components/app')
+const mutantArray = require('mutant/array')
 
 const batchSize = 100
 
@@ -56,7 +57,7 @@ function waitForConfig(state) {
 
 function addAppToState(state, appId) {
   state.apps.put(appId, {
-    messages: [],
+    messages: mutantArray(),
     peers: [],
     userNames: []
   })
@@ -122,7 +123,8 @@ function setUpMessageStream(state, appName) {
           if (end === true) return
           if (end) throw end
           if (msg.value) {
-            messages.unshift(msg)
+            console.log(msg)
+            messages.insert(msg, 0)
           }
           read(null, next)
         })
