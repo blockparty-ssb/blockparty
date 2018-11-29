@@ -20,18 +20,21 @@ module.exports = function (state) {
           h4('You are:'),
           ul(map(userNamesObs, name => li(name))),
           input({id: "username"}),
-          // button({
-          //   id: 'add-username',
-          //   'ev-click': () => {
-          //     const textfield = document.getelementbyid('username')
-          //     currentapp.server.publish({
-          //       type: 'about',
-          //       name: textfield.value,
-          //       about: currentapp.ownid
-          //     }, err => console.log(err))
-          //     textfield.value = ''
-          //   }
-          // }, 'add username')
+          button({
+            id: 'add-username',
+            'ev-click': () => {
+              console.log('click')
+              const textfield = document.getElementById('username')
+              computed([state.activeApp], a => {
+                a.server.publish( {
+                  type: 'about',
+                  name: textfield.value,
+                  about: computed([state.activeApp], a => a.ownId)
+                }, err => console.log(err))
+              })
+              textfield.value = ''
+            }
+          }, 'add username')
         ])
       ]),
       div('.main', [
