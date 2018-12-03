@@ -15,11 +15,12 @@ const blockpartyDir = path.join(os.homedir(), '.blockparty')
 let mainWindow
 
 function createWindow (ssbConfigs) {
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow()
 
   mainWindow.loadFile('index.html')
 
   mainWindow.webContents.openDevTools()
+  mainWindow.maximize()
   mainWindow.webContents.on('dom-ready', () => {
     if (!ssbConfigs.length) {
       sendToWindow('no-apps-found')
