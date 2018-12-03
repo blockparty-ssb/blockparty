@@ -43,10 +43,10 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   injectedConfig.keys = keys
 
-  const newSbot = startSbot(injectedConfig)
+  const ownSbot = startSbot(injectedConfig)
 
-  injectedConfig.manifest = newSbot.getManifest()
-  injectedConfig.remote = newSbot.getAddress()
+  injectedConfig.manifest = ownSbot.getManifest()
+  injectedConfig.remote = ownSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
   const {ip, key} = await installOnDigitalOcean({
@@ -63,8 +63,9 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
   // TODO have sbot-whoareyou return the whole address so we don't have to fiddle
   // with the formatting
   const formatted = key.replace('@', '').replace('.ed25519', '')
+  const pubAddress = `net:${ip}:${port}~shs:${formatted}`
   const pubConnectionConfig = Object.assign(injectedConfig, {
-    remote: `net:${ip}:${port}~shs:${formatted}`
+    remote: pubAddress
   })
 
   client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
@@ -74,11 +75,23 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
       type: 'contact',
       contact: keys.id,
       following: true
-    }, (err, msg) => {
+    }, (err) => {
       if (err) {
         return console.log(err)
       } else {
-        console.log('juhuuuu', msg)
+        console.log('pub now follows you')
+        ownSbot.publish({
+          type: 'contact',
+          contact: key,
+          following: true
+        }, (err) => {
+          if (err) return console.log(err)
+          console.log('following pub back')
+          ownSbot.gossip.add(pubAddress, (err) => {
+            if (err) return console.log(err)
+            console.log('pub added to gossip.json')
+          })
+        })
       }
     })
   })
