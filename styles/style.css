@@ -63,22 +63,26 @@ input {
 
 input#username {
     border: none;
+    background-color: transparent;
     border-bottom: 1px solid #F9065F;
-    width: 70%;
 }
 
 /********************** side Blockparties ******************/
 
 .SplitMainView {
     display: flex;
+    width: 100%;
 }
 
 .SplitWindow {
     display: flex;
 }
 
+.MainWindow {
+    width: 100%;
+}
+
 div.main {
-    display: block;
     flex: 8;
     height: 100%;
 }
@@ -189,7 +193,6 @@ button#load-more {
     overflow: scroll;
     padding: 5px;
     padding-top: 15px;
-    width: 90%;
     height: 700px;
 }
 
