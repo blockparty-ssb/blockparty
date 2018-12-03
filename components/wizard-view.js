@@ -1,7 +1,7 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
 const mutantValue = require('mutant/value')
-const { div, button, img, p, form, h2, h3, section, input } =
+const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 
