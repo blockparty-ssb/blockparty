@@ -4,7 +4,8 @@ const { body, button } = require('../html-helpers')
 module.exports = (state) => {
   return body('welcome!',
     button({'ev-click': () => {
-      state.wizardActive = true
+      console.log('click')
+      state.wizardActive.set(true)
     }}, 'create a network!')
   )
 }
