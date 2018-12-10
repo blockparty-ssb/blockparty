@@ -9,7 +9,7 @@ const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
 const injectConfig = require('ssb-config/inject')
 
-module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
+module.exports = async (appName, apiToken, blockpartyDir, mainWindow, whenDone) => {
   const slugifiedId = slugify(appName)
   const shsKey = crypto.randomBytes(32).toString('base64')
   const port = Math.floor(50000 + 15000 * Math.random())
@@ -88,7 +88,8 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow) => {
           if (err) return console.log(err)
           console.log('following pub back')
           ownSbot.gossip.add(pubAddress, (err) => {
-            if (err) return console.log(err)
+            if (err) return whenDone(err)
+            whenDone()
             console.log('pub added to gossip.json')
           })
         })

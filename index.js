@@ -137,5 +137,10 @@ function getUserNames(state, app) {
   )
 }
 
+ipcRenderer.on('network-created', (event, appName) => {
+  state.activeApp.set(state.apps.get(appName))
+  state.wizardActive.set(false)
+})
+
 const appMarkup = appView(state)
 document.body.appendChild(appMarkup)

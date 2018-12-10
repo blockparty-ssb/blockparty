@@ -77,7 +77,10 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', async (event, {appName, apiToken}) => {
-    createNetwork(appName, apiToken, blockpartyDir, mainWindow)
+    createNetwork(appName, apiToken, blockpartyDir, mainWindow, (err) => {
+      console.log("callback called")
+      event.sender.send('network-created', appName)
+    })
   })
 })
 
