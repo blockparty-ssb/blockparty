@@ -6,6 +6,7 @@ const createSbot = scuttleBot
   .use(require('scuttlebot/plugins/local'))
   .use(require('scuttlebot/plugins/logging'))
   .use(require('scuttlebot/plugins/replicate'))
+  .use(require('scuttlebot/plugins/invite'))
   .use(require('ssb-query'))
   .use(require('ssb-ws'))
   .use(require('ssb-friends'))

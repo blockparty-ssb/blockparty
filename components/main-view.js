@@ -33,6 +33,17 @@ module.exports = function (state) {
               textfield.value = ''
             }
           }, 'add username')
+        ]),
+        div('.username', [
+          button({
+            id: 'invite',
+            'ev-click': () => {
+              state.activeApp().server.invite.create(1, (err, code) => {
+                console.log(err)
+                console.log(code)
+              })
+            }
+          }, 'create an invite code')
         ])
       ]),
       div('.main', [
