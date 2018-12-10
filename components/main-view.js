@@ -10,7 +10,7 @@ module.exports = function (state) {
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
 
-  return div('.MainWindow',
+  return div('.MainWindow', [
     div('.SplitMainView', [
       div('.sidebar', [
         div('.show-blockparty',
@@ -41,6 +41,7 @@ module.exports = function (state) {
               state.activeApp().server.invite.create(1, (err, code) => {
                 console.log(err)
                 console.log(code)
+                document.getElementById('overlay').style.display = 'block'
               })
             }
           }, 'create an invite code')
@@ -76,6 +77,18 @@ module.exports = function (state) {
           // 'ev-click': () => emit('get-messages', state.activeApp)
         }, 'Load more')
       ])
+    ]),
+    div('#overlay', [
+      div(
+        'Here is your legger invite. Share it with your friend'
+      ),
+      button({
+        id: 'close',
+        'ev-click': () => {
+          document.getElementById('overlay').style.display = 'none'
+        }
+      }, 'close')
     ])
-  )
+
+  ])
 }

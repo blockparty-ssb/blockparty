@@ -257,3 +257,16 @@ input#wizard-app-id > button {
     margin: auto;
     display: block;
 }
+
+#overlay {
+    display: none;
+    width: 50%;
+    height: 200px;
+    background-color: #fff;
+    box-shadow: 1px 1px gainsboro;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-25%);
+}
+
