@@ -83,7 +83,7 @@ memory_limit=$(($(free -b --si | awk '/Mem\\:/ { print $2 }') - 200*(10**6)))
 
 docker run -d --name sbot \\
    --mount type=bind,target=/home/node/.blockparty-pub,source=${appDir} \\
-   -e ssb_host="\\$ssb_host" \\
+   -e ssb_host="$ssb_host" \\
    -e ssb_appname="blockparty-pub" \\
    -p ${port}:${port}\\
    -p ${wsPort}:${wsPort}\\
