@@ -36,6 +36,8 @@ function waitForConfig(state) {
       if (err) return console.log(err)
       app.server = server
       app.ownId = config.keys.id
+      app.keys = config.keys
+      app.pubConfig = config.pubConfig
       setUpMessageStream(state, app)
       getUserNames(state, app)
     })
@@ -137,8 +139,10 @@ function getUserNames(state, app) {
   )
 }
 
-ipcRenderer.on('network-created', (event, appName) => {
-  state.activeApp.set(state.apps.get(appName))
+ipcRenderer.on('network-created', (event, {appName, pubConnectionConfig}) => {
+  const newApp = state.apps.get(appName)
+  state.activeApp.set(newApp)
+  newApp.pubConfig = pubConnectionConfig
   state.wizardActive.set(false)
 })
 
