@@ -4,12 +4,12 @@ const path = require('path')
 const crypto = require('crypto')
 const ssbKeys = require('ssb-keys')
 const client = require('ssb-client')
-const setUpNetworkLocally = require('./set-up-locally')
+const localSetup = require('./set-up-locally')
 const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
 const injectConfig = require('ssb-config/inject')
 
-module.exports = async (appName, apiToken, blockpartyDir, mainWindow, whenDone) => {
+module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   const slugifiedId = slugify(appName)
   const shsKey = crypto.randomBytes(32).toString('base64')
   const port = Math.floor(50000 + 15000 * Math.random())
@@ -34,7 +34,7 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, whenDone) 
 
   const injectedConfig = injectConfig(appName, networkConfig)
 
-  const appDir = setUpNetworkLocally(
+  const appDir = localSetup.setUpAppDir(
     slugifiedId,
     blockpartyDir,
     injectedConfig
@@ -60,40 +60,28 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, whenDone) 
     userKey: keys.id
   })
 
-  // TODO have sbot-whoareyou return the whole address so we don't have to fiddle
-  // with the formatting
   const formatted = key.replace('@', '').replace('.ed25519', '')
   const pubAddress = `net:${ip}:${port}~shs:${formatted}`
   const pubConnectionConfig = Object.assign(injectedConfig, {
-    remote: pubAddress
+    remote: pubAddress,
+    manifest: {manifest: 'sync'}
   })
-
-  client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
+  client(keys, pubConnectionConfig, (err, ssb) => {
     if (err) return console.log(err)
-
-    pubSbot.publish({
-      type: 'contact',
-      contact: keys.id,
-      following: true
-    }, (err) => {
-      if (err) {
-        return console.log(err)
-      } else {
-        console.log('pub now follows you')
-        ownSbot.publish({
-          type: 'contact',
-          contact: key,
-          following: true
-        }, (err) => {
-          if (err) return console.log(err)
-          console.log('following pub back')
-          ownSbot.gossip.add(pubAddress, (err) => {
-            if (err) return whenDone(err)
-            whenDone()
-            console.log('pub added to gossip.json')
+    ssb.manifest((err, manifest) => {
+      if (err) return console.log(err)
+      pubConnectionConfig.manifest = manifest
+      localSetup.persistPubConfig(pubConnectionConfig, appDir)
+      client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
+        if (err) return console.log(err)
+        pubSbot.invite.create(1, (err, code) => {
+          if (err) return cb(err)
+          ownSbot.invite.accept(code, err => {
+            if (err) return cb(err)
+            console.log('i guess this worked?')
           })
         })
-      }
+      })
     })
   })
 }
