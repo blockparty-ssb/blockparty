@@ -7,7 +7,7 @@ const os = require('os')
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbot = require('./server.js')
 const ssbKeys = require('ssb-keys')
-const config = require('ssb-config/inject')
+const injectConfig = require('ssb-config/inject')
 const createNetwork = require('./create-network')
 
 const blockpartyDir = path.join(os.homedir(), '.blockparty')
@@ -59,10 +59,18 @@ app.on('ready', () => {
     // it uses rc to find the app's config file but can't find ours,
     // because it's nested in the .blockparty directory
     appConfig.path = appDir
-    const ssbConfig = appName ? config(appName, appConfig) : config()
+    const ssbConfig = appName ? injectConfig(appName, appConfig) : injectConfig()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
     ssbConfig.appName = appName || 'global-scuttlebutt'
+
+    // are a we pub admin?
+    const pubFilePath = path.join(appDir, 'pub')
+    if (fs.existsSync(pubFilePath)) {
+      const pubConfig = JSON.parse(fs.readFileSync(pubFilePath))
+      ssbConfig.pubConfig = pubConfig
+    }
+
     return ssbConfig
   })
 
@@ -77,9 +85,9 @@ app.on('ready', () => {
   createWindow(ssbConfigs)
 
   ipcMain.on('create-network', async (event, {appName, apiToken}) => {
-    createNetwork(appName, apiToken, blockpartyDir, mainWindow, (err) => {
-      console.log("callback called")
-      event.sender.send('network-created', appName)
+    createNetwork(appName, apiToken, blockpartyDir, mainWindow, (err, pubConnectionConfig) => {
+      // TODO handle error
+      event.sender.send('network-created', {appName, pubConnectionConfig})
     })
   })
 })
