@@ -1,4 +1,6 @@
 'use strict'
+const injectConfig = require('ssb-config/inject')
+const connect = require('ssb-client')
 const { div, ul, li, button, h4, h2, input } =
   require('../html-helpers')
 const computed = require('mutant/computed')
@@ -23,7 +25,6 @@ module.exports = function (state) {
           button({
             id: 'add-username',
             'ev-click': () => {
-              console.log('click')
               const textfield = document.getElementById('username')
               state.activeApp().server.publish({
                 type: 'about',
@@ -38,10 +39,17 @@ module.exports = function (state) {
           button({
             id: 'invite',
             'ev-click': () => {
-              state.activeApp().server.invite.create(1, (err, code) => {
-                console.log(err)
-                console.log(code)
-                document.getElementById('overlay').style.display = 'block'
+              const app = state.activeApp()
+              const keys = app.keys
+              const pubConfig = injectConfig(app.name, app.pubConfig)
+              connect(keys, pubConfig, (err, pub) => {
+                if (err) return console.log(err)
+
+                pub.invite.create(1, (err, code) => {
+                  console.log(err)
+                  console.log(code)
+                  document.getElementById('overlay').style.display = 'block'
+                })
               })
             }
           }, 'create an invite code')
