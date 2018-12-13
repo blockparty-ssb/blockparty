@@ -2,7 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 
-module.exports = (appName, blockpartyDir, networkConfig) => {
+function setUpAppDir(appName, blockpartyDir, networkConfig) {
   const appDir = makeAppDirectory(appName)
   fs.writeFileSync(path.join(appDir, 'config'), JSON.stringify(networkConfig, null, 4))
   return appDir
@@ -22,3 +22,10 @@ module.exports = (appName, blockpartyDir, networkConfig) => {
     }
   }
 }
+
+function persistPubConfig(pubConfig, appDir) {
+  fs.writeFileSync(path.join(appDir, 'pub'), JSON.stringify(pubConfig, null, 4))
+  console.log('wrote pub file')
+}
+
+module.exports = {setUpAppDir, persistPubConfig}
