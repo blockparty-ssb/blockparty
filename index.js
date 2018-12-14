@@ -26,7 +26,7 @@ function waitForConfig(state) {
   ipcRenderer.on('no-apps-found', () => state.noApps.set(true))
 
   ipcRenderer.on('ssb-config', (event, config) => {
-    addAppToState(state, config.appName)
+    addAppToState(state, config)
     const app = state.apps.get(config.appName)
     if (isFirst) {
       state.activeApp.set(app)
@@ -35,21 +35,17 @@ function waitForConfig(state) {
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
       app.server = server
-      app.ownId = config.keys.id
-      app.keys = config.keys
-      app.pubConfig = config.pubConfig
       setUpMessageStream(state, app)
       getUserNames(state, app)
     })
   })
 }
 
-function addAppToState(state, appId) {
-  state.apps.put(appId, {
+function addAppToState(state, appConfig) {
+  state.apps.put(appConfig.appName, Object.assign(appConfig, {
     messages: mutantArray(),
-    userNames: mutantArray(),
-    name: appId
-  })
+    userNames: mutantArray()
+  }))
 }
 
 function setUpMessageStream(state, app) {

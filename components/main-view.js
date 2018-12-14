@@ -91,7 +91,9 @@ function makeInviteButton(app) {
         connect(keys, app.pubConfig, (err, pub) => {
           if (err) return console.log(err)
           pub.invite.create(1, (err, code) => {
-            console.log(err)
+            // TODO
+            if (err) return console.log(err)
+            code = `${code}!${app.caps.shs}`
             console.log(code)
             document.getElementById('overlay').style.display = 'block'
           })
