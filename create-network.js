@@ -72,13 +72,13 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
       if (err) return console.log(err)
       pubConnectionConfig.manifest = manifest
       localSetup.persistPubConfig(pubConnectionConfig, appDir)
-      client(keys, injectConfig(appName, pubConnectionConfig), (err, pubSbot) => {
+      client(keys, pubConnectionConfig, (err, pubSbot) => {
         if (err) return console.log(err)
         pubSbot.invite.create(1, (err, code) => {
           if (err) return cb(err)
           ownSbot.invite.accept(code, err => {
             if (err) return cb(err)
-            console.log('i guess this worked?')
+            cb(null, pubConnectionConfig)
           })
         })
       })
