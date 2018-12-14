@@ -10,6 +10,7 @@ module.exports = function (state) {
   const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
+  const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
 
   return div('.MainWindow', [
     div('.SplitMainView', [
@@ -34,24 +35,7 @@ module.exports = function (state) {
             }
           }, 'add username')
         ]),
-        div('.username', [
-          button({
-            id: 'invite',
-            'ev-click': () => {
-              const app = state.activeApp()
-              const keys = app.keys
-              connect(keys, app.pubConfig, (err, pub) => {
-                if (err) return console.log(err)
-
-                pub.invite.create(1, (err, code) => {
-                  console.log(err)
-                  console.log(code)
-                  document.getElementById('overlay').style.display = 'block'
-                })
-              })
-            }
-          }, 'create an invite code')
-        ])
+        inviteButtonObs
       ]),
       div('.main', [
         div('.post-msg', [
@@ -95,6 +79,24 @@ module.exports = function (state) {
         }
       }, 'close')
     ])
-
   ])
+}
+
+function makeInviteButton(app) {
+  return div('.username',
+    button({
+      id: 'invite',
+      'ev-click': () => {
+        const keys = app.keys
+        connect(keys, app.pubConfig, (err, pub) => {
+          if (err) return console.log(err)
+          pub.invite.create(1, (err, code) => {
+            console.log(err)
+            console.log(code)
+            document.getElementById('overlay').style.display = 'block'
+          })
+        })
+      }
+    }, 'create an invite code')
+  )
 }
