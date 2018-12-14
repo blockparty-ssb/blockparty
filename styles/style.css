@@ -94,6 +94,7 @@ div.blockparties {
     padding-right: 7px;
     min-height: 100%;
     width: 65px;
+    padding-top: 20px;
 }
 
 .show-blockparty {
@@ -142,10 +143,6 @@ div.blockparty {
     height: 60px;
     width: 60px;
     border-radius: 100%;
-}
-
-#add-network:hover {
-    color: #F9065F;
 }
 
 .username {
