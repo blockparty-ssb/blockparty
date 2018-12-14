@@ -212,7 +212,19 @@ li {
     list-style-type: none;
 }
 
+/***************welcome******************/
 
+div.welcome {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 5%;
+}
+
+div.welcome section {
+    margin: 20px 10%;
+    padding: 20px;
+    outline: 0.5px solid #1DA0E1;
+}
 
 /***************wizard******************/
 

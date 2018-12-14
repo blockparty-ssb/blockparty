@@ -17,5 +17,13 @@ module.exports = {
     madeAccount: 'I am logged in Digital Ocean now',
     paintWhileWaiting: 'Paint a nice picture, while waiting...',
     takeSomeTime: 'The procedure of setting up your new blockparty will take about 3 minutes. Enjoy yourself while waiting and paint a little.'
+  },
+  welcome: {
+    hello: 'You Are Here! 🎉',
+    firstP: 'Welcome to blockparty. We are happy, you made it. From here you can do two things:',
+    setupBlockparty: '1. Setup your first blockparty community and invite friends to join',
+    readManual: 'Before diving into it, please take a few minutes to read our "How to setup a new community space" Ready? Ok, then lets go!',
+    join: '2. Join an existing blockparty community',
+    joinCommunity: 'You want to join an existing blockparty community your friend created? What you need is the name of the community an invite code.'
   }
 }
