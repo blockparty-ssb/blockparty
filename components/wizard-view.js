@@ -22,6 +22,15 @@ module.exports = function (state) {
           appIdObs.set(wizardInput)
           pageObs.set(wizardPages.hasAccount)
         }}, labels.continue)
+      ]),
+      div('.wrapper', [
+        h2('Or enter an invite code'),
+        input('#invite-code'),
+        button('.button-continue', {'ev-click': async () => {
+          const inviteCode = document.getElementById('invite-code').value
+          if (!inviteCode) return
+          await redeemInviteCode(inviteCode)
+        }}, labels.continue)
       ])
     ]),
     hasAccount: section('.wizard-page', [
@@ -83,3 +92,10 @@ module.exports = function (state) {
   return div('#wizard-view', pageObs)
 }
 
+async function redeemInviteCode(code) {
+  const port = code.match(/:([0-9]+):/)[1]
+  const [invite, appId] = code.split('!')
+  console.log(port)
+  console.log(invite)
+  console.log(appId)
+}
