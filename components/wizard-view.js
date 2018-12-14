@@ -11,27 +11,29 @@ module.exports = function (state) {
   const apiKeyObs = mutantValue()
   const wizardPages = {
     enterName: section('.wizard-page', [
-      img('.logo', {attributes: {src: 'styles/img/logo.png'}}),
       div('.wrapper', [
-        h2(labels.enterAppId),
-        input('#wizard-app-id', {attributes: {required: true}}),
-        button('.button-continue', {'ev-click': () => {
-          const wizardInput = document.getElementById('wizard-app-id').value
-          if (!wizardInput) {
-            return
-          }
-          appIdObs.set(wizardInput)
-          pageObs.set(wizardPages.hasAccount)
-        }}, labels.continue)
-      ]),
-      div('.wrapper', [
-        h2('Or enter an invite code'),
-        input('#invite-code'),
-        button('.button-continue', {'ev-click': async () => {
-          const inviteCode = document.getElementById('invite-code').value
-          if (!inviteCode) return
-          await redeemInviteCode(inviteCode)
-        }}, labels.continue)
+        h2('Create a new community or join an existing one!'),
+        div('.box', [
+          h3(labels.enterAppId),
+          input('#wizard-app-id', {attributes: {required: true}}),
+          button('.button-continue', {'ev-click': () => {
+            const wizardInput = document.getElementById('wizard-app-id').value
+            if (!wizardInput) {
+              return
+            }
+            appIdObs.set(wizardInput)
+            pageObs.set(wizardPages.hasAccount)
+          }}, labels.continue)
+        ]),
+        div('.box', [
+          h3(labels.enterInvite),
+          input('#invite-code'),
+          button('.button-continue', {'ev-click': async () => {
+            const inviteCode = document.getElementById('invite-code').value
+            if (!inviteCode) return
+            await redeemInviteCode(inviteCode)
+          }}, labels.continue)
+        ])
       ])
     ]),
     hasAccount: section('.wizard-page', [
@@ -57,7 +59,8 @@ module.exports = function (state) {
     confirmation: section('.wizard-page', [
       div('.wrapper', [
         h2(labels.confirmation),
-        p(appIdObs),
+        div('.box', [
+          p(appIdObs),
         p(apiKeyObs),
         button('.button-continue', {'ev-click': () => {
           ipcRenderer.send('create-network', {
@@ -67,6 +70,7 @@ module.exports = function (state) {
           pageObs.set(wizardPages.wait)
         }}, labels.yesCreate),
         makeCancelButton()
+        ])
       ])
     ]),
     wait: section('.wizard-page', [

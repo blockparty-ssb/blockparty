@@ -252,9 +252,10 @@ div.wrapper {
 .box {
     margin-top: 30px;
     padding: 25px;
+    outline: 0.5px solid #1DA0E1;
 }
 
-input#wizard-app-id, input#wizard-api-key {
+input#wizard-app-id, input#wizard-api-key, input#invite-code {
     border: none;
     border-bottom: 1px solid #F9065F;
     width: 70%;
