@@ -1,5 +1,4 @@
 'use strict'
-const injectConfig = require('ssb-config/inject')
 const connect = require('ssb-client')
 const { div, ul, li, button, h4, h2, input } =
   require('../html-helpers')
@@ -41,8 +40,7 @@ module.exports = function (state) {
             'ev-click': () => {
               const app = state.activeApp()
               const keys = app.keys
-              const pubConfig = injectConfig(app.name, app.pubConfig)
-              connect(keys, pubConfig, (err, pub) => {
+              connect(keys, app.pubConfig, (err, pub) => {
                 if (err) return console.log(err)
 
                 pub.invite.create(1, (err, code) => {
