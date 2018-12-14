@@ -4,6 +4,7 @@ const mutantValue = require('mutant/value')
 const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
+const redeemInviteCode = require('../redeem-invite')
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
@@ -90,12 +91,4 @@ module.exports = function (state) {
   }
 
   return div('#wizard-view', pageObs)
-}
-
-async function redeemInviteCode(code) {
-  const port = code.match(/:([0-9]+):/)[1]
-  const [invite, appId] = code.split('!')
-  console.log(port)
-  console.log(invite)
-  console.log(appId)
 }
