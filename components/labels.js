@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 'use strict'
 
 module.exports = {
@@ -24,6 +25,6 @@ module.exports = {
     setupBlockparty: '1. Setup your first blockparty community and invite friends to join',
     readManual: 'Before diving into it, please take a few minutes to read our "How to setup a new community space" Ready? Ok, then lets go!',
     join: '2. Join an existing blockparty community',
-    joinCommunity: 'You want to join an existing blockparty community your friend created? What you need is the name of the community an invite code.'
+    joinCommunity: 'You want to join an existing blockparty community your friend created? All you need is an invite code. Paste it here:'
   }
 }
