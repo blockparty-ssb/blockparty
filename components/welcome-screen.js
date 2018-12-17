@@ -1,7 +1,7 @@
 'use strict'
 const { div, section, h1, h2, p, button, input } = require('../html-helpers')
 const labels = require('./labels').welcome
-const redeemInviteCode = require('../redeem-invite')
+const joinNetwork = require('../join-network')
 
 module.exports = (state) => {
   return div('.welcome!', [
@@ -21,7 +21,7 @@ module.exports = (state) => {
       button('.button-continue', {'ev-click': async () => {
         const inviteCode = document.getElementById('invite-code').value
         if (!inviteCode) return
-        await redeemInviteCode(inviteCode)
+        await joinNetwork(inviteCode)
       }}, labels.continue)
     ])
   ]

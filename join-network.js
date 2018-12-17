@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = async function redeemInviteCode(code) {
+module.exports = async function (code) {
   //TODO error handling for wrong input
   const port = code.match(/:([0-9]+):/)[1]
   const [invite, appId, appName] = code.split('!')

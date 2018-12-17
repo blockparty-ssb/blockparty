@@ -4,7 +4,7 @@ const mutantValue = require('mutant/value')
 const { div, button, img, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
-const redeemInviteCode = require('../redeem-invite')
+const joinNetwork = require('../join-network')
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
@@ -31,7 +31,7 @@ module.exports = function (state) {
           button('.button-continue', {'ev-click': async () => {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
-            await redeemInviteCode(inviteCode)
+            await joinNetwork(inviteCode)
           }}, labels.continue)
         ])
       ])
