@@ -2,15 +2,13 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
-const os = require('os')
 
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbot = require('./server.js')
 const ssbKeys = require('ssb-keys')
 const injectConfig = require('ssb-config/inject')
 const createNetwork = require('./create-network')
-
-const blockpartyDir = path.join(os.homedir(), '.blockparty')
+const blockpartyDir = require('./blockparty-dir')
 
 let mainWindow
 

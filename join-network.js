@@ -1,4 +1,7 @@
 'use strict'
+const setUpLocally = require('./set-up-locally')
+const blockpartyDir = require('./blockparty-dir')
+
 
 module.exports = async function (code) {
   //TODO error handling for wrong input
@@ -8,4 +11,11 @@ module.exports = async function (code) {
   console.log(invite)
   console.log(appId)
   console.log(appName)
+  //TODO 
+  //write local data
+  //TODO add network config
+  setUpLocally(appName, blockpartyDir)
+  //start sbot
+  //use sbot to accept or decline invite code
+  //show feed if code was accepted
 }
