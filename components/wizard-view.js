@@ -28,10 +28,13 @@ module.exports = function (state) {
         div('.box', [
           h3(labels.enterInvite),
           input('#invite-code'),
-          button('.button-continue', {'ev-click': async () => {
+          button('.button-continue', {'ev-click': () => {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
-            await joinNetwork(inviteCode)
+            joinNetwork(inviteCode, function(err, success) {
+              if (err) console.log(err)
+              console.log(success)
+            })
           }}, labels.continue)
         ])
       ])
