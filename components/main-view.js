@@ -93,7 +93,7 @@ function makeInviteButton(app) {
           pub.invite.create(1, (err, code) => {
             // TODO
             if (err) return console.log(err)
-            code = `${code}!${app.caps.shs}`
+            code = `${code}!${app.caps.shs}!${app.name}`
             console.log(code)
             document.getElementById('overlay').style.display = 'block'
           })
