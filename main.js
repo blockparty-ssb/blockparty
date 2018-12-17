@@ -6,7 +6,7 @@ const fs = require('fs')
 const {app, BrowserWindow, ipcMain} = require('electron')
 const startSbot = require('./server.js')
 const ssbKeys = require('ssb-keys')
-const injectConfig = require('ssb-config/inject')
+const injectConfig = require('./inject')
 const createNetwork = require('./create-network')
 const blockpartyDir = require('./blockparty-dir')
 
@@ -57,7 +57,7 @@ app.on('ready', () => {
     // it uses rc to find the app's config file but can't find ours,
     // because it's nested in the .blockparty directory
     appConfig.path = appDir
-    const ssbConfig = appName ? injectConfig(appName, appConfig) : injectConfig()
+    const ssbConfig = appName ? injectConfig(appConfig) : injectConfig()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
     ssbConfig.appName = appName || 'global-scuttlebutt'

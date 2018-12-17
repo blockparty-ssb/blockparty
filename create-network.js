@@ -7,32 +7,14 @@ const client = require('ssb-client')
 const localSetup = require('./set-up-locally')
 const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
-const injectConfig = require('ssb-config/inject')
+const createConfig = require('./create-sbot-config')
 
 module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   const slugifiedId = slugify(appName)
   const shsKey = crypto.randomBytes(32).toString('base64')
   const port = Math.floor(50000 + 15000 * Math.random())
   const wsPort = port + 1
-  const networkConfig = {
-    appName,
-    caps: {
-      shs: shsKey
-    },
-    port: port,
-    allowPrivate: true,
-    ws: {
-      port: wsPort
-    },
-    connections: {
-      incoming: {
-        net: [{ port: port, scope: "public", transform: "shs" }]
-      }
-    },
-    path: path.join(blockpartyDir, slugifiedId)
-  }
-
-  const injectedConfig = injectConfig(appName, networkConfig)
+  const injectedConfig = createConfig(shsKey, port, wsPort, slugifiedId)
 
   const appDir = localSetup.setUpAppDir(
     slugifiedId,
