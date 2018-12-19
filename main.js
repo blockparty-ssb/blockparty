@@ -60,6 +60,7 @@ app.on('ready', () => {
     const ssbConfig = appName ? injectConfig(appConfig) : injectConfig()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
+    ssbConfig.ownId = keys.id
     ssbConfig.appName = appName || 'global-scuttlebutt'
 
     // are a we pub admin?

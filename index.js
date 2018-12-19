@@ -131,7 +131,6 @@ function getUserNames(app) {
     pull.drain(msg => {
       if (!msg.value) return
       app.userNames.insert(msg.value.content.name, 0)
-      console.log(msg.value.content)
     })
   )
 }

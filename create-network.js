@@ -15,7 +15,6 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   const port = Math.floor(50000 + 15000 * Math.random())
   const wsPort = port + 1
   const injectedConfig = createConfig(appName, shsKey, port, wsPort, slugifiedId)
-  
 
   const appDir = localSetup.setUpAppDir(
     slugifiedId,
@@ -25,6 +24,7 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   // also TODO: use same key for all, or not?
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   injectedConfig.keys = keys
+  injectedConfig.ownId = keys.id
 
   const ownSbot = startSbot(injectedConfig)
 
