@@ -51,11 +51,11 @@ module.exports = function (state) {
           h3(labels.accountYes),
           p(labels.giveApiKey),
           input({id: 'wizard-api-key'}),
+          makeCancelButton(),
           button('.button-continue', {'ev-click': () => {
             apiKeyObs.set(document.getElementById('wizard-api-key').value)
             pageObs.set(wizardPages.confirmation)
-          }}, labels.continue),
-          makeCancelButton()
+          }}, labels.continue)
         ])
       ])
     ]),
@@ -65,14 +65,14 @@ module.exports = function (state) {
         div('.box', [
           p(appIdObs),
         p(apiKeyObs),
+        makeCancelButton(),
         button('.button-continue', {'ev-click': () => {
           ipcRenderer.send('create-network', {
             appName: appIdObs(),
             apiToken: apiKeyObs()
           })
           pageObs.set(wizardPages.wait)
-        }}, labels.yesCreate),
-        makeCancelButton()
+        }}, labels.yesCreate)
         ])
       ])
     ]),
