@@ -14,7 +14,8 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   const shsKey = crypto.randomBytes(32).toString('base64')
   const port = Math.floor(50000 + 15000 * Math.random())
   const wsPort = port + 1
-  const injectedConfig = createConfig(shsKey, port, wsPort, slugifiedId)
+  const injectedConfig = createConfig(appName, shsKey, port, wsPort, slugifiedId)
+  
 
   const appDir = localSetup.setUpAppDir(
     slugifiedId,
