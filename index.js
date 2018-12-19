@@ -35,8 +35,8 @@ function waitForConfig(state) {
     connection(config.keys, config, (err, server) => {
       if (err) return console.log(err)
       app.server = server
-      setUpMessageStream(state, app)
-      getUserNames(state, app)
+      setUpMessageStream(app)
+      getUserNames(app)
     })
   })
 }
@@ -48,7 +48,7 @@ function addAppToState(state, appConfig) {
   }))
 }
 
-function setUpMessageStream(state, app) {
+function setUpMessageStream(app) {
   const getResultFromDatabase = app.server.query.read
   pull(
     getResultFromDatabase({
@@ -117,7 +117,7 @@ function setUpMessageStream(state, app) {
   )
 }
 
-function getUserNames(state, app) {
+function getUserNames(app) {
   pull(
     app.server.query.read({
       live: true,
@@ -131,6 +131,7 @@ function getUserNames(state, app) {
     pull.drain(msg => {
       if (!msg.value) return
       app.userNames.insert(msg.value.content.name, 0)
+      console.log(msg.value.content)
     })
   )
 }
