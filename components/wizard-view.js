@@ -1,7 +1,7 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
 const mutantValue = require('mutant/value')
-const { div, button, img, p, h2, h3, section, input } =
+const { div, button, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 const joinNetwork = require('../join-network')
@@ -32,7 +32,7 @@ module.exports = function (state) {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
             joinNetwork(inviteCode, function(err, success) {
-              if (err) console.log(err)
+              if (err) return console.log(err)
               console.log(success)
             })
           }}, labels.continue)
@@ -64,15 +64,15 @@ module.exports = function (state) {
         h2(labels.confirmation),
         div('.box', [
           p(appIdObs),
-        p(apiKeyObs),
-        makeCancelButton(),
-        button('.button-continue', {'ev-click': () => {
-          ipcRenderer.send('create-network', {
-            appName: appIdObs(),
-            apiToken: apiKeyObs()
-          })
-          pageObs.set(wizardPages.wait)
-        }}, labels.yesCreate)
+          p(apiKeyObs),
+          makeCancelButton(),
+          button('.button-continue', {'ev-click': () => {
+            ipcRenderer.send('create-network', {
+              appName: appIdObs(),
+              apiToken: apiKeyObs()
+            })
+            pageObs.set(wizardPages.wait)
+          }}, labels.yesCreate)
         ])
       ])
     ]),
