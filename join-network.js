@@ -12,7 +12,6 @@ module.exports = async function (code, cb) {
   const opts = createConfig(appName, appId, port, port + 1, appName)
   localSetup.setUpAppDir(appName, blockpartyDir, opts)
   const sbot = startSbot(opts)
-  // use sbot to accept or decline invite code
   sbot.invite.accept(invite, err => {
     if (err) return cb(err)
     cb(null, 'Yeah, worked!')
