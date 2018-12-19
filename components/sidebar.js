@@ -23,7 +23,7 @@ module.exports = function (state) {
         const borderObs = mutantValue()
         const bgColorObs = mutantValue()
         state.activeApp(activeApp => {
-          const isActive = id === activeApp.name
+          const isActive = id === activeApp.appName
           if (isActive) {
             bgColorObs.set(color)
             colorObs.set('#fff')

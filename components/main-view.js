@@ -6,7 +6,7 @@ const computed = require('mutant/computed')
 const map = require('mutant/map')
 
 module.exports = function (state) {
-  const appNameObs = computed([state.activeApp], activeApp => activeApp.name)
+  const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
   const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
@@ -93,7 +93,7 @@ function makeInviteButton(app) {
           pub.invite.create(1, (err, code) => {
             // TODO
             if (err) return console.log(err)
-            code = `${code}!${app.caps.shs}!${app.name}`
+            code = `${code}!${app.caps.shs}!${app.appName}`
             console.log(code)
             document.getElementById('overlay').style.display = 'block'
           })
