@@ -9,16 +9,23 @@ const startSbot = require('./server')
 module.exports = async function (code, cb) {
   // TODO error handling for wrong input
   const port = parseInt(code.match(/:([0-9]+):/)[1])
-  const [invite, appId, appName] = code.split('!')
+  const [invite, appId, inviterId, appName] = code.split('!')
   const opts = createConfig(appName, appId, port, port + 1, appName)
   const appDir = localSetup.setUpAppDir(appName, blockpartyDir, opts)
   ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   const sbot = startSbot(opts)
   sbot.invite.accept(invite, err => {
     if (err) return cb(err)
-    cb(null, 'Yeah, worked!')
+    sbot.publish({
+      type: "contact",
+      contact: inviterId,
+      following: true
+    }, err => {
+      if (err) return cb(err)
+      cb(null, 'Jipiieeh')
+    })
   })
-  // show feed if code was accepted
+  // TODO show feed if code was accepted
 }
 
 
