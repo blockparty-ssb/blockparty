@@ -11,19 +11,14 @@ const makeWizardView = require('./wizard-view')
 module.exports = (state) => {
   const noAppsAndWizardActive = computed([state.noApps, state.wizardActive], (a,b) => a && b)
   const noAppsAndWizardInactive = computed([state.noApps, state.wizardActive], (a,b) => a && !b)
-  const lookingForApps = computed([state.apps, noAppsAndWizardActive, noAppsAndWizardInactive], (a, nwa, nwi) => {
-    return !Object.keys(a).length && !nwa && !nwi
-  })
-  const appsFound = computed([state.apps, noAppsAndWizardActive, noAppsAndWizardInactive], (a, nwa, nwi) => {
-    return Object.keys(a).length && !nwa && !nwi
-  })
+  const lookingForApps = computed([state.noApps, state.appsFound], (a, b) => !a && !b)
 
   return div(
     computed([
       noAppsAndWizardActive,
       noAppsAndWizardInactive,
       lookingForApps,
-      appsFound
+      state.appsFound
     ], (nwa, nwi, lfa, af) => {
       if (nwa) return body(makeWizardView)
       if (nwi) return welcomeScreen(state)

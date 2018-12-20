@@ -27,6 +27,7 @@ function createWindow (ssbConfigs) {
     ssbConfigs.forEach(ssbConfig => {
       sendToWindow('ssb-config', ssbConfig)
     })
+    sendToWindow('apps-found')
   })
 }
 
