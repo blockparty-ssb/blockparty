@@ -24,6 +24,7 @@ function waitForConfig(state) {
 
   ipcRenderer.on('ssb-config', (event, config) => {
     startApp(state, config, isFirst)
+    isFirst = false
   })
 }
 

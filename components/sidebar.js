@@ -22,8 +22,9 @@ module.exports = function (state) {
         const colorObs = mutantValue(color)
         const borderObs = mutantValue()
         const bgColorObs = mutantValue()
-        state.activeApp(activeApp => {
-          const isActive = id === activeApp.appName
+
+        function setTabBackgroundColor (appName) {
+          const isActive = id === appName
           if (isActive) {
             bgColorObs.set(color)
             colorObs.set('#fff')
@@ -32,6 +33,10 @@ module.exports = function (state) {
             colorObs.set(color)
             bgColorObs.set('unset')
           }
+        }
+        setTabBackgroundColor(state.activeApp().appName)
+        state.activeApp(activeApp => {
+          setTabBackgroundColor(activeApp.appName)
         })
         return div('.blockparty', {
           'ev-click': () => {

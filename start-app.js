@@ -10,7 +10,6 @@ module.exports = function(state, config, isFirst) {
   const app = state.apps.get(config.appName)
   if (isFirst) {
     state.activeApp.set(app)
-    isFirst = false
   }
   connection(config.keys, config, (err, server) => {
     if (err) return console.log(err)

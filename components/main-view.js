@@ -69,7 +69,7 @@ module.exports = function (state) {
       ])
     ]),
     div('#overlay', [
-      div(
+      div('#invite-code',
         'Here is your legger invite. Share it with your friend'
       ),
       button({
@@ -90,7 +90,7 @@ function makeInviteButton(app) {
         const keys = app.keys
         connect(keys, app.pubConfig, (err, pub) => {
           if (err) return console.log(err)
-          pub.invite.create(1, (err, code) => {
+          pub.invite.create(10, (err, code) => {
             // TODO
             if (err) return console.log(err)
             code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
