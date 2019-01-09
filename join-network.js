@@ -18,6 +18,7 @@ module.exports = async function (code, cb) {
   config.keys = keys
   const sbot = startSbot(config)
   config.manifest = sbot.getManifest()
+  config.ownId = keys.id
   sbot.invite.accept(invite, err => {
     if (err) return cb(err)
     sbot.publish({
