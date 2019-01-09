@@ -2,6 +2,7 @@
 const { div, section, h1, h2, p, button, input } = require('../html-helpers')
 const labels = require('./labels').welcome
 const joinNetwork = require('../join-network')
+const startApp = require('../start-app')
 
 module.exports = (state) => {
   return div('.welcome!', [
@@ -23,8 +24,12 @@ module.exports = (state) => {
         const inviteCode = document.getElementById('invite-code').value
         if (!inviteCode) return
         // TODO error handling
-        await joinNetwork(inviteCode, err => {
-          if (err) console.log(err)
+        await joinNetwork(inviteCode, (err, appName, config) => {
+          if (err) return console.log(err)
+          config.appName = appName
+          state.appsFound.set(true)
+          state.noApps.set(false)
+          startApp(state, config, true)
         })
       }}, labels.continue)
     ])

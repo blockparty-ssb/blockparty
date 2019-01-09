@@ -10,11 +10,14 @@ module.exports = async function (code, cb) {
   // TODO error handling for wrong input
   const port = parseInt(code.match(/:([0-9]+):/)[1])
   const [invite, appId, inviterId, appName] = code.split('!')
-  const opts = createConfig(appName, appId, port, port + 1, appName)
-  const appDir = localSetup.setUpAppDir(appName, blockpartyDir, opts)
+  const config = createConfig(appName, appId, port, port + 1, appName)
+  // TODO we shouldn't write the directory before we know whether the invite
+  // was successful? Or delete in error case?
+  const appDir = localSetup.setUpAppDir(appName, blockpartyDir, config)
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
-  opts.keys = keys
-  const sbot = startSbot(opts)
+  config.keys = keys
+  const sbot = startSbot(config)
+  config.manifest = sbot.getManifest()
   sbot.invite.accept(invite, err => {
     if (err) return cb(err)
     sbot.publish({
@@ -23,10 +26,9 @@ module.exports = async function (code, cb) {
       following: true
     }, err => {
       if (err) return cb(err)
-      cb(null, 'Jipiieeh')
+      cb(null, appName, config)
     })
   })
-  // TODO show feed if code was accepted
 }
 
 
