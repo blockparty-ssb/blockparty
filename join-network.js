@@ -12,7 +12,8 @@ module.exports = async function (code, cb) {
   const [invite, appId, inviterId, appName] = code.split('!')
   const opts = createConfig(appName, appId, port, port + 1, appName)
   const appDir = localSetup.setUpAppDir(appName, blockpartyDir, opts)
-  ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
+  const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
+  opts.keys = keys
   const sbot = startSbot(opts)
   sbot.invite.accept(invite, err => {
     if (err) return cb(err)

@@ -19,9 +19,13 @@ module.exports = (state) => {
       p(labels.joinCommunity),
       input('#invite-code'),
       button('.button-continue', {'ev-click': async () => {
+        // TODO deduplicate with wizard view
         const inviteCode = document.getElementById('invite-code').value
         if (!inviteCode) return
-        await joinNetwork(inviteCode)
+        // TODO error handling
+        await joinNetwork(inviteCode, err => {
+          if (err) console.log(err)
+        })
       }}, labels.continue)
     ])
   ]
