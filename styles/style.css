@@ -80,6 +80,7 @@ input#username {
 
 .MainWindow {
     width: 100%;
+    position: relative;
 }
 
 div.main {
@@ -268,7 +269,7 @@ input#wizard-app-id > button {
     display: block;
 }
 
-#overlay {
+#popup {
     display: none;
     width: 50%;
     height: 200px;
@@ -278,5 +279,30 @@ input#wizard-app-id > button {
     top: 10px;
     left: 50%;
     transform: translateX(-25%);
+    z-index: 1;
+    margin: 15px;
+    padding: 15px;
 }
 
+#invite-code {
+    word-wrap: break-word;
+    padding-top: 10px;
+}
+
+#close {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    border: 1px solid #000;
+    text-align: center;
+}
+
+#overlay {
+    width: 100%;
+    height: 100%;
+    background-color: #55585d78;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+}

@@ -68,17 +68,30 @@ module.exports = function (state) {
         }, 'Load more')
       ])
     ]),
-    div('#overlay', [
-      div('#invite-code',
-        'Here is your legger invite. Share it with your friend'
-      ),
-      button({
-        id: 'close',
+    div('#popup', [
+      div('#close', {
         'ev-click': () => {
+          document.getElementById('popup').style.display = 'none'
           document.getElementById('overlay').style.display = 'none'
         }
-      }, 'close')
-    ])
+      }, 'x'),
+      div('#invite-text',
+        'Here is your invite code. Share it with your friends.'
+      ),
+      div('#invite-code'),
+      button('#copy', {
+        'ev-click': () => {
+          let elm = document.getElementById('invite-code')
+          let selection = window.getSelection()
+          let range = document.createRange()
+          range.selectNodeContents(elm)
+          selection.removeAllRanges
+          selection.addRange(range)
+          document.execCommand('copy')
+        }
+      }, 'copy to clipboard')
+    ]),
+    div('#overlay')
   ])
 }
 
@@ -90,12 +103,14 @@ function makeInviteButton(app) {
         const keys = app.keys
         connect(keys, app.pubConfig, (err, pub) => {
           if (err) return console.log(err)
-          pub.invite.create(10, (err, code) => {
+          pub.invite.create(100, (err, code) => {
             // TODO
             if (err) return console.log(err)
             code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
             console.log(code)
+            document.getElementById('popup').style.display = 'block'
             document.getElementById('overlay').style.display = 'block'
+            document.getElementById('invite-code').innerHTML = code
           })
         })
       }
