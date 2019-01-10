@@ -5,6 +5,7 @@ const { div, button, p, h2, h3, section, input } =
   require('../html-helpers')
 const labels = require('./labels').wizard
 const joinNetwork = require('../join-network')
+const startApp = require('../start-app')
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
@@ -31,9 +32,13 @@ module.exports = function (state) {
           button('.button-continue', {'ev-click': () => {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
-            joinNetwork(inviteCode, function(err, success) {
+            joinNetwork(inviteCode, (err, appName, config) => {
               if (err) return console.log(err)
-              console.log(success)
+              config.appName = appName
+              state.appsFound.set(true)
+              state.wizardActive.set(false)
+              state.noApps.set(false)
+              startApp(state, config, true)
             })
           }}, labels.continue)
         ])

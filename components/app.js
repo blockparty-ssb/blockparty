@@ -20,7 +20,7 @@ module.exports = (state) => {
       lookingForApps,
       state.appsFound
     ], (nwa, nwi, lfa, af) => {
-      if (nwa) return body(makeWizardView)
+      if (nwa) return body(makeWizardView(state))
       if (nwi) return welcomeScreen(state)
       if (lfa) return loadingScreen()
       if (af) return body(
