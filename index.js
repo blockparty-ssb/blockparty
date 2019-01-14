@@ -16,9 +16,6 @@ const state = mutantStruct({
 })
 
 waitForConfig(state)
-navigator.clipboard.writeText('hiii')
-  .then(() => console.log('worked'))
-  .catch(err => console.log(err))
 
 function waitForConfig(state) {
   let isFirst = true

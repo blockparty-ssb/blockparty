@@ -5,6 +5,7 @@ const { div, ul, li, button, h4, h2, input, textarea } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const map = require('mutant/map')
+const friendlyTime = require('friendly-time')
 
 module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
@@ -58,7 +59,8 @@ module.exports = function (state) {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent', [
-                div(`${m.displayName} says:`),
+                div(m.displayName),
+                div(friendlyTime(new Date(m.timestamp))),
                 div('.postText', { innerHTML: markdown.block(m.content.text) })
               ])
             } else if (m.content.type === 'hello-world') {

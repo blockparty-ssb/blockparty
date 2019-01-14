@@ -40,9 +40,7 @@ function setUpMessageStream(app) {
         cb(null, msg)
         return
       }
-      console.log('in paramap', msg.value.content)
       const userId = msg.value.author
-      console.log('user id', userId)
       pull(
         getResultFromDatabase({
           reverse: true,
@@ -69,9 +67,7 @@ function setUpMessageStream(app) {
           ]
         }),
         pull.drain(name => {
-          console.log('found name', name.name)
           msg.value.displayName = name.name
-          console.log('calling read callback with ', msg)
           cb(null, msg)
         })
       )
@@ -85,18 +81,11 @@ function setUpMessageStream(app) {
       // })
 
       function getBatchOfMessages(messages) {
-        console.log('get bath of messages')
         // TODO actually use batching again
         read(null, function next(end, msg) {
-          console.log('got msg in read')
-          console.log(end)
           if (end === true) return
           if (end) throw end
-          if (msg.value) {
-            console.log(msg.value)
-            messages.insert(msg, 0)
-          }
-          console.log('calling read again')
+          if (msg.value) messages.insert(msg, 0)
           read(null, next)
         })
       }
