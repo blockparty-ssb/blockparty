@@ -1,6 +1,7 @@
 'use strict'
 const connect = require('ssb-client')
-const { div, ul, li, button, h4, h2, input } =
+const markdown = require('ssb-markdown')
+const { div, ul, li, button, h4, h2, input, textarea } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const map = require('mutant/map')
@@ -39,7 +40,7 @@ module.exports = function (state) {
       ]),
       div('.main', [
         div('.post-msg', [
-          input({id: "post", attributes: {name: "your message", placeholder: placeholderObs}}),
+          textarea({id: "post", attributes: {name: "your message", placeholder: placeholderObs}}),
           button({
             id: 'add-to-list',
             'ev-click': () => {
@@ -56,7 +57,10 @@ module.exports = function (state) {
           map(messagesObs, msg => {
             const m = msg.value
             if (m.content.type === 'post') {
-              return div('.FeedEvent',`${m.displayName} says: ${m.content.text}`)
+              return div('.FeedEvent', [
+                div(`${m.displayName} says:`),
+                div('.postText', { innerHTML: markdown.block(m.content.text) })
+              ])
             } else if (m.content.type === 'hello-world') {
               return div('.FeedEvent', `${m.displayName} says: ${m.content.type}`)
             }
