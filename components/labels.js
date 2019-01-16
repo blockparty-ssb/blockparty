@@ -27,5 +27,12 @@ module.exports = {
     readManual: 'Before diving into it, please take a few minutes to read our "How to setup a new community space" Ready? Ok, then lets go!',
     join: 'Join an existing blockparty community',
     joinCommunity: 'You want to join an existing blockparty community your friend created? All you need is an invite code. Paste it here:'
+  },
+  errors: {
+    couldNotCreate: {
+      title: 'No invite created',
+      text: 'Oops, we could not create an invite code.'
+    }
   }
+
 }

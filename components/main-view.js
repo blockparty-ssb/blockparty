@@ -1,11 +1,15 @@
+/* eslint-disable new-cap */
 'use strict'
 const connect = require('ssb-client')
 const markdown = require('ssb-markdown')
 const { div, ul, li, button, h4, h2, input, textarea } =
   require('../html-helpers')
 const computed = require('mutant/computed')
-const map = require('mutant/map')
+const Map = require('mutant/map')
+const Value = require('mutant/value')
 const friendlyTime = require('friendly-time')
+const makeErrorMessage = require('./error-message')
+const labels = require('./labels').errors
 
 module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
@@ -13,8 +17,10 @@ module.exports = function (state) {
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
   const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
+  const errorMessagePlaceholder = Value()
 
   return div('.MainWindow', [
+    div(errorMessagePlaceholder),
     div('.SplitMainView', [
       div('.sidebar', [
         div('.show-blockparty',
@@ -22,7 +28,7 @@ module.exports = function (state) {
         ),
         div('.username', [
           h4('You are:'),
-          ul(map(userNamesObs, name => li(name))),
+          ul(Map(userNamesObs, name => li(name))),
           input({id: "username"}),
           button({
             id: 'add-username',
@@ -55,7 +61,7 @@ module.exports = function (state) {
           }, 'send')
         ]),
         div('.feed',
-          map(messagesObs, msg => {
+          Map(messagesObs, msg => {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent', [
@@ -99,27 +105,35 @@ module.exports = function (state) {
     ]),
     div('#overlay')
   ])
+
+
+  function makeInviteButton(app) {
+    return div('.username',
+      button({
+        id: 'invite',
+        'ev-click': () => {
+          const keys = app.keys
+          connect(keys, app.pubConfig, (err, pub) => {
+            if (err) return console.log(err)
+            pub.invite.create(100, (err, code) => {
+              if (err) {
+                const errorHTML = makeErrorMessage(labels.couldNotCreate.title, labels.couldNotCreate.text, () => {
+                  errorMessagePlaceholder.set(null)
+                })
+                errorMessagePlaceholder.set(errorHTML)
+                return
+              }
+
+              code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
+              console.log(code)
+              document.getElementById('popup').style.display = 'block'
+              document.getElementById('overlay').style.display = 'block'
+              document.getElementById('invite-code').innerHTML = code
+            })
+          })
+        }
+      }, 'create an invite code')
+    )
+  }
 }
 
-function makeInviteButton(app) {
-  return div('.username',
-    button({
-      id: 'invite',
-      'ev-click': () => {
-        const keys = app.keys
-        connect(keys, app.pubConfig, (err, pub) => {
-          if (err) return console.log(err)
-          pub.invite.create(100, (err, code) => {
-            // TODO
-            if (err) return console.log(err)
-            code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
-            console.log(code)
-            document.getElementById('popup').style.display = 'block'
-            document.getElementById('overlay').style.display = 'block'
-            document.getElementById('invite-code').innerHTML = code
-          })
-        })
-      }
-    }, 'create an invite code')
-  )
-}
