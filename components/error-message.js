@@ -1,13 +1,13 @@
 'use strict'
 
-const { div, button } = require('../html-helpers')
+const { div, button, img, h2 } = require('../html-helpers')
 
 module.exports = function (title, text, buttonAction, buttonTitle = 'Close',) {
   return [
     div('#error-message', [
       div('.top', [
-        div('.icon'),
-        div('.message-title', title)
+        img('.error-icon', {src: 'styles/img/error.png'}),
+        h2('.message-title', title)
       ]),
       div('.bottom', [
         text,

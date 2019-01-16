@@ -292,6 +292,7 @@ input#wizard-app-id > button {
     left: 50%;
     transform: translate(-50%, -70%);
     z-index: 1;
+    border-radius: 10px;
 }
 
 #invite-code {
@@ -322,9 +323,13 @@ input#wizard-app-id > button {
 }
 
 .top {
-    background-color: #F9065F;
+    display: flex;
+    padding: 20px;
+    background-color: rgb(211, 39, 70);
     flex: 1;
     height: 50;
+    align-items: center;
+    flex-direction: column;
 }
 
 .bottom {
@@ -333,10 +338,20 @@ input#wizard-app-id > button {
     align-items: center;
     height: 50;
     flex: 1;
-    margin-top: 15px;
+    padding: 20px;
+    justify-content: space-around;
 }
 
 .bottom #retry {
     margin-top: 15px;
     width: 50%;
+}
+
+.error-icon {
+    height: 100px;
+}
+
+.message-title {
+    font-weight: 200;
+    color: #fff;
 }

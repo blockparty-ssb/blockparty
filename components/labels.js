@@ -31,7 +31,7 @@ module.exports = {
   errors: {
     couldNotCreate: {
       title: 'No invite created',
-      text: 'Oops, we could not create an invite code.'
+      text: 'Oops, we could not create an invite code. Please try again.'
     }
   }
 
