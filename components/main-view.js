@@ -1,13 +1,11 @@
 'use strict'
 const connect = require('ssb-client')
 const markdown = require('ssb-markdown')
-const { div, ul, li, button, h4, h2, input } =
+const { div, ul, li, button, h4, h2, input, textarea } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const map = require('mutant/map')
 const friendlyTime = require('friendly-time')
-const {exec, init} = require('pell')
-const TurndownService = require('turndown')
 
 module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
@@ -15,8 +13,6 @@ module.exports = function (state) {
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
   const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
-  let pellAlreadyInitiated = false
-  let html
 
   return div('.MainWindow', [
     div('.SplitMainView', [
@@ -45,77 +41,16 @@ module.exports = function (state) {
       ]),
       div('.main', [
         div('.post-msg', [
-          div({
-            id: 'compose-message',
-            attributes: {
-              name: "your message",
-              placeholder: placeholderObs
-            },
-            onload: () => {
-              if (!document.getElementById('compose-message')) return
-              if (pellAlreadyInitiated) return
-              console.log('loaded')
-              console.log(document.getElementById('compose-message'))
-              pellAlreadyInitiated = true
-              init({
-                element: document.getElementById('compose-message'),
-                onChange: newHTML => {
-                  html = newHTML
-                },
-                defaultParagraphSeparator: 'p',
-                styleWithCSS: true,
-                actions: [
-                  'bold',
-                  'heading1',
-                  'underline',
-                  {
-                    name: 'italic',
-                    result: () => exec('italic')
-                  },
-                  {
-                    name: 'backColor',
-                    icon: '<div style="background-color:pink;">A</div>',
-                    title: 'Highlight Color',
-                    result: () => exec('backColor', 'pink')
-                  },
-                  {
-                    name: 'image',
-                    result: () => {
-                      const url = window.prompt('Enter the image URL')
-                      if (url) exec('insertImage', url)
-                    }
-                  },
-                  {
-                    name: 'link',
-                    result: () => {
-                      const url = window.prompt('Enter the link URL')
-                      if (url) exec('createLink', url)
-                    }
-                  }
-                ],
-                classes: {
-                  actionbar: 'pell-actionbar-custom-name',
-                  button: 'pell-button-custom-name',
-                  content: 'compose-message',
-                  selected: 'pell-button-selected-custom-name'
-                }
-              })
-            }
-          }),
+          textarea({id: "post", attributes: {name: "your message", placeholder: placeholderObs}}),
           button({
             id: 'add-to-list',
             'ev-click': () => {
-              const textField = document.getElementsByClassName('compose-message')[0]
-              const turndownService = new TurndownService()
-              console.log(html)
-              const md = turndownService.turndown(html)
-              console.log(md)
+              const textField = document.getElementById('post')
               state.activeApp().server.publish({
                 type: 'post',
-                text: md
+                text: textField.value
               }, err => console.log(err))
-              html = ''
-              textField.innerHTML = ''
+              textField.value = ''
             }
           }, 'send')
         ]),
@@ -188,5 +123,3 @@ function makeInviteButton(app) {
     }, 'create an invite code')
   )
 }
-
-
