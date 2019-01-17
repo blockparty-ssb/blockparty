@@ -11,7 +11,7 @@ module.exports = function (title, text, buttonAction, buttonTitle = 'Close',) {
       ]),
       div('.bottom', [
         text,
-        button('.errorMessageAction', {
+        button('.errorMessageAction .app-button', {
           'ev-click': buttonAction
         }, buttonTitle)
       ])

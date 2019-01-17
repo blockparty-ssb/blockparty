@@ -17,7 +17,7 @@ module.exports = function (state) {
         div('.box', [
           h3(labels.enterAppId),
           input('#wizard-app-id', {attributes: {required: true}}),
-          button('.button-continue', {'ev-click': () => {
+          button('.button-continue .app-button', {'ev-click': () => {
             const wizardInput = document.getElementById('wizard-app-id').value
             if (!wizardInput) {
               return
@@ -29,7 +29,7 @@ module.exports = function (state) {
         div('.box', [
           h3(labels.enterInvite),
           input('#invite-code'),
-          button('.button-continue', {'ev-click': () => {
+          button('.button-continue .app-button', {'ev-click': () => {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
             joinNetwork(inviteCode, (err, appName, config) => {
@@ -50,14 +50,14 @@ module.exports = function (state) {
         div('.box', [
           h3(labels.accountNo),
           p(labels.getDOAccount),
-          button('#make-account', {'ev-click': () => shell.openExternal(labels.dOURL)}, labels.goToDO)
+          button('#make-account .app-button', {'ev-click': () => shell.openExternal(labels.dOURL)}, labels.goToDO)
         ]),
         div('.box', [
           h3(labels.accountYes),
           p(labels.giveApiKey),
           input({id: 'wizard-api-key'}),
           makeCancelButton(),
-          button('.button-continue', {'ev-click': () => {
+          button('.button-continue .app-button', {'ev-click': () => {
             apiKeyObs.set(document.getElementById('wizard-api-key').value)
             pageObs.set(wizardPages.confirmation)
           }}, labels.continue)
@@ -71,7 +71,7 @@ module.exports = function (state) {
           p(appIdObs),
           p(apiKeyObs),
           makeCancelButton(),
-          button('.button-continue', {'ev-click': () => {
+          button('.button-continue .app-button', {'ev-click': () => {
             ipcRenderer.send('create-network', {
               appName: appIdObs(),
               apiToken: apiKeyObs()
@@ -91,7 +91,7 @@ module.exports = function (state) {
   const pageObs = mutantValue(wizardPages.enterName)
 
   function makeCancelButton() {
-    return button('.button-cancel', {'ev-click': () => {
+    return button('.button-cancel .app-button', {'ev-click': () => {
       delete state.wizard.appId
       delete state.wizard.apiKey
       if (state.apps) {

@@ -17,7 +17,7 @@ h2 {
     font-weight: 200;
 }
 
-button {
+.app-button {
     background-color: #fff;
     border-width: 1px;
     border-color: #F9065F;
@@ -31,27 +31,27 @@ button {
     border-radius: 8px;
 }
 
-button:hover {
+.app-button:hover {
     background-color: #F9065F;
     color: #fff;
 }
 
-button.button-cancel {
+.app-button.button-cancel {
     border-color: #B9BCC1;
     color: #B9BCC1;
 }
 
-button.button-cancel:hover {
+.app-button.button-cancel:hover {
     background-color: #B9BCC1;
     color: #fff;
 }
 
-button.button-continue {
+.app-button.button-continue {
     border-color: #27A83F;
     color: #27A83F;
 }
 
-button.button-continue:hover {
+.app-button.button-continue:hover {
     background-color: #27A83F;
     color: #fff;
 }

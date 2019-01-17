@@ -20,7 +20,6 @@ module.exports = function (state) {
   const userNamesObs = computed([state.activeApp], a => a.userNames)
   const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
   const errorMessagePlaceholder = Value()
-  let pellAlreadyInitiated = false
   let html
 
   return div('.MainWindow', [
@@ -34,7 +33,7 @@ module.exports = function (state) {
           h4('You are:'),
           ul(Map(userNamesObs, name => li(name))),
           input({id: "username"}),
-          button({
+          button('#add-username .app-button',{
             id: 'add-username',
             'ev-click': () => {
               const textfield = document.getElementById('username')
@@ -57,12 +56,7 @@ module.exports = function (state) {
               name: "your message",
               placeholder: placeholderObs
             },
-            onload: () => {
-              if (!document.getElementById('compose-message')) return
-              if (pellAlreadyInitiated) return
-              console.log('loaded')
-              console.log(document.getElementById('compose-message'))
-              pellAlreadyInitiated = true
+            hooks: [() => {
               init({
                 element: document.getElementById('compose-message'),
                 onChange: newHTML => {
@@ -107,9 +101,9 @@ module.exports = function (state) {
                 }
               })
             }
+            ]
           }),
-          button({
-            id: 'add-to-list',
+          button('#add-to-list .app-button', {
             'ev-click': () => {
               const textField = document.getElementsByClassName('compose-message')[0]
               const turndownService = new TurndownService()
@@ -138,11 +132,7 @@ module.exports = function (state) {
               return div('.FeedEvent', `${m.displayName} says: ${m.content.type}`)
             }
           })
-        ),
-        button({
-          id: 'load-more'
-          // 'ev-click': () => emit('get-messages', state.activeApp)
-        }, 'Load more')
+        )
       ])
     ]),
     div('#popup', [
@@ -156,7 +146,7 @@ module.exports = function (state) {
         'Here is your invite code. Share it with your friends.'
       ),
       div('#invite-code'),
-      button('#copy', {
+      button('#copy .app-button', {
         'ev-click': () => {
           let elm = document.getElementById('invite-code')
           let selection = window.getSelection()
@@ -174,8 +164,7 @@ module.exports = function (state) {
 
   function makeInviteButton(app) {
     return div('.username',
-      button({
-        id: 'invite',
+      button('#invite .app-button', {
         'ev-click': () => {
           const keys = app.keys
           connect(keys, app.pubConfig, (err, pub) => {
