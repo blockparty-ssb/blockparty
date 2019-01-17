@@ -284,7 +284,7 @@ input#wizard-app-id > button {
     display: flex;
     flex-direction: column;
     width: 50%;
-    min-height: 400px;
+    /* min-height: 400px; */
     background-color: #fff;
     box-shadow: 1px 1px gainsboro;
     position: absolute;
@@ -293,6 +293,7 @@ input#wizard-app-id > button {
     transform: translate(-50%, -70%);
     z-index: 1;
     border-radius: 10px;
+    overflow: hidden;
 }
 
 #invite-code {
@@ -327,8 +328,9 @@ input#wizard-app-id > button {
     padding: 20px;
     background-color: rgb(211, 39, 70);
     flex: 1;
-    height: 50;
+    height: 50%;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
 }
 
@@ -336,7 +338,7 @@ input#wizard-app-id > button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 50;
+    height: 50%;
     flex: 1;
     padding: 20px;
     justify-content: space-around;
@@ -353,5 +355,12 @@ input#wizard-app-id > button {
 
 .message-title {
     font-weight: 200;
+    font-size: 5vw;
     color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+.errorMessageAction {
+    margin-top: 10%;
 }
