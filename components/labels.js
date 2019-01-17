@@ -32,6 +32,10 @@ module.exports = {
     couldNotCreate: {
       title: 'No invite created',
       text: 'Oops, we could not create an invite code. Please try again.'
+    },
+    badInviteCode: {
+      title: 'Bad invite code',
+      text: 'Oh no, we were not able to process that invite code, please check, if you copied / pasted it correctly and try again.'
     }
   }
 

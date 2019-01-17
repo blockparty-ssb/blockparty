@@ -3,9 +3,11 @@ const { ipcRenderer, shell } = require('electron')
 const mutantValue = require('mutant/value')
 const { div, button, p, h2, h3, section, input } =
   require('../html-helpers')
-const labels = require('./labels').wizard
+const {wizard, errors} = require('./labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
+const makeErrorMessage = require('../components/error-message')
+const errorMessagePlaceholder = mutantValue()
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
@@ -15,7 +17,7 @@ module.exports = function (state) {
       div('.wrapper', [
         h2('Create a new community or join an existing one!'),
         div('.box', [
-          h3(labels.enterAppId),
+          h3(wizard.enterAppId),
           input('#wizard-app-id', {attributes: {required: true}}),
           button('.button-continue .app-button', {'ev-click': () => {
             const wizardInput = document.getElementById('wizard-app-id').value
@@ -24,49 +26,59 @@ module.exports = function (state) {
             }
             appIdObs.set(wizardInput)
             pageObs.set(wizardPages.hasAccount)
-          }}, labels.continue)
+          }}, wizard.continue)
         ]),
         div('.box', [
-          h3(labels.enterInvite),
+          h3(wizard.enterInvite),
           input('#invite-code'),
           button('.button-continue .app-button', {'ev-click': () => {
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
             joinNetwork(inviteCode, (err, appName, config) => {
-              if (err) return console.log(err)
+              if (err) {
+                if (err.message === 'bad invite code') {
+                  console.log(err.message)
+                  const errorHTML = makeErrorMessage(errors.badInviteCode.title, errors.badInviteCode.text, () => {
+                    errorMessagePlaceholder.set(null)
+                  })
+                  errorMessagePlaceholder.set(errorHTML)
+                  return
+                }
+                return
+              }
               config.appName = appName
               state.appsFound.set(true)
               state.wizardActive.set(false)
               state.noApps.set(false)
               startApp(state, config, true)
             })
-          }}, labels.continue)
+          }}, wizard.continue)
         ])
       ])
     ]),
     hasAccount: section('.wizard-page', [
       div('.wrapper', [
-        h2(labels.haveAccount),
+        h2(wizard.haveAccount),
         div('.box', [
-          h3(labels.accountNo),
-          p(labels.getDOAccount),
-          button('#make-account .app-button', {'ev-click': () => shell.openExternal(labels.dOURL)}, labels.goToDO)
+          h3(wizard.accountNo),
+          p(wizard.getDOAccount),
+          button('#make-account .app-button', {'ev-click': () => shell.openExternal(wizard.dOURL)}, wizard.goToDO)
         ]),
         div('.box', [
-          h3(labels.accountYes),
-          p(labels.giveApiKey),
+          h3(wizard.accountYes),
+          p(wizard.giveApiKey),
           input({id: 'wizard-api-key'}),
           makeCancelButton(),
           button('.button-continue .app-button', {'ev-click': () => {
             apiKeyObs.set(document.getElementById('wizard-api-key').value)
             pageObs.set(wizardPages.confirmation)
-          }}, labels.continue)
+          }}, wizard.continue)
         ])
       ])
     ]),
     confirmation: section('.wizard-page', [
       div('.wrapper', [
-        h2(labels.confirmation),
+        h2(wizard.confirmation),
         div('.box', [
           p(appIdObs),
           p(apiKeyObs),
@@ -77,14 +89,14 @@ module.exports = function (state) {
               apiToken: apiKeyObs()
             })
             pageObs.set(wizardPages.wait)
-          }}, labels.yesCreate)
+          }}, wizard.yesCreate)
         ])
       ])
     ]),
     wait: section('.wizard-page', [
       div('.wrapper', [
-        h2(labels.paintWhileWaiting),
-        p(labels.takeSomeTime)
+        h2(wizard.paintWhileWaiting),
+        p(wizard.takeSomeTime)
       ])
     ])
   }
@@ -99,8 +111,11 @@ module.exports = function (state) {
       } else {
         state.wizardActive = false
       }
-    }}, labels.cancel)
+    }}, wizard.cancel)
   }
 
-  return div('#wizard-view', pageObs)
+  return div('#wizard-view', [
+    pageObs,
+    div(errorMessagePlaceholder)
+  ])
 }

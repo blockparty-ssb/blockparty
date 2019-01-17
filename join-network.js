@@ -7,8 +7,13 @@ const createConfig = require('./create-sbot-config')
 const startSbot = require('./server')
 
 module.exports = async function (code, cb) {
-  // TODO error handling for wrong input
-  const port = parseInt(code.match(/:([0-9]+):/)[1])
+  const regExPort = code.match(/:([0-9]+):/)
+  if (!regExPort) {
+    return cb(new Error('bad invite code'))
+  }
+  const cleanRegEx = regExPort[1]
+  const port = parseInt(cleanRegEx)
+
   const [invite, appId, inviterId, appName] = code.split('!')
   const config = createConfig(appName, appId, port, port + 1, appName)
   // TODO we shouldn't write the directory before we know whether the invite
