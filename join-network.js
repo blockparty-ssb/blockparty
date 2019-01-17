@@ -13,8 +13,11 @@ module.exports = async function (code, cb) {
   }
   const cleanRegEx = regExPort[1]
   const port = parseInt(cleanRegEx)
-
-  const [invite, appId, inviterId, appName] = code.split('!')
+  const inviteCodeParts = code.split('!')
+  if (inviteCodeParts.length !== 4) {
+    return cb(new Error('bad invite code'))
+  }
+  const [invite, appId, inviterId, appName] = inviteCodeParts
   const config = createConfig(appName, appId, port, port + 1, appName)
   // TODO we shouldn't write the directory before we know whether the invite
   // was successful? Or delete in error case?

@@ -54,6 +54,7 @@ app.on('ready', () => {
     } catch (err) {
       return console.log('could not parse config file')
     }
+
     // config merges the given config with the default boilerplate
     // it uses rc to find the app's config file but can't find ours,
     // because it's nested in the .blockparty directory
@@ -101,4 +102,3 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
-
