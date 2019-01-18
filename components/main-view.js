@@ -2,14 +2,14 @@
 'use strict'
 const connect = require('ssb-client')
 const markdown = require('ssb-markdown')
-const { div, ul, li, button, h4, h2, input } =
+const { div, p, ul, li, button, h4, h2, input, img } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const Map = require('mutant/map')
 const Value = require('mutant/value')
 const friendlyTime = require('friendly-time')
 const makeErrorMessage = require('./error-message')
-const labels = require('./labels').errors
+const {errors, invite} = require('./labels')
 const {exec, init} = require('pell')
 const TurndownService = require('turndown')
 
@@ -136,31 +136,38 @@ module.exports = function (state) {
       ])
     ]),
     div('#popup', [
-      div('#close', {
-        'ev-click': () => {
-          document.getElementById('popup').style.display = 'none'
-          document.getElementById('overlay').style.display = 'none'
-        }
-      }, 'x'),
-      div('#invite-text',
-        'Here is your invite code. Share it with your friends.'
-      ),
-      div('#invite-code'),
-      button('#copy .app-button', {
-        'ev-click': () => {
-          let elm = document.getElementById('invite-code')
-          let selection = window.getSelection()
-          let range = document.createRange()
-          range.selectNodeContents(elm)
-          selection.removeAllRanges
-          selection.addRange(range)
-          document.execCommand('copy')
-        }
-      }, 'copy to clipboard')
+      div([
+        div('.top .successTop', [
+          img('.success-icon', {src: 'styles/img/success.png'}),
+          h2('.message-title', invite.title)
+        ]),
+        div('.bottom', [
+          h4(invite.text),
+          p('#invite-code'),
+          div('.buttons', [
+            button('#copy .app-button', {
+              'ev-click': () => {
+                let elm = document.getElementById('invite-code')
+                let selection = window.getSelection()
+                let range = document.createRange()
+                range.selectNodeContents(elm)
+                selection.removeAllRanges
+                selection.addRange(range)
+                document.execCommand('copy')
+              }
+            }, 'copy to clipboard'),
+            button('.app-button .button-cancel', {
+              'ev-click': () => {
+                document.getElementById('popup').style.display = 'none'
+                document.getElementById('overlay').style.display = 'none'
+              }
+            }, 'close')
+          ])
+        ])
+      ])
     ]),
     div('#overlay')
   ])
-
 
   function makeInviteButton(app) {
     return div('.username',
@@ -171,7 +178,7 @@ module.exports = function (state) {
             if (err) return console.log(err)
             pub.invite.create(100, (err, code) => {
               if (err) {
-                const errorHTML = makeErrorMessage(labels.couldNotCreate.title, labels.couldNotCreate.text, () => {
+                const errorHTML = makeErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text, () => {
                   errorMessagePlaceholder.set(null)
                 })
                 errorMessagePlaceholder.set(errorHTML)

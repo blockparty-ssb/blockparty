@@ -37,6 +37,10 @@ module.exports = {
       title: 'Bad invite code',
       text: 'Oh no, we were not able to process that invite code, please check, if you copied / pasted it correctly and try again.'
     }
+  },
+  invite: {
+    title: 'Your invite code',
+    text: 'Here is your invite code. Share it with your friends.'
   }
 
 }

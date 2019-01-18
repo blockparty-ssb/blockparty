@@ -326,7 +326,6 @@ input#wizard-app-id > button {
 .top {
     display: flex;
     padding: 20px;
-    background-color: rgb(211, 39, 70);
     flex: 1;
     height: 50%;
     align-items: center;
@@ -334,10 +333,17 @@ input#wizard-app-id > button {
     flex-direction: column;
 }
 
+.errorTop {
+    background-color: rgb(211, 39, 70);
+}
+
+.successTop {
+    background-color: rgb(32, 169, 66);
+}
+
 .bottom {
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 50%;
     flex: 1;
     padding: 20px;
@@ -363,4 +369,9 @@ input#wizard-app-id > button {
 
 .errorMessageAction {
     margin-top: 10%;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
 }
