@@ -18,22 +18,30 @@ h2 {
 }
 
 .app-button {
+    display: inline-block;
     background-color: #fff;
     border-width: 1px;
     border-color: #F9065F;
     color: #F9065F;
-    padding: 10px 32px;
+    padding: 0.35em 1.2em;
     text-align: center;
     text-decoration: none;
     font-size: 15px;
-    margin: 4px 2px;
+    margin: 0 0.3em 0.3em 0;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 0.35em;
 }
 
 .app-button:hover {
     background-color: #F9065F;
     color: #fff;
+}
+
+@media all and (max-width:30em) {
+    .app-button {
+        display: block;
+        margin: 0.4em auto;
+    }
 }
 
 .app-button.button-cancel {
@@ -59,6 +67,7 @@ h2 {
 input {
     padding: 4px;
     height: 40px;
+    margin-bottom: 6px;
 }
 
 input#username {
@@ -268,16 +277,14 @@ input#wizard-app-id > button {
 #popup {
     display: none;
     width: 50%;
+    max-width: 500px;
     min-height: 200px;
     background-color: #fff;
-    box-shadow: 1px 1px gainsboro;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -70%);
+    transform: translate(-50%, -50%);
     z-index: 1;
-    margin: 15px;
-    padding: 15px;
 }
 
 #error-message {
@@ -355,13 +362,13 @@ input#wizard-app-id > button {
     width: 50%;
 }
 
-.error-icon {
+.error-icon, .success-icon {
     height: 100px;
 }
 
 .message-title {
     font-weight: 200;
-    font-size: 5vw;
+    font-size: 4.5vw;
     color: #fff;
     margin: 0;
     text-align: center;
@@ -371,7 +378,13 @@ input#wizard-app-id > button {
     margin-top: 10%;
 }
 
-.buttons {
-    display: flex;
-    flex-direction: column;
+p#invite-code {
+    font-size: 14px;
+    margin-bottom: 25px;
 }
+
+.bottom > h4 {
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
