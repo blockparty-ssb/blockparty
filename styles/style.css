@@ -21,6 +21,7 @@ h2 {
     display: inline-block;
     background-color: #fff;
     border-width: 1px;
+    max-width: 200px;
     border-color: #F9065F;
     color: #F9065F;
     padding: 0.35em 1.2em;
