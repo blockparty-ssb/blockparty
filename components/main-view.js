@@ -178,11 +178,7 @@ module.exports = function (state) {
             if (err) return console.log(err)
             pub.invite.create(100, (err, code) => {
               if (err) {
-                const errorHTML = makeErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text, () => {
-                  errorMessagePlaceholder.set(null)
-                })
-                errorMessagePlaceholder.set(errorHTML)
-                return
+                showErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text)
               }
 
               code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
@@ -195,5 +191,13 @@ module.exports = function (state) {
         }
       }, 'create an invite code')
     )
+  }
+
+  function showErrorMessage (title, text) {
+    const errorHTML = makeErrorMessage(title, text, () => {
+      errorMessagePlaceholder.set(null)
+    })
+    errorMessagePlaceholder.set(errorHTML)
+    return
   }
 }
