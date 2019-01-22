@@ -2,12 +2,12 @@
 const path = require('path')
 const fs = require('fs')
 
-function setUpAppDir(appName, blockpartyDir, networkConfig, cb) {
+function setUpAppDir(appName, blockpartyDir, networkConfig) {
   const appDir = makeAppDirectory(appName)
   try {
     fs.writeFileSync(path.join(appDir, 'config'), JSON.stringify(networkConfig, null, 4))
   } catch (err) {
-    cb(new Error('Could not write config file: ' + err.message))
+    throw new Error('Could not write config file: ' + err.message)
   }
   return appDir
 
@@ -16,19 +16,17 @@ function setUpAppDir(appName, blockpartyDir, networkConfig, cb) {
       try {
         fs.mkdirSync(blockpartyDir)
       } catch (err) {
-        cb(new Error('Could not create blockparty directory: ' + err.message))
-        return
+        throw new Error('Could not create blockparty directory: ' + err.message)
       }
     } else {
       const stat = fs.statSync(blockpartyDir)
-      if (stat.isFile()) return cb(new Error('blockparty directory path already exists as a file'))
+      if (stat.isFile()) throw new Error('blockparty directory path already exists as a file')
     }
     const appDirectory = path.join(blockpartyDir, appId)
     try {
       fs.mkdirSync(appDirectory)
     } catch (err) {
-      cb(new Error('Could not create app directory: ' + err.message))
-      return
+      throw new Error('Could not create app directory: ' + err.message)
     }
     return appDirectory
   }
