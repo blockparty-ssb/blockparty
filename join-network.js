@@ -28,6 +28,7 @@ module.exports = async function (code, cb) {
   }
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   config.keys = keys
+  // TODO how do we learn if this errors?
   const sbot = startSbot(config)
   config.manifest = sbot.getManifest()
   config.ownId = keys.id
