@@ -51,7 +51,7 @@ module.exports = function (state) {
         inviteButtonObs
       ]),
       div('.main', [
-        div('.post-msg', [
+        div('.editor', [
           div({
             id: 'compose-message',
             attributes: {
@@ -75,12 +75,6 @@ module.exports = function (state) {
                     result: () => exec('italic')
                   },
                   {
-                    name: 'backColor',
-                    icon: '<div style="background-color:pink;">A</div>',
-                    title: 'Highlight Color',
-                    result: () => exec('backColor', 'pink')
-                  },
-                  {
                     name: 'image',
                     result: () => {
                       const url = window.prompt('Enter the image URL')
@@ -96,31 +90,31 @@ module.exports = function (state) {
                   }
                 ],
                 classes: {
-                  actionbar: 'pell-actionbar-custom-name',
-                  button: 'pell-button-custom-name',
+                  actionbar: 'actionbar',
+                  button: 'editor-button',
                   content: 'compose-message',
-                  selected: 'pell-button-selected-custom-name'
+                  selected: 'editor-button-selected'
                 }
               })
             }
             ]
-          }),
-          button('#add-to-list .app-button', {
-            'ev-click': () => {
-              const textField = document.getElementsByClassName('compose-message')[0]
-              const turndownService = new TurndownService()
-              const md = turndownService.turndown(html)
-              state.activeApp().server.publish({
-                type: 'post',
-                text: md
-              }, () => {
-                return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
-              })
-              html = ''
-              textField.innerHTML = ''
-            }
-          }, 'send')
+          })
         ]),
+        button('#add-to-list .app-button', {
+          'ev-click': () => {
+            const textField = document.getElementsByClassName('compose-message')[0]
+            const turndownService = new TurndownService()
+            const md = turndownService.turndown(html)
+            state.activeApp().server.publish({
+              type: 'post',
+              text: md
+            }, () => {
+              return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
+            })
+            html = ''
+            textField.innerHTML = ''
+          }
+        }, 'send'),
         div('.feed',
           Map(messagesObs, msg => {
             const m = msg.value

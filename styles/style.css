@@ -389,3 +389,38 @@ p#invite-code {
     margin-top: 4px;
 }
 
+  /**************************PELL************************************/
+
+
+.editor {
+    border: 1px solid #B9BCC1;
+    box-sizing: border-box;
+  }
+  
+  .compose-message {
+    box-sizing: border-box;
+    max-height: 300px;
+    outline: 0;
+    overflow-y: auto;
+    padding: 10px;
+  }
+
+  
+  .actionbar {
+    background-color: #fff;
+    border-bottom: 1px solid #B9BCC1;
+  }
+  
+  .editor-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 30px;
+    outline: 0;
+    width: 30px;
+    vertical-align: bottom;
+  }
+  
+  .editor-button-selected {
+    background-color: #F0F0F0;
+  }
