@@ -28,13 +28,13 @@ module.exports = async function (code, cb) {
   }
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   config.keys = keys
-  // TODO how do we learn if this errors?
+  // TODO in sbot version 11, we don't learn about any errors from startSbot
   const sbot = startSbot(config)
   config.manifest = sbot.getManifest()
   config.ownId = keys.id
   sbot.invite.accept(invite, err => {
     if (err) {
-      rimraf(appDir)
+      rimraf.sync(appDir)
       return cb(err)
     }
     sbot.publish({
@@ -43,7 +43,7 @@ module.exports = async function (code, cb) {
       following: true
     }, err => {
       if (err) {
-        rimraf(appDir)
+        rimraf.sync(appDir)
         return cb(err)
       }
       cb(null, appName, config)
