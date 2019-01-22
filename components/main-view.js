@@ -41,7 +41,9 @@ module.exports = function (state) {
                 type: 'about',
                 name: textfield.value,
                 about: state.activeApp().ownId
-              }, err => console.log(err))
+              }, () => {
+                return showErrorMessage(errors.couldNotPublishUsername.title, errors.couldNotPublishUsername.text)
+              })
               textfield.value = ''
             }
           }, 'add username')
@@ -107,13 +109,13 @@ module.exports = function (state) {
             'ev-click': () => {
               const textField = document.getElementsByClassName('compose-message')[0]
               const turndownService = new TurndownService()
-              console.log(html)
               const md = turndownService.turndown(html)
-              console.log(md)
               state.activeApp().server.publish({
                 type: 'post',
                 text: md
-              }, err => console.log(err))
+              }, () => {
+                return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
+              })
               html = ''
               textField.innerHTML = ''
             }
@@ -175,14 +177,15 @@ module.exports = function (state) {
         'ev-click': () => {
           const keys = app.keys
           connect(keys, app.pubConfig, (err, pub) => {
-            if (err) return console.log(err)
+            if (err) {
+              return showErrorMessage(errors.couldNotConnect.title, errors.couldNotConnect.text)
+            }
             pub.invite.create(100, (err, code) => {
               if (err) {
-                showErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text)
+                return showErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text)
               }
 
               code = `${code}!${app.caps.shs}!${app.ownId}!${app.appName}`
-              console.log(code)
               document.getElementById('popup').style.display = 'block'
               document.getElementById('overlay').style.display = 'block'
               document.getElementById('invite-code').innerHTML = code

@@ -36,6 +36,18 @@ module.exports = {
     badInviteCode: {
       title: 'Bad invite code',
       text: 'Oh no, we were not able to process that invite code, please check, if you copied / pasted it correctly and try again.'
+    },
+    couldNotConnect: {
+      title: 'Could not connect',
+      text: 'Sorry, we are not able to connect to your pub, you may check, if it is running at Digital Ocean.'
+    },
+    couldNotPublishUsername: {
+      title: 'Username not saved',
+      text: 'Oops, we were not able to save your username, please restart Blockparty and try again.'
+    },
+    couldNotPublishMessage: {
+      title: 'Message not published',
+      text: 'Oh no! We were unable to publish your message. Please check, if your pub is running on Digital Ocean and your internet connection is working.'
     }
   },
   invite: {
