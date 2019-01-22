@@ -22,7 +22,7 @@ module.exports = async function (code, cb) {
   // TODO we shouldn't write the directory before we know whether the invite
   // was successful? Or delete in error case?
   // TODO error handling for appDir
-  const appDir = localSetup.setUpAppDir(appName, blockpartyDir, config)
+  const appDir = localSetup.setUpAppDir(appName, blockpartyDir, config, cb)
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   config.keys = keys
   const sbot = startSbot(config)
