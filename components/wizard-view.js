@@ -1,17 +1,21 @@
 'use strict'
 const { ipcRenderer, shell } = require('electron')
 const mutantValue = require('mutant/value')
-const { div, button, p, h2, h3, section, input } =
+const computed = require('mutant/computed')
+const { div, button, p, h2, h3, section, select, input, option } =
   require('../html-helpers')
 const {wizard, errors} = require('./labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
 const makeErrorMessage = require('../components/error-message')
 const errorMessagePlaceholder = mutantValue()
+const getSizes = require('../get-sizes')
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
   const apiKeyObs = mutantValue()
+  const sizesObs = mutantValue()
+  const regionsObs = mutantValue()
   const wizardPages = {
     enterName: section('.wizard-page', [
       div('.wrapper', [
@@ -69,10 +73,40 @@ module.exports = function (state) {
           p(wizard.giveApiKey),
           input({id: 'wizard-api-key'}),
           makeCancelButton(),
-          button('.button-continue .app-button', {'ev-click': () => {
-            apiKeyObs.set(document.getElementById('wizard-api-key').value)
-            pageObs.set(wizardPages.confirmation)
+          button('.button-continue .app-button', {'ev-click': async () => {
+            const apiKeyValue = document.getElementById('wizard-api-key').value
+            apiKeyObs.set(apiKeyValue)
+            pageObs.set(wizardPages.sizeAndRegion)
+            sizesObs.set(await getSizes(apiKeyValue))
           }}, wizard.continue)
+        ])
+      ])
+    ]),
+    sizeAndRegion: section('.wizard-page', [
+      div('.wrapper', [
+        h2(wizard.chooseOptions),
+        div('.box', [
+          select(
+            {'ev-change': (ev) => {
+              const chosenSize = ev.target.value
+              const matchSize = sizesObs().find(item => item.slug === chosenSize)
+              regionsObs.set(matchSize.regions)
+            }},
+            computed([sizesObs], sizes => sizes && sizes.map(size => {
+              return option(size.slug)
+            }))
+          ),
+          select(
+            computed([regionsObs], regions => regions && regions.map(region => option(region)))
+          ),
+          makeCancelButton(),
+          button('.button-continue .app-button', {'ev-click': () => {
+            ipcRenderer.send('create-network', {
+              appName: appIdObs(),
+              apiToken: apiKeyObs()
+            })
+            pageObs.set(wizardPages.confirmation)
+          }}, wizard.yesCreate)
         ])
       ])
     ]),
