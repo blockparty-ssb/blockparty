@@ -9,7 +9,8 @@ const installOnDigitalOcean = require('./install-on-digital-ocean')
 const startSbot = require('./server')
 const createConfig = require('./create-sbot-config')
 
-module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
+module.exports = async (pubInfo, blockpartyDir, mainWindow, cb) => {
+  const {appName, apiToken, region, size } = pubInfo
   const slugifiedId = slugify(appName)
   const shsKey = crypto.randomBytes(32).toString('base64')
   const port = Math.floor(50000 + 15000 * Math.random())
@@ -35,8 +36,8 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
   const {ip, key} = await installOnDigitalOcean({
     apiToken,
     name: slugifiedId,
-    region: 'nyc3',
-    size: 's-1vcpu-1gb',
+    region,
+    size,
     appId: shsKey,
     port,
     wsPort,

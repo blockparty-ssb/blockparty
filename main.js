@@ -85,11 +85,11 @@ app.on('ready', () => {
   })
   createWindow(ssbConfigs)
 
-  ipcMain.on('create-network', async (event, {appName, apiToken}) => {
-    createNetwork(appName, apiToken, blockpartyDir, mainWindow, (err, pubConnectionConfig) => {
+  ipcMain.on('create-network', async (event, pubInfo) => {
+    createNetwork(pubInfo, blockpartyDir, mainWindow, (err, pubConnectionConfig) => {
       // TODO Handle error
       if (err) return console.log(err)
-      event.sender.send('network-created', {appName, pubConnectionConfig})
+      event.sender.send('network-created', {appName: pubInfo.appName, pubConnectionConfig})
     })
   })
 })
