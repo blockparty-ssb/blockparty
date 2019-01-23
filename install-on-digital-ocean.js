@@ -24,6 +24,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
     return {ip, key}
     // TODO Handle error
   } catch (err) {
+    // TODO handle this better
     console.log(err)
   }
 
