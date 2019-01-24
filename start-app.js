@@ -12,6 +12,7 @@ module.exports = function(state, config, isFirst) {
     state.activeApp.set(app)
   }
   connection(config.keys, config, (err, server) => {
+    // TODO Handle error
     if (err) return console.log(err)
     app.server = server
     setUpMessageStream(app)

@@ -22,6 +22,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
     console.log('ip', ip)
     const key = await getKey(ip, wsPort)
     return {ip, key}
+    // TODO Handle error
   } catch (err) {
     console.log(err)
   }

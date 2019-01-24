@@ -50,13 +50,16 @@ module.exports = async (appName, apiToken, blockpartyDir, mainWindow, cb) => {
     manifest: {manifest: 'sync'}
   })
   client(keys, pubConnectionConfig, (err, ssb) => {
+    // TODO Handle error
     if (err) return console.log(err)
     ssb.manifest((err, manifest) => {
+      // TODO Handle error
       if (err) return console.log(err)
       pubConnectionConfig.manifest = manifest
       localSetup.persistPubConfig(pubConnectionConfig, appDir)
       client(keys, pubConnectionConfig, (err, pubSbot) => {
         if (err) return console.log(err)
+        // TODO Handle error
         pubSbot.invite.create(1, (err, code) => {
           if (err) return cb(err)
           ownSbot.invite.accept(code, err => {
