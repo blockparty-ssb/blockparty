@@ -56,6 +56,14 @@ module.exports = {
     pubInfoTimeout: {
       title: 'Could not install pub on server',
       text: "We were able to start a server on Digital Ocean, but something went wrong while installing the pub. Would you like to try again?"
+    },
+    wrongToken: {
+      title: 'Wrong Digital Ocean Token',
+      text: 'We were not able to authenticate you. Please check the Token you have entered.'
+    },
+    noInternet: {
+      title: 'No internet connection',
+      text: 'Please make sure you have an internet connection and try again.'
     }
   },
   invite: {

@@ -7,8 +7,7 @@ const mutantDict = require('mutant/dict')
 const Value = require('mutant/value')
 const appView = require('./components/app')
 const startApp = require('./start-app')
-const makeErrorMessage = require('./components/error-message')
-const {errors} = require('./components/labels')
+const showError = require('./show-do-error')
 
 const state = mutantStruct({
   wizard: mutantDict(),
@@ -43,16 +42,7 @@ ipcRenderer.on('network-created', (_, {appName, pubConnectionConfig}) => {
 })
 
 ipcRenderer.on('network-create-error', (_, err) => {
-  const errorTexts = {
-    ipTimeout: errors.ipTimeout,
-    pubInfoTimeout: errors.pubInfoTimeout
-  }
-  const error = errorTexts[err.message]
-  state.error.set(makeErrorMessage(
-    error.title,
-    error.text,
-    () => state.error.set(null)
-  ))
+  showError(err, state)
 })
 
 const appMarkup = appView(state)

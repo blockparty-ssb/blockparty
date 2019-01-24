@@ -10,13 +10,13 @@ const startSbot = require('./server')
 module.exports = async function (code, cb) {
   const regExPort = code.match(/:([0-9]+):/)
   if (!regExPort) {
-    return cb(new Error('bad invite code'))
+    return cb(new Error('badInviteCode'))
   }
   const cleanRegEx = regExPort[1]
   const port = parseInt(cleanRegEx)
   const inviteCodeParts = code.split('!')
   if (inviteCodeParts.length !== 4) {
-    return cb(new Error('bad invite code'))
+    return cb(new Error('badInviteCode'))
   }
   const [invite, appId, inviterId, appName] = inviteCodeParts
   const config = createConfig(appName, appId, port, port + 1, appName)

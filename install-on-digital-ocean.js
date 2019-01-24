@@ -21,18 +21,21 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
   let getKeyTimeUp = false
 
   try {
-    const res = await request(opts)
-    var getIpTimerId = setTimeout(() => getIpTimeUp = true, 60 * 1000)
-    const ip = await getIP(res.droplet)
-    console.log('ip', ip)
-    var getKeyTimerId = setTimeout(() => getKeyTimeUp = true, 7 * 60 * 1000)
-    const key = await getKey(ip, wsPort)
-    return {ip, key}
-    // TODO Handle error
+    var res = await request(opts)
   } catch (err) {
-    // TODO handle this better
-    console.log(err)
+    if (err.statusCode === 401) {
+      throw new Error('wrongToken')
+    } else if (err.name === 'RequestError') {
+      throw new Error('noInternet')
+    } else throw new Error(err.message)
   }
+
+  var getIpTimerId = setTimeout(() => getIpTimeUp = true, 60 * 1000)
+  const ip = await getIP(res.droplet)
+  console.log('ip', ip)
+  var getKeyTimerId = setTimeout(() => getKeyTimeUp = true, 7 * 60 * 1000)
+  const key = await getKey(ip, wsPort)
+  return {ip, key}
 
   async function getIP(droplet) {
     // it sometimes takes a while until DO tells us about the IP adress, so we

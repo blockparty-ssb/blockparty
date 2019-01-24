@@ -4,11 +4,11 @@ const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
 const { div, button, p, h2, h3, section, select, input, option } =
   require('../html-helpers')
-const {wizard, errors} = require('./labels')
+const {wizard} = require('./labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
-const makeErrorMessage = require('../components/error-message')
 const getSizes = require('../get-sizes')
+const showError = require('../show-do-error')
 
 module.exports = function (state) {
   const appIdObs = mutantValue()
@@ -41,15 +41,7 @@ module.exports = function (state) {
             if (!inviteCode) return
             joinNetwork(inviteCode, (err, appName, config) => {
               if (err) {
-                if (err.message === 'bad invite code') {
-                  console.log(err.message)
-                  const errorHTML = makeErrorMessage(errors.badInviteCode.title, errors.badInviteCode.text, () => {
-                    state.error.set(null)
-                  })
-                  state.error.set(errorHTML)
-                  return
-                }
-                return
+                return showError(err, state)
               }
               config.appName = appName
               state.appsFound.set(true)
@@ -78,7 +70,12 @@ module.exports = function (state) {
             const apiKeyValue = document.getElementById('wizard-api-key').value
             apiKeyObs.set(apiKeyValue)
             pageObs.set(wizardPages.sizeAndRegion)
-            doSizesObs.set(await getSizes(apiKeyValue))
+            try {
+              var sizes = await getSizes(apiKeyValue)
+            } catch (err) {
+              return showError(err, state)
+            }
+            doSizesObs.set(sizes)
           }}, wizard.continue)
         ])
       ])

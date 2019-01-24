@@ -11,8 +11,11 @@ module.exports = async function (apiToken) {
   try {
     const res = await request(opts)
     return res.sizes
-    // TODO handle sensibly
   } catch (err) {
-    console.log(err)
+    if (err.statusCode === 401) {
+      throw new Error('wrongToken')
+    } else if (err.name === 'RequestError') {
+      throw new Error('noInternet')
+    } else throw new Error(err.message)
   }
 }
