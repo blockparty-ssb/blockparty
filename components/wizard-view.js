@@ -8,7 +8,6 @@ const {wizard, errors} = require('./labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
 const makeErrorMessage = require('../components/error-message')
-const errorMessagePlaceholder = mutantValue()
 const getSizes = require('../get-sizes')
 
 module.exports = function (state) {
@@ -45,9 +44,9 @@ module.exports = function (state) {
                 if (err.message === 'bad invite code') {
                   console.log(err.message)
                   const errorHTML = makeErrorMessage(errors.badInviteCode.title, errors.badInviteCode.text, () => {
-                    errorMessagePlaceholder.set(null)
+                    state.error.set(null)
                   })
-                  errorMessagePlaceholder.set(errorHTML)
+                  state.error.set(errorHTML)
                   return
                 }
                 return
@@ -160,8 +159,5 @@ module.exports = function (state) {
     }}, wizard.cancel)
   }
 
-  return div('#wizard-view', [
-    pageObs,
-    div(errorMessagePlaceholder)
-  ])
+  return div('#wizard-view', pageObs)
 }

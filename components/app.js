@@ -29,7 +29,8 @@ module.exports = (state) => {
           when(state.wizardActive,
             makeWizardView(state),
             makeAppView(state)
-          )
+          ),
+          div(state.error)
         ])
       )
     })

@@ -49,7 +49,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
       json: true
     })
     await promisifiedSetTimeout(10 * 1000)
-    if (getIpTimeUp) throw new Error('getIp timeout')
+    if (getIpTimeUp) throw new Error('ipTimeout')
     console.log('requesting ip')
     return await getIP(res2.droplet)
   }
@@ -62,7 +62,7 @@ module.exports = async function ({apiToken, name, region, size, appId, port, wsP
       clearTimeout(getKeyTimerId)
       return key
     } catch (err) {
-      if (getKeyTimeUp) throw new Error('get key timeout')
+      if (getKeyTimeUp) throw new Error('pubInfoTimeout')
       await promisifiedSetTimeout(20 * 1000)
       return getKey(ip, port)
     }

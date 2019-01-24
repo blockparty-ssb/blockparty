@@ -48,6 +48,14 @@ module.exports = {
     couldNotPublishMessage: {
       title: 'Message not published',
       text: 'Oh no! We were unable to publish your message. Please check, if your pub is running on Digital Ocean and your internet connection is working.'
+    },
+    ipTimeout: {
+      title: 'Could not create server',
+      text: "We weren't able to get the new pub's IP address. This sometimes happens, would you like to try again?"
+    },
+    pubInfoTimeout: {
+      title: 'Could not install pub on server',
+      text: "We were able to start a server on Digital Ocean, but something went wrong while installing the pub. Would you like to try again?"
     }
   },
   invite: {

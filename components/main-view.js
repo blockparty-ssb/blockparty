@@ -6,7 +6,6 @@ const { div, p, ul, li, button, h4, h2, input, img } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const Map = require('mutant/map')
-const Value = require('mutant/value')
 const friendlyTime = require('friendly-time')
 const makeErrorMessage = require('./error-message')
 const {errors, invite} = require('./labels')
@@ -19,11 +18,9 @@ module.exports = function (state) {
   const messagesObs = computed([state.activeApp], a => a.messages)
   const userNamesObs = computed([state.activeApp], a => a.userNames)
   const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
-  const errorMessagePlaceholder = Value()
   let html
 
   return div('.MainWindow', [
-    div(errorMessagePlaceholder),
     div('.SplitMainView', [
       div('.sidebar', [
         div('.show-blockparty',
@@ -192,9 +189,9 @@ module.exports = function (state) {
 
   function showErrorMessage (title, text) {
     const errorHTML = makeErrorMessage(title, text, () => {
-      errorMessagePlaceholder.set(null)
+      state.error.set(null)
     })
-    errorMessagePlaceholder.set(errorHTML)
+    state.error.set(errorHTML)
     return
   }
 }

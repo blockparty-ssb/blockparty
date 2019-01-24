@@ -1,10 +1,14 @@
+/* eslint-disable new-cap */
 'use strict'
 
 const { ipcRenderer } = require('electron')
 const mutantStruct = require('mutant/struct')
 const mutantDict = require('mutant/dict')
+const Value = require('mutant/value')
 const appView = require('./components/app')
 const startApp = require('./start-app')
+const makeErrorMessage = require('./components/error-message')
+const {errors} = require('./components/labels')
 
 const state = mutantStruct({
   wizard: mutantDict(),
@@ -12,7 +16,8 @@ const state = mutantStruct({
   activeApp: {},
   noApps: false,
   appsFound: false,
-  apps: mutantDict({})
+  apps: mutantDict({}),
+  error: Value()
 })
 
 waitForConfig(state)
@@ -28,13 +33,26 @@ function waitForConfig(state) {
   })
 }
 
-ipcRenderer.on('network-created', (event, {appName, pubConnectionConfig}) => {
+ipcRenderer.on('network-created', (_, {appName, pubConnectionConfig}) => {
   const newApp = state.apps.get(appName)
   state.activeApp.set(newApp)
   newApp.pubConfig = pubConnectionConfig
   state.wizardActive.set(false)
   state.appsFound.set(true)
   state.noApps.set(false)
+})
+
+ipcRenderer.on('network-create-error', (_, err) => {
+  const errorTexts = {
+    ipTimeout: errors.ipTimeout,
+    pubInfoTimeout: errors.pubInfoTimeout
+  }
+  const error = errorTexts[err.message]
+  state.error.set(makeErrorMessage(
+    error.title,
+    error.text,
+    () => state.error.set(null)
+  ))
 })
 
 const appMarkup = appView(state)

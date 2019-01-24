@@ -87,9 +87,11 @@ app.on('ready', () => {
 
   ipcMain.on('create-network', async (event, pubInfo) => {
     createNetwork(pubInfo, blockpartyDir, mainWindow, (err, pubConnectionConfig) => {
-      // TODO Handle error
-      if (err) return console.log(err)
-      event.sender.send('network-created', {appName: pubInfo.appName, pubConnectionConfig})
+      if (err) {
+        event.sender.send('network-create-error', err)
+      } else {
+        event.sender.send('network-created', {appName: pubInfo.appName, pubConnectionConfig})
+      }
     })
   })
 })
