@@ -33,16 +33,20 @@ module.exports = async (pubInfo, blockpartyDir, mainWindow, cb) => {
   injectedConfig.remote = ownSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
   // TODO get these dynamically and let user choose
-  const {ip, key} = await installOnDigitalOcean({
-    apiToken,
-    name: slugifiedId,
-    region,
-    size,
-    appId: shsKey,
-    port,
-    wsPort,
-    userKey: keys.id
-  })
+  try {
+    var {ip, key} = await installOnDigitalOcean({
+      apiToken,
+      name: slugifiedId,
+      region,
+      size,
+      appId: shsKey,
+      port,
+      wsPort,
+      userKey: keys.id
+    })
+  } catch (err) {
+    return (cb(err))
+  }
 
   const formatted = key.replace('@', '').replace('.ed25519', '')
   const pubAddress = `net:${ip}:${port}~shs:${formatted}`
