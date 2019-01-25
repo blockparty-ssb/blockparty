@@ -4,7 +4,7 @@ const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
 const { div, button, p, h2, h3, section, select, input, option } =
   require('../html-helpers')
-const {wizard} = require('./labels')
+const {wizard} = require('../labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
 const getSizes = require('../get-sizes')

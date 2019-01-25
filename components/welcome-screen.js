@@ -1,6 +1,6 @@
 'use strict'
 const { div, h1, p, button } = require('../html-helpers')
-const labels = require('./labels').welcome
+const labels = require('../labels').welcome
 
 module.exports = (state) => {
   return div('.welcome!', [

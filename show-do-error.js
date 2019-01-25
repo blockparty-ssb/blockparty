@@ -1,7 +1,7 @@
 'use strict'
 
 const makeErrorMessage = require('./components/error-message')
-const {errors} = require('./components/labels')
+const {errors} = require('./labels')
 
 module.exports = function (err, state) {
   const errorTexts = {

@@ -8,7 +8,7 @@ const computed = require('mutant/computed')
 const Map = require('mutant/map')
 const friendlyTime = require('friendly-time')
 const makeErrorMessage = require('./error-message')
-const {errors, invite} = require('./labels')
+const {errors, invite} = require('../labels')
 const {exec, init} = require('pell')
 const TurndownService = require('turndown')
 
