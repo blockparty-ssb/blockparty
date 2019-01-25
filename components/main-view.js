@@ -159,7 +159,11 @@ module.exports = function (state) {
         ])
       ])
     ]),
-    div('#overlay')
+    div('#overlay'),
+    div('#loader', [
+      div('#double-bounce1'),
+      div('#double-bounce2')
+    ])
   ])
 
   function makeInviteButton(app) {
