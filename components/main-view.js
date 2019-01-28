@@ -11,6 +11,7 @@ const makeErrorMessage = require('./error-message')
 const {errors, invite} = require('../labels')
 const {exec, init} = require('pell')
 const TurndownService = require('turndown')
+const spinner = require('./spinner')
 
 module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
@@ -30,20 +31,27 @@ module.exports = function (state) {
           h4('You are:'),
           ul(Map(userNamesObs, name => li(name))),
           input({id: "username"}),
-          button('#add-username .app-button',{
-            id: 'add-username',
-            'ev-click': () => {
-              const textfield = document.getElementById('username')
-              state.activeApp().server.publish({
-                type: 'about',
-                name: textfield.value,
-                about: state.activeApp().ownId
-              }, err => {
-                if (err) return showErrorMessage(errors.couldNotPublishUsername.title, errors.couldNotPublishUsername.text)
-              })
-              textfield.value = ''
-            }
-          }, 'add username')
+          div('#add-username .app-button',
+            {
+              'ev-click': () => {
+                const textfield = document.getElementById('username')
+                const spinnerStyle = document.querySelector('.username .spinner').style
+                spinnerStyle.display = 'inline'
+                state.activeApp().server.publish({
+                  type: 'about',
+                  name: textfield.value,
+                  about: state.activeApp().ownId
+                }, err => {
+                  spinnerStyle.display = 'none'
+                  if (err) return showErrorMessage(
+                    errors.couldNotPublishUsername.title,
+                    errors.couldNotPublishUsername.text
+                  )
+                })
+                textfield.value = ''
+              }
+            },
+            [spinner, 'add username'])
         ]),
         inviteButtonObs
       ]),
@@ -159,11 +167,7 @@ module.exports = function (state) {
         ])
       ])
     ]),
-    div('#overlay'),
-    div('#loader', [
-      div('#double-bounce1'),
-      div('#double-bounce2')
-    ])
+    div('#overlay')
   ])
 
   function makeInviteButton(app) {
@@ -187,7 +191,9 @@ module.exports = function (state) {
             })
           })
         }
-      }, 'create an invite code')
+      },
+      spinner,
+      'create an invite code')
     )
   }
 

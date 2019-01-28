@@ -21,6 +21,7 @@ h2 {
     display: inline-block;
     background-color: #fff;
     border-width: 1px;
+    border-style: solid;
     max-width: 200px;
     border-color: #F9065F;
     color: #F9065F;
@@ -425,9 +426,8 @@ p#invite-code {
     background-color: #F0F0F0;
   }
 
-  /**********************************LOADER****************************/
-
-  #loader {
+  /**********************************.spinner****************************/
+  .overLaySpinner {
     display: none;
     width: 80px;
     height: 80px;
@@ -437,40 +437,40 @@ p#invite-code {
     z-index: 1;
   }
 
-  #double-bounce1 {
-    background-color:#1DA0E1;
+  .spinner { display: none; }
+  
+  .spinner > div {
+    width: 18px;
+    height: 18px;
+    background-color: #333;
+  
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.4s infinite ease-in-out both;
   }
   
-  #double-bounce1, #double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-    
-    -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
-    animation: sk-bounce 2.0s infinite ease-in-out;
+  .spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
   }
   
-  #double-bounce2 {
-    -webkit-animation-delay: -1.0s;
-    animation-delay: -1.0s;
-    background-color: #F9065F;
+  .spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
   }
   
-  @-webkit-keyframes sk-bounce {
-    0%, 100% { -webkit-transform: scale(0.0) }
-    50% { -webkit-transform: scale(1.0) }
+  @-webkit-keyframes sk-bouncedelay {
+    0%, 80%, 100% { -webkit-transform: scale(0) }
+    40% { -webkit-transform: scale(1.0) }
   }
   
-  @keyframes sk-bounce {
-    0%, 100% { 
-      transform: scale(0.0);
-      -webkit-transform: scale(0.0);
-    } 50% { 
-      transform: scale(1.0);
+  @keyframes sk-bouncedelay {
+    0%, 80%, 100% { 
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    } 40% { 
       -webkit-transform: scale(1.0);
+      transform: scale(1.0);
     }
   }
