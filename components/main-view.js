@@ -38,8 +38,8 @@ module.exports = function (state) {
                 type: 'about',
                 name: textfield.value,
                 about: state.activeApp().ownId
-              }, () => {
-                return showErrorMessage(errors.couldNotPublishUsername.title, errors.couldNotPublishUsername.text)
+              }, err => {
+                if (err) return showErrorMessage(errors.couldNotPublishUsername.title, errors.couldNotPublishUsername.text)
               })
               textfield.value = ''
             }
@@ -105,8 +105,8 @@ module.exports = function (state) {
             state.activeApp().server.publish({
               type: 'post',
               text: md
-            }, () => {
-              return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
+            }, err => {
+              if (err) return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
             })
             html = ''
             textField.innerHTML = ''
