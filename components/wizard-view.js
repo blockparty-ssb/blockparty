@@ -37,9 +37,12 @@ module.exports = function (state) {
           h3(wizard.enterInvite),
           input('#invite-code'),
           button('.button-continue .app-button', {'ev-click': () => {
+            const spinner = document.getElementById('loader')
+            spinner.style.display = 'block'
             const inviteCode = document.getElementById('invite-code').value
             if (!inviteCode) return
             joinNetwork(inviteCode, (err, appName, config) => {
+              spinner.style.display = 'none'
               if (err) {
                 return showError(err, state)
               }
