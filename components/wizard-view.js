@@ -70,12 +70,15 @@ module.exports = function (state) {
             const apiKeyValue = document.getElementById('wizard-api-key').value
             apiKeyObs.set(apiKeyValue)
             pageObs.set(wizardPages.sizeAndRegion)
+            var spinner = document.getElementById('loader')
+            spinner.style.display = 'block'
             try {
               var sizes = await getSizes(apiKeyValue)
             } catch (err) {
               return showError(err, state)
             }
             doSizesObs.set(sizes)
+            spinner.style.display = 'none'
           }}, wizard.continue)
         ])
       ])

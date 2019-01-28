@@ -23,7 +23,11 @@ module.exports = (state) => {
       if (nwa) return body(makeWizardView(state))
       if (nwi) return welcomeScreen(state)
       if (lfa) return loadingScreen()
-      if (af) return body(
+      if (af) return body([
+        div('#loader', [
+          div('#double-bounce1'),
+          div('#double-bounce2')
+        ]),
         div('.SplitWindow', [
           makeSidebar(state),
           when(state.wizardActive,
@@ -32,7 +36,7 @@ module.exports = (state) => {
           ),
           div(state.error)
         ])
-      )
+      ])
     })
   )
 }
