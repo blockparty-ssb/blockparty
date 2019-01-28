@@ -157,7 +157,7 @@ div.blockparty {
     border-radius: 100%;
 }
 
-.username {
+.username, .invite {
     display: flex;
     flex: 1;
     width: 100%;
@@ -184,15 +184,10 @@ input#post {
     overflow: auto;
 }
 
-button#add-to-list {
-    max-width: 20%;
-}
-
 button#load-more {
     margin-top: 15px;
     display: block;
 }
-
 
 .content {
     padding: 0 20px;

@@ -105,21 +105,28 @@ module.exports = function (state) {
             ]
           })
         ]),
-        button('#add-to-list .app-button', {
+        button('#publish-msg-button .app-button', {
           'ev-click': () => {
             const textField = document.getElementsByClassName('compose-message')[0]
+            const spinnerStyle = document.querySelector('#publish-msg-button .spinner').style
             const turndownService = new TurndownService()
             const md = turndownService.turndown(html)
+            if (!md) return
+            spinnerStyle.display = 'inline'
             state.activeApp().server.publish({
               type: 'post',
               text: md
             }, err => {
-              if (err) return showErrorMessage(errors.couldNotPublishMessage.title, errors.couldNotPublishMessage.text)
+              spinnerStyle.display = 'none'
+              if (err) return showErrorMessage(
+                errors.couldNotPublishMessage.title,
+                errors.couldNotPublishMessage.text
+              )
             })
             html = ''
             textField.innerHTML = ''
           }
-        }, 'send'),
+        }, [spinner, 'send']),
         div('.feed',
           Map(messagesObs, msg => {
             const m = msg.value
@@ -171,15 +178,18 @@ module.exports = function (state) {
   ])
 
   function makeInviteButton(app) {
-    return div('.username',
+    return div('.invite',
       button('#invite .app-button', {
         'ev-click': () => {
           const keys = app.keys
+          const spinnerStyle = document.querySelector('.invite .spinner').style
+          spinnerStyle.display = 'inline'
           connect(keys, app.pubConfig, (err, pub) => {
             if (err) {
               return showErrorMessage(errors.couldNotConnect.title, errors.couldNotConnect.text)
             }
             pub.invite.create(100, (err, code) => {
+              spinnerStyle.display = 'none'
               if (err) {
                 return showErrorMessage(errors.couldNotCreate.title, errors.couldNotCreate.text)
               }
@@ -192,8 +202,7 @@ module.exports = function (state) {
           })
         }
       },
-      spinner,
-      'create an invite code')
+      [spinner,'create an invite code'])
     )
   }
 
