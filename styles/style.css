@@ -291,9 +291,10 @@ div.welcome section {
     background: url('img/frame.png');
     background-size: cover;
     top: 0;
+    z-index: -1;
     right: 0;
     bottom: 0;
-    left: 79px;
+    left: 0;
     text-align: center;
     background-color: #fff;
     display: flex;
