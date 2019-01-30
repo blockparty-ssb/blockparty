@@ -68,21 +68,23 @@ module.exports = function (state) {
           h3(wizard.accountYes),
           p(wizard.giveApiKey),
           input({id: 'wizard-api-key'}),
-          makeCancelButton(),
-          button('.button-continue .app-button', {'ev-click': async () => {
-            const apiKeyValue = document.getElementById('wizard-api-key').value
-            apiKeyObs.set(apiKeyValue)
-            pageObs.set(wizardPages.sizeAndRegion)
-            var spinner = document.getElementById('loader')
-            spinner.style.display = 'block'
-            try {
-              var sizes = await getSizes(apiKeyValue)
-            } catch (err) {
-              return showError(err, state)
-            }
-            doSizesObs.set(sizes)
-            spinner.style.display = 'none'
-          }}, wizard.continue)
+          div('.button-group', [
+            makeCancelButton(),
+            button('.button-continue .app-button', {'ev-click': async () => {
+              const apiKeyValue = document.getElementById('wizard-api-key').value
+              apiKeyObs.set(apiKeyValue)
+              pageObs.set(wizardPages.sizeAndRegion)
+              var spinner = document.getElementById('loader')
+              spinner.style.display = 'block'
+              try {
+                var sizes = await getSizes(apiKeyValue)
+              } catch (err) {
+                return showError(err, state)
+              }
+              doSizesObs.set(sizes)
+              spinner.style.display = 'none'
+            }}, wizard.continue)
+          ])
         ])
       ])
     ]),
@@ -90,33 +92,37 @@ module.exports = function (state) {
       div('.wrapper', [
         h2(wizard.chooseOptions),
         div('.box', [
-          select(
-            {'ev-change': ev => {
-              const chosenSize = ev.target.value
-              if (!chosenSize) {
-                doRegionsObs.set(null)
-                return
-              }
-              const matchSize = doSizesObs().find(item => item.slug === chosenSize)
-              doRegionsObs.set(matchSize.regions)
-              sizeObs.set(chosenSize)
-            }},
-            computed([doSizesObs], sizes => {
-              if (!sizes) return
-              return sizes.reduce((selectOptions, size) => {
-                selectOptions.push(option({value: size.slug}, size.slug))
-                return selectOptions
-              }, [option({value: ""}, "Please choose")])
-            })
-          ),
-          select(
-            {'ev-change': ev => regionObs.set(ev.target.value)},
-            computed([doRegionsObs], regions => regions && regions.map(region => option(region)))
-          ),
-          makeCancelButton(),
-          button('.button-continue .app-button', {'ev-click': () => {
-            pageObs.set(wizardPages.confirmation)
-          }}, wizard.yesCreate)
+          div('.selection', [
+            select(
+              {'ev-change': ev => {
+                const chosenSize = ev.target.value
+                if (!chosenSize) {
+                  doRegionsObs.set(null)
+                  return
+                }
+                const matchSize = doSizesObs().find(item => item.slug === chosenSize)
+                doRegionsObs.set(matchSize.regions)
+                sizeObs.set(chosenSize)
+              }},
+              computed([doSizesObs], sizes => {
+                if (!sizes) return
+                return sizes.reduce((selectOptions, size) => {
+                  selectOptions.push(option({value: size.slug}, size.slug))
+                  return selectOptions
+                }, [option({value: ""}, "Please choose")])
+              })
+            ),
+            select(
+              {'ev-change': ev => regionObs.set(ev.target.value)},
+              computed([doRegionsObs], regions => regions && regions.map(region => option(region)))
+            )
+          ]),
+          div('.button-group', [
+            makeCancelButton(),
+            button('.button-continue .app-button', {'ev-click': () => {
+              pageObs.set(wizardPages.confirmation)
+            }}, wizard.yesCreate)
+          ])
         ])
       ])
     ]),
@@ -128,16 +134,18 @@ module.exports = function (state) {
           p(apiKeyObs),
           p(sizeObs),
           p(regionObs),
-          makeCancelButton(),
-          button('.button-continue .app-button', {'ev-click': () => {
-            ipcRenderer.send('create-network', {
-              appName: appIdObs(),
-              apiToken: apiKeyObs(),
-              size: sizeObs(),
-              region: regionObs()
-            })
-            pageObs.set(wizardPages.wait)
-          }}, wizard.yesCreate)
+          div('.button-group', [
+            makeCancelButton(),
+            button('.button-continue .app-button', {'ev-click': () => {
+              ipcRenderer.send('create-network', {
+                appName: appIdObs(),
+                apiToken: apiKeyObs(),
+                size: sizeObs(),
+                region: regionObs()
+              })
+              pageObs.set(wizardPages.wait)
+            }}, wizard.yesCreate)
+          ])
         ])
       ])
     ]),

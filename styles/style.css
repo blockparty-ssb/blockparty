@@ -3,7 +3,7 @@ html, body {
     box-sizing: border-box;
 }
 
-body, button {
+body, button, select {
     font-family: 'Lato', sans-serif;
     font-size: 16px;
 }
@@ -271,10 +271,42 @@ div.wrapper {
 }
 
 .box {
-    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px;
+    margin-bottom: 30px;
     padding: 25px;
     outline: 0.5px solid #1DA0E1;
 }
+
+.selection {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+select {
+    width: 100%;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    align-self: center;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    height: 40px;
+    border: 1px solid #F9065F;
+    padding-left: 10px;
+
+  }
 
 input#wizard-app-id, input#wizard-api-key, input#invite-code {
     border: none;

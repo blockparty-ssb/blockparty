@@ -11,6 +11,7 @@ module.exports = {
     accountNo: 'No, not yet.',
     getDOAccount: 'No problem! Please go, sign up on Digital Ocean. When you are done, come back.',
     giveApiKey: 'Awesome! Please fetch your API key from Digital Ocean and paste it here.',
+    chooseOptions: 'Please choose the size of your network-droplet',
     confirmation: 'Almost done! Here is what you entered:',
     yesCreate: 'Yes, please create my new blockparty network',
     cancel: 'Cancel',
