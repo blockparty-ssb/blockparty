@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 'use strict'
 const connect = require('ssb-client')
 const markdown = require('ssb-markdown')
-const { div, p, ul, li, button, h4, h2, input, img } =
+const { div, p, button, h4, h2, input, img } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const Map = require('mutant/map')
@@ -28,8 +29,7 @@ module.exports = function (state) {
           h2(appNameObs)
         ),
         div('.username', [
-          h4('You are:'),
-          ul(Map(userNamesObs, name => li(name))),
+          h4(['Your username:  ', userNamesObs]),
           input({id: "username"}),
           div('#add-username .app-button',
             {
