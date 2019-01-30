@@ -92,7 +92,7 @@ module.exports = function (state) {
       div('.wrapper', [
         h2(wizard.chooseOptions),
         div('.box', [
-          div('.selection', [
+          div('.selection',
             select(
               {'ev-change': ev => {
                 const chosenSize = ev.target.value
@@ -111,12 +111,14 @@ module.exports = function (state) {
                   return selectOptions
                 }, [option({value: ""}, "Please choose")])
               })
-            ),
+            )
+          ),
+          div('.selection',
             select(
               {'ev-change': ev => regionObs.set(ev.target.value)},
               computed([doRegionsObs], regions => regions && regions.map(region => option(region)))
             )
-          ]),
+          ),
           div('.button-group', [
             makeCancelButton(),
             button('.button-continue .app-button', {'ev-click': () => {
