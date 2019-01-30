@@ -203,13 +203,31 @@ button#load-more {
 .FeedEvent {
     margin-top: 10px;
     background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,0.1);
     min-height: 35px;
     padding: 10px;
 }
 
+.date {
+    font-style: italic;
+    color: grey;
+}
+
+.author {
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.postText {
+    font-family: 'Noto Serif SC', serif;
+}
+
 #username {
     display: block;
+}
+
+span {
+    margin-right: 5px;
 }
 
 /***************welcome******************/
@@ -469,3 +487,4 @@ p#invite-code {
       transform: scale(1.0);
     }
   }
+

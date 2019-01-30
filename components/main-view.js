@@ -3,7 +3,7 @@
 'use strict'
 const connect = require('ssb-client')
 const markdown = require('ssb-markdown')
-const { div, p, button, h4, h2, input, img } =
+const { div, p, button, h4, h2, span, input, img } =
   require('../html-helpers')
 const computed = require('mutant/computed')
 const Map = require('mutant/map')
@@ -132,8 +132,10 @@ module.exports = function (state) {
             const m = msg.value
             if (m.content.type === 'post') {
               return div('.FeedEvent', [
-                div(m.displayName),
-                div(friendlyTime(new Date(m.timestamp))),
+                div([
+                  span('.author', m.displayName),
+                  span('.date', friendlyTime(new Date(m.timestamp)))
+                ]),
                 div('.postText', { innerHTML: markdown.block(m.content.text) })
               ])
             } else if (m.content.type === 'hello-world') {
