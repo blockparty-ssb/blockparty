@@ -25,6 +25,7 @@ module.exports = function (state) {
           h3(wizard.enterAppId),
           input('#wizard-app-id', {attributes: {required: true}}),
           button('.button-continue .app-button', {'ev-click': () => {
+            console.log('jeht')
             const wizardInput = document.getElementById('wizard-app-id').value
             if (!wizardInput) {
               return
