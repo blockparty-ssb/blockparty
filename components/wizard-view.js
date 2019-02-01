@@ -10,7 +10,9 @@ const startApp = require('../start-app')
 const getSizes = require('../get-sizes')
 const showError = require('../show-do-error')
 
-module.exports = function (state) {
+const pageObs = mutantValue('enterName')
+
+module.exports.renderWizard = function (state) {
   const appIdObs = mutantValue()
   const apiKeyObs = mutantValue()
   const doSizesObs = mutantValue()
@@ -30,7 +32,7 @@ module.exports = function (state) {
               return
             }
             appIdObs.set(wizardInput)
-            pageObs.set(wizardPages.hasAccount)
+            pageObs.set('hasAccount')
           }}, wizard.continue)
         ]),
         div('.box', [
@@ -73,7 +75,7 @@ module.exports = function (state) {
             button('.button-continue .app-button', {'ev-click': async () => {
               const apiKeyValue = document.getElementById('wizard-api-key').value
               apiKeyObs.set(apiKeyValue)
-              pageObs.set(wizardPages.sizeAndRegion)
+              pageObs.set('sizeAndRegion')
               var spinner = document.getElementById('loader')
               spinner.style.display = 'block'
               try {
@@ -122,7 +124,7 @@ module.exports = function (state) {
           div('.button-group', [
             makeCancelButton(),
             button('.button-continue .app-button', {'ev-click': () => {
-              pageObs.set(wizardPages.confirmation)
+              pageObs.set('confirmation')
             }}, wizard.yesCreate)
           ])
         ])
@@ -145,7 +147,8 @@ module.exports = function (state) {
                 size: sizeObs(),
                 region: regionObs()
               })
-              pageObs.set(wizardPages.wait)
+              pageObs.set('wait');
+              [appIdObs, apiKeyObs, sizeObs, regionObs].forEach(obs => obs.set(null))
             }}, wizard.yesCreate)
           ])
         ])
@@ -158,19 +161,24 @@ module.exports = function (state) {
       ])
     ])
   }
-  const pageObs = mutantValue(wizardPages.enterName)
 
   function makeCancelButton() {
-    return button('.button-cancel .app-button', {'ev-click': () => {
-      delete state.wizard.appId
-      delete state.wizard.apiKey
-      if (state.apps) {
-        pageObs.set(wizardPages.enterName)
-      } else {
-        state.wizardActive = false
-      }
-    }}, wizard.cancel)
+    return button('.button-cancel .app-button',
+      {'ev-click': () => resetWizardState(state)},
+      wizard.cancel)
   }
 
-  return div('#wizard-view', pageObs)
+  return div('#wizard-view', computed(pageObs, pageName => wizardPages[pageName]))
 }
+
+function resetWizardState(state) {
+  delete state.wizard.appId
+  delete state.wizard.apiKey
+  if (state.apps) {
+    pageObs.set('enterName')
+  } else {
+    state.wizardActive = false
+  }
+}
+
+module.exports.resetWizardState = resetWizardState

@@ -8,6 +8,7 @@ const Value = require('mutant/value')
 const appView = require('./components/app')
 const startApp = require('./start-app')
 const showError = require('./show-do-error')
+const resetWizard = require('./components/wizard-view').resetWizardState
 
 const state = mutantStruct({
   wizard: mutantDict(),
@@ -39,9 +40,11 @@ ipcRenderer.on('network-created', (_, {appName, pubConnectionConfig}) => {
   state.wizardActive.set(false)
   state.appsFound.set(true)
   state.noApps.set(false)
+  resetWizard(state)
 })
 
 ipcRenderer.on('network-create-error', (_, err) => {
+  resetWizard(state)
   showError(err, state)
 })
 
