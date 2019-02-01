@@ -45,8 +45,8 @@ app.on('ready', () => {
     appIds = []
   }
 
-  const ssbConfigs = appIds.map(appName => {
-    const appDir = path.join(blockpartyDir, appName)
+  const ssbConfigs = appIds.map(dirName => {
+    const appDir = path.join(blockpartyDir, dirName)
     const fileContents = fs.readFileSync(path.join(appDir, 'config'), 'utf8')
     let appConfig
     try {
@@ -58,12 +58,10 @@ app.on('ready', () => {
     // config merges the given config with the default boilerplate
     // it uses rc to find the app's config file but can't find ours,
     // because it's nested in the .blockparty directory
-    appConfig.path = appDir
-    const ssbConfig = appName ? injectConfig(appConfig) : injectConfig()
+    const ssbConfig = dirName ? injectConfig(appConfig) : injectConfig()
     const keys = ssbKeys.loadOrCreateSync(path.join(ssbConfig.path, 'secret'))
     ssbConfig.keys = keys
     ssbConfig.ownId = keys.id
-    ssbConfig.appName = appName || 'global-scuttlebutt'
 
     // are a we pub admin?
     const pubFilePath = path.join(appDir, 'pub')

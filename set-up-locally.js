@@ -2,8 +2,8 @@
 const path = require('path')
 const fs = require('fs')
 
-function setUpAppDir(appName, blockpartyDir, networkConfig) {
-  const appDir = makeAppDirectory(appName)
+function setUpAppDir(appId, blockpartyDir, networkConfig) {
+  const appDir = makeAppDirectory(appId)
   try {
     fs.writeFileSync(path.join(appDir, 'config'), JSON.stringify(networkConfig, null, 4))
   } catch (err) {

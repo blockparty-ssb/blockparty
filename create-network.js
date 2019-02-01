@@ -13,16 +13,16 @@ module.exports = async (pubInfo, blockpartyDir, mainWindow, cb) => {
   const {appName, apiToken, region, size } = pubInfo
   const slugifiedId = slugify(appName)
   const shsKey = crypto.randomBytes(32).toString('base64')
+  const dirName = shsKey.replace(/\//g, '')
   const port = Math.floor(50000 + 15000 * Math.random())
   const wsPort = port + 1
-  const injectedConfig = createConfig(appName, shsKey, port, wsPort, slugifiedId)
+  const injectedConfig = createConfig(appName, shsKey, port, wsPort, dirName)
 
   const appDir = localSetup.setUpAppDir(
-    slugifiedId,
+    dirName,
     blockpartyDir,
     injectedConfig
   )
-  // also TODO: use same key for all, or not?
   const keys = ssbKeys.loadOrCreateSync(path.join(appDir, 'secret'))
   injectedConfig.keys = keys
   injectedConfig.ownId = keys.id
@@ -32,7 +32,6 @@ module.exports = async (pubInfo, blockpartyDir, mainWindow, cb) => {
   injectedConfig.manifest = ownSbot.getManifest()
   injectedConfig.remote = ownSbot.getAddress()
   mainWindow.webContents.send('ssb-config', injectedConfig)
-  // TODO get these dynamically and let user choose
   try {
     var {ip, key} = await installOnDigitalOcean({
       apiToken,
