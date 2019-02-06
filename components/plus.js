@@ -1,5 +1,5 @@
 'use strict'
-const { ipcRenderer, shell } = require('electron')
+const { ipcRenderer } = require('electron')
 const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
 const { div, button, p, h2, h3, section, select, input, option } =
@@ -7,10 +7,8 @@ const { div, button, p, h2, h3, section, select, input, option } =
 const {wizard} = require('../labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
-const getSizes = require('../get-sizes')
 const showError = require('../show-do-error')
 const pubWizard = require('../../ssb-pub-wizard')
-
 
 const pageObs = mutantValue('createOrJoin')
 
@@ -54,85 +52,8 @@ module.exports.renderWizard = function (state) {
         ])
       ])
     ]),
-    pubWizard: pubWizard(onPubCreated),
-    sizeAndRegion: section('.wizard-page', [
-      div('.wrapper', [
-        h2(wizard.chooseOptions),
-        div('.box', [
-          div('.selection',
-            select(
-              {'ev-change': ev => {
-                const chosenSize = ev.target.value
-                if (!chosenSize) {
-                  doRegionsObs.set(null)
-                  return
-                }
-                const matchSize = doSizesObs().find(item => item.slug === chosenSize)
-                doRegionsObs.set(matchSize.regions)
-                sizeObs.set(chosenSize)
-              }},
-              computed([doSizesObs], sizes => {
-                if (!sizes) return
-                return sizes.reduce((selectOptions, size) => {
-                  selectOptions.push(option({value: size.slug}, size.slug))
-                  return selectOptions
-                }, [option({value: ""}, "Please choose")])
-              })
-            )
-          ),
-          div('.selection',
-            select(
-              {'ev-change': ev => regionObs.set(ev.target.value)},
-              computed([doRegionsObs], regions => regions && regions.map(region => option(region)))
-            )
-          ),
-          div('.button-group', [
-            makeCancelButton(),
-            button('.button-continue .app-button', {'ev-click': () => {
-              pageObs.set('confirmation')
-            }}, wizard.yesCreate)
-          ])
-        ])
-      ])
-    ]),
-    confirmation: section('.wizard-page', [
-      div('.wrapper', [
-        h2(wizard.confirmation),
-        div('.box', [
-          p(appIdObs),
-          p(apiKeyObs),
-          p(sizeObs),
-          p(regionObs),
-          div('.button-group', [
-            makeCancelButton(),
-            button('.button-continue .app-button', {'ev-click': () => {
-              ipcRenderer.send('create-network', {
-                appName: appIdObs(),
-                apiToken: apiKeyObs(),
-                size: sizeObs(),
-                region: regionObs()
-              })
-              pageObs.set('wait');
-              [appIdObs, apiKeyObs, sizeObs, regionObs].forEach(obs => obs.set(null))
-            }}, wizard.yesCreate)
-          ])
-        ])
-      ])
-    ]),
-    wait: section('.wizard-page', [
-      div('.wrapper', [
-        h2(wizard.paintWhileWaiting),
-        p(wizard.takeSomeTime)
-      ])
-    ])
+    pubWizard: pubWizard(onPubCreated)
   }
-
-  function makeCancelButton() {
-    return button('.button-cancel .app-button',
-      {'ev-click': () => resetWizardState(state)},
-      wizard.cancel)
-  }
-
   return div('#wizard-view', computed(pageObs, pageName => wizardPages[pageName]))
 }
 
