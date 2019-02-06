@@ -35,14 +35,11 @@ module.exports = function (state) {
             {
               'ev-click': () => {
                 const textfield = document.getElementById('username')
-                const spinnerStyle = document.querySelector('.username .spinner').style
-                spinnerStyle.display = 'inline'
                 state.activeApp().server.publish({
                   type: 'about',
                   name: textfield.value,
                   about: state.activeApp().ownId
                 }, err => {
-                  spinnerStyle.display = 'none'
                   if (err) return showErrorMessage(
                     errors.couldNotPublishUsername.title,
                     errors.couldNotPublishUsername.text
@@ -50,8 +47,7 @@ module.exports = function (state) {
                 })
                 textfield.value = ''
               }
-            },
-            [spinner, 'add username'])
+            }, 'add username')
         ]),
         inviteButtonObs
       ]),
