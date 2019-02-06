@@ -7,7 +7,7 @@ const loadingScreen = require('./loading-screen')
 const welcomeScreen = require('./welcome-screen')
 const makeSidebar = require('./sidebar')
 const makeAppView = require('./main-view')
-const makeWizardView = require('./wizard-view-new')
+const makeWizardView = require('../../wizard-extract/')
 
 module.exports = (state) => {
   const noAppsAndWizardActive = computed([state.noApps, state.wizardActive], (a,b) => a && b)
