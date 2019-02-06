@@ -9,8 +9,10 @@ const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
 const getSizes = require('../get-sizes')
 const showError = require('../show-do-error')
+const pubWizard = require('../../ssb-pub-wizard')
 
-const pageObs = mutantValue('enterName')
+
+const pageObs = mutantValue('createOrJoin')
 
 module.exports.renderWizard = function (state) {
   const appIdObs = mutantValue()
@@ -20,19 +22,13 @@ module.exports.renderWizard = function (state) {
   const sizeObs = mutantValue()
   const regionObs = mutantValue()
   const wizardPages = {
-    enterName: section('.wizard-page', [
+    createOrJoin: section('.wizard-page', [
       div('.wrapper', [
         h2('Create a new community or join an existing one!'),
         div('.box', [
           h3(wizard.enterAppId),
-          input('#wizard-app-id', {attributes: {required: true}}),
           button('.button-continue .app-button', {'ev-click': () => {
-            const wizardInput = document.getElementById('wizard-app-id').value
-            if (!wizardInput) {
-              return
-            }
-            appIdObs.set(wizardInput)
-            pageObs.set('hasAccount')
+            pageObs.set('pubWizard')
           }}, wizard.continue)
         ]),
         div('.box', [
@@ -58,38 +54,7 @@ module.exports.renderWizard = function (state) {
         ])
       ])
     ]),
-    hasAccount: section('.wizard-page', [
-      div('.wrapper', [
-        h2(wizard.haveAccount),
-        div('.box', [
-          h3(wizard.accountNo),
-          p(wizard.getDOAccount),
-          button('#make-account .app-button', {'ev-click': () => shell.openExternal(wizard.dOURL)}, wizard.goToDO)
-        ]),
-        div('.box', [
-          h3(wizard.accountYes),
-          p(wizard.giveApiKey),
-          input({id: 'wizard-api-key'}),
-          div('.button-group', [
-            makeCancelButton(),
-            button('.button-continue .app-button', {'ev-click': async () => {
-              const apiKeyValue = document.getElementById('wizard-api-key').value
-              apiKeyObs.set(apiKeyValue)
-              pageObs.set('sizeAndRegion')
-              var spinner = document.getElementById('loader')
-              spinner.style.display = 'block'
-              try {
-                var sizes = await getSizes(apiKeyValue)
-              } catch (err) {
-                return showError(err, state)
-              }
-              doSizesObs.set(sizes)
-              spinner.style.display = 'none'
-            }}, wizard.continue)
-          ])
-        ])
-      ])
-    ]),
+    pubWizard: pubWizard(onPubCreated),
     sizeAndRegion: section('.wizard-page', [
       div('.wrapper', [
         h2(wizard.chooseOptions),
@@ -175,10 +140,14 @@ function resetWizardState(state) {
   delete state.wizard.appId
   delete state.wizard.apiKey
   if (state.apps) {
-    pageObs.set('enterName')
+    pageObs.set('createOrJoin')
   } else {
     state.wizardActive = false
   }
+}
+
+function onPubCreated(err, pubInfo) {
+  ipcRenderer.send('create-network', pubInfo)
 }
 
 module.exports.resetWizardState = resetWizardState
