@@ -1,5 +1,4 @@
 'use strict'
-const { ipcRenderer } = require('electron')
 const { div, body} = require('../html-helpers')
 const computed = require('mutant/computed')
 const when = require('mutant/when')
@@ -7,7 +6,7 @@ const loadingScreen = require('./loading-screen')
 const welcomeScreen = require('./welcome-screen')
 const makeSidebar = require('./sidebar')
 const makeAppView = require('./main-view')
-const makeWizardView = require('../../wizard-extract/')
+const makeOrJoin = require('./plus').renderWizard
 
 module.exports = (state) => {
   const noAppsAndWizardActive = computed([state.noApps, state.wizardActive], (a,b) => a && b)
@@ -21,7 +20,7 @@ module.exports = (state) => {
       lookingForApps,
       state.appsFound
     ], (nwa, nwi, lfa, af) => {
-      if (nwa) return body(makeWizardView(onPubCreated))
+      if (nwa) return body(makeOrJoin(state))
       if (nwi) return welcomeScreen(state)
       if (lfa) return loadingScreen()
       if (af) return body([
@@ -32,7 +31,7 @@ module.exports = (state) => {
         div('.SplitWindow', [
           makeSidebar(state),
           when(state.wizardActive,
-            makeWizardView(onPubCreated),
+            makeOrJoin(state),
             makeAppView(state)
           ),
           div(state.error)
@@ -40,8 +39,4 @@ module.exports = (state) => {
       ])
     })
   )
-
-  function onPubCreated(err, pubInfo) {
-    ipcRenderer.send('create-network', pubInfo)
-  }
 }

@@ -8,7 +8,7 @@ const Value = require('mutant/value')
 const appView = require('./components/app')
 const startApp = require('./start-app')
 const showError = require('./show-do-error')
-const resetWizard = require('./components/wizard-view').resetWizardState
+const resetWizard = require('./components/plus').resetWizardState
 
 const state = mutantStruct({
   wizard: mutantDict(),
