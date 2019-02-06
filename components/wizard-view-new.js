@@ -126,9 +126,10 @@ module.exports = function (cb) {
               const wsPort = port + 1
               const appId = crypto.randomBytes(32).toString('base64')
               const keys = ssbKeys.generate()
+              const appName = slugify(appIdObs())
               pageObs.set('wait')
               const pubInfo = {
-                name: slugify(appIdObs()),
+                name: appName,
                 apiToken: apiKeyObs(),
                 size: sizeObs(),
                 region: regionObs(),
@@ -139,7 +140,7 @@ module.exports = function (cb) {
               }
               try {
                 const {ip, key} = await installOnDigitalOcean(pubInfo)
-                cb(null, {appId, port, wsPort, appName: name, keys, pubKey: key, ip})
+                cb(null, {appId, port, wsPort, appName, keys, pubKey: key, ip})
               } catch (err) {
                 cb(err)
               } finally {
