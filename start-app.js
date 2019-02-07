@@ -1,8 +1,10 @@
+/* eslint-disable new-cap */
 'use strict'
 const connection = require('ssb-client')
 const pull = require('pull-stream')
 const mutantArray = require('mutant/array')
 const paraMap = require('pull-paramap')
+const Value = require('mutant/Value')
 const batchSize = 100
 
 module.exports = function(state, config, isFirst) {
@@ -16,14 +18,14 @@ module.exports = function(state, config, isFirst) {
     if (err) return console.log(err)
     app.server = server
     setUpMessageStream(app)
-    getUserNames(app)
+    getuserName(app)
   })
 }
 
 function addAppToState(state, appConfig) {
   state.apps.put(appConfig.appName, Object.assign(appConfig, {
     messages: mutantArray(),
-    userNames: mutantArray()
+    userName: Value()
   }))
 }
 
@@ -94,7 +96,7 @@ function setUpMessageStream(app) {
   )
 }
 
-function getUserNames(app) {
+function getuserName(app) {
   pull(
     app.server.query.read({
       live: true,
@@ -107,7 +109,7 @@ function getUserNames(app) {
     }),
     pull.drain(msg => {
       if (!msg.value) return
-      app.userNames.insert(msg.value.content.name, 0)
+      app.userName.set(msg.value.content.name)
     })
   )
 }

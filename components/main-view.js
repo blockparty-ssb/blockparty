@@ -18,7 +18,7 @@ module.exports = function (state) {
   const appNameObs = computed([state.activeApp], activeApp => activeApp.appName)
   const placeholderObs = computed([appNameObs], appName => 'Write a message in ' + appName)
   const messagesObs = computed([state.activeApp], a => a.messages)
-  const userNamesObs = computed([state.activeApp], a => a.userNames)
+  const userNameObs = computed([state.activeApp], a => a.userName)
   const inviteButtonObs = computed([state.activeApp], a => a.pubConfig ? makeInviteButton(a) : null)
   let html
 
@@ -29,7 +29,7 @@ module.exports = function (state) {
           h2(appNameObs)
         ),
         div('.username', [
-          h4(['Your username:  ', userNamesObs]),
+          h4(['Your username:  ', userNameObs]),
           input({id: "username"}),
           div('#add-username .app-button',
             {
