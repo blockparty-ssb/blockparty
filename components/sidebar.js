@@ -42,10 +42,15 @@ module.exports = function (state) {
           'ev-click': () => {
             const textFieldInput = document.querySelector('.compose-message > p')
             if (textFieldInput) {
-              state.activeApp().draft = textFieldInput.innerHTML
+              const originAppDraft = textFieldInput.innerHTML
+              state.activeApp().draft = originAppDraft
               textFieldInput.innerHTML = ''
             }
             state.activeApp.set(state.apps.get(id))
+            const targetAppDraft = state.activeApp().draft
+            if (targetAppDraft) {
+              textFieldInput.innerHTML = targetAppDraft
+            }
             state.wizardActive.set(false)
           },
           style: {
