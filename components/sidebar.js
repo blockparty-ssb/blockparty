@@ -40,6 +40,7 @@ module.exports = function (state) {
         })
         return div('.blockparty', {
           'ev-click': () => {
+            document.querySelector('.compose-message > p').innerHTML = ''
             state.activeApp.set(state.apps.get(id))
             state.wizardActive.set(false)
           },
