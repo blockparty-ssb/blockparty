@@ -61,7 +61,7 @@ function resetWizardState(state) {
   }
 }
 
-function onPubCreated(pubInfo) {
+function onPubCreated(err, pubInfo) {
   ipcRenderer.send('create-network', pubInfo)
 }
 

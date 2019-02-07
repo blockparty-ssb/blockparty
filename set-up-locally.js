@@ -34,7 +34,6 @@ function setUpAppDir(appId, blockpartyDir, networkConfig) {
 
 function persistPubConfig(pubConfig, appDir) {
   fs.writeFileSync(path.join(appDir, 'pub'), JSON.stringify(pubConfig, null, 4))
-  console.log('wrote pub file')
 }
 
 module.exports = {setUpAppDir, persistPubConfig}

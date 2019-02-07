@@ -1,10 +1,9 @@
 'use strict'
-const { div } = require('../html-helpers')
+const { div, p } = require('../html-helpers')
 const mutantKeys = require('mutant/keys')
 const map = require('mutant/map')
 const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
-
 
 module.exports = function (state) {
   const colors = ['#F9065F', '#1DA0E1', '#27A83F', '#F9B405']
@@ -47,9 +46,12 @@ module.exports = function (state) {
               textFieldInput.innerHTML = ''
             }
             state.activeApp.set(state.apps.get(id))
+
             const targetAppDraft = state.activeApp().draft
             if (targetAppDraft) {
-              textFieldInput.innerHTML = targetAppDraft
+              const editor = document.getElementsByClassName('.compose-message')[0]
+              const content = p(targetAppDraft)
+              editor.innerHTML = content
             }
             state.wizardActive.set(false)
           },
