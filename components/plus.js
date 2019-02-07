@@ -18,10 +18,10 @@ module.exports.renderWizard = function (state) {
       div('.wrapper', [
         h2('Create a new community or join an existing one!'),
         div('.box', [
-          h3(wizard.enterAppId),
+          h3(wizard.createNew),
           button('.button-continue .app-button', {'ev-click': () => {
             pageObs.set('pubWizard')
-          }}, wizard.continue)
+          }}, wizard.create)
         ]),
         div('.box', [
           h3(wizard.enterInvite),

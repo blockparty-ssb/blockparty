@@ -3,9 +3,10 @@
 
 module.exports = {
   wizard: {
-    enterAppId: 'To create a new community, please enter the name of your new network',
+    createNew: 'Click here, to create a new community',
     enterInvite: 'To join an existing community, paste your invite code here',
     continue: 'Continue',
+    create: 'Get started!',
     haveAccount: 'Do you already have an account on Digital Ocean?',
     accountYes: 'Yes, I already have an account.',
     accountNo: 'No, not yet.',
