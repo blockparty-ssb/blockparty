@@ -2,13 +2,13 @@
 const { ipcRenderer } = require('electron')
 const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
+const pubWizard = require('ssb-pub-wizard')
 const { div, button, h2, h3, section, input } =
   require('../html-helpers')
 const {wizard} = require('../labels')
 const joinNetwork = require('../join-network')
 const startApp = require('../start-app')
 const showError = require('../show-do-error')
-const pubWizard = require('../../ssb-pub-wizard')
 
 const pageObs = mutantValue('createOrJoin')
 
