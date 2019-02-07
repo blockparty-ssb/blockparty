@@ -40,7 +40,11 @@ module.exports = function (state) {
         })
         return div('.blockparty', {
           'ev-click': () => {
-            document.querySelector('.compose-message > p').innerHTML = ''
+            const textFieldInput = document.querySelector('.compose-message > p')
+            if (textFieldInput) {
+              state.activeApp().draft = textFieldInput.innerHTML
+              textFieldInput.innerHTML = ''
+            }
             state.activeApp.set(state.apps.get(id))
             state.wizardActive.set(false)
           },
