@@ -104,16 +104,13 @@ module.exports = function (state) {
         button('#publish-msg-button .app-button', {
           'ev-click': () => {
             const textField = document.getElementsByClassName('compose-message')[0]
-            const spinnerStyle = document.querySelector('#publish-msg-button .spinner').style
             const turndownService = new TurndownService()
             const md = turndownService.turndown(html)
             if (!md) return
-            spinnerStyle.display = 'inline'
             state.activeApp().server.publish({
               type: 'post',
               text: md
             }, err => {
-              spinnerStyle.display = 'none'
               if (err) return showErrorMessage(
                 errors.couldNotPublishMessage.title,
                 errors.couldNotPublishMessage.text
@@ -122,7 +119,7 @@ module.exports = function (state) {
             html = ''
             textField.innerHTML = ''
           }
-        }, [spinner, 'send']),
+        }, 'send'),
         div('.feed',
           Map(messagesObs, msg => {
             const m = msg.value
