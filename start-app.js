@@ -4,7 +4,7 @@ const connection = require('ssb-client')
 const pull = require('pull-stream')
 const mutantArray = require('mutant/array')
 const paraMap = require('pull-paramap')
-const Value = require('mutant/Value')
+const Value = require('mutant/value')
 const batchSize = 100
 
 module.exports = function(state, config, isFirst) {

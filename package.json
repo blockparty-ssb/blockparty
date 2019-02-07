@@ -25,6 +25,7 @@
     "ssb-config": "^2.3.4",
     "ssb-friends": "^3.1.5",
     "ssb-markdown": "^4.0.0",
+    "ssb-pub-wizard": "^1.0.0",
     "turndown": "^5.0.1"
   },
   "devDependencies": {
