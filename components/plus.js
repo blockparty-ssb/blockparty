@@ -2,7 +2,7 @@
 const { ipcRenderer } = require('electron')
 const mutantValue = require('mutant/value')
 const computed = require('mutant/computed')
-const { div, button, p, h2, h3, section, select, input, option } =
+const { div, button, h2, h3, section, input } =
   require('../html-helpers')
 const {wizard} = require('../labels')
 const joinNetwork = require('../join-network')
@@ -13,12 +13,6 @@ const pubWizard = require('../../ssb-pub-wizard')
 const pageObs = mutantValue('createOrJoin')
 
 module.exports.renderWizard = function (state) {
-  const appIdObs = mutantValue()
-  const apiKeyObs = mutantValue()
-  const doSizesObs = mutantValue()
-  const doRegionsObs = mutantValue()
-  const sizeObs = mutantValue()
-  const regionObs = mutantValue()
   const wizardPages = {
     createOrJoin: section('.wizard-page', [
       div('.wrapper', [
@@ -67,7 +61,7 @@ function resetWizardState(state) {
   }
 }
 
-function onPubCreated(err, pubInfo) {
+function onPubCreated(pubInfo) {
   ipcRenderer.send('create-network', pubInfo)
 }
 
