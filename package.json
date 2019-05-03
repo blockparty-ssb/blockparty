@@ -25,12 +25,12 @@
     "ssb-config": "^2.3.4",
     "ssb-friends": "^3.1.5",
     "ssb-markdown": "^4.0.0",
-    "ssb-pub-wizard": "^1.0.0",
+    "ssb-pub-wizard": "^1.0.1",
     "turndown": "^5.0.1"
   },
   "devDependencies": {
     "electron": "^3.0.2",
-    "electron-rebuild": "^1.8.2",
+    "electron-rebuild": "^1.8.4",
     "eslint": "^5.12.0"
   }
 }
